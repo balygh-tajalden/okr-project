@@ -259,7 +259,7 @@ export const useInstitutionalStore = create<InstitutionalStore>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 2,
+      version: 4,
       storage: {
         getItem: (name) => {
           try {
@@ -285,7 +285,7 @@ export const useInstitutionalStore = create<InstitutionalStore>()(
         },
       },
       // عند تغيير الإصدار: استبدل البيانات بالنسخة الأولية الجديدة
-      migrate: () => ({ state: { ...SEED_DATA }, version: 2 }),
+      migrate: () => ({ state: { ...SEED_DATA }, version: 4 }),
     }
   )
 );

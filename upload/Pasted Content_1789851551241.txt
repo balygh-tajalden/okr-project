@@ -1,0 +1,2588 @@
+You are a senior Software Engineer, Product Architect, UX Designer,
+and Frontend/Full-Stack Prototype Engineer.
+
+You are continuing the implementation of an existing Arabic institutional
+OKR management system:
+
+"نظام إدارة الأهداف المؤسسية وفق منهجية الأهداف والنتائج الرئيسية (OKR)"
+
+PHASE 1 has already established the product foundation.
+
+PHASE 2 has already implemented the institutional foundation including:
+
+- Users
+- Roles
+- Permissions
+- Organizational Structure
+- Organizational Scope
+- OKR Cycles
+- Arabic RTL application shell
+- Authentication and protected routing
+- Shared UI/design system
+- Centralized prototype persistence/data layer
+
+DO NOT rebuild Phase 1 or Phase 2.
+
+Your task now is to implement:
+
+==================================================
+PHASE 3
+OBJECTIVES + KEY RESULTS
++ ALIGNMENT
++ REVIEW & APPROVAL
++ INDIVIDUAL ASSIGNMENT
+==================================================
+
+This phase implements the planning and approval layer of the OKR system.
+
+It does NOT implement progress execution yet.
+
+The project documentation itself is NOT available to you.
+
+Therefore this prompt contains the authoritative Phase-3
+business rules and diagram-derived workflows.
+
+Do not replace these rules with assumptions from another OKR product.
+
+==================================================
+0. FIRST — INSPECT THE CURRENT PROJECT
+==================================================
+
+Before implementing anything:
+
+Inspect the repository after Phase 2.
+
+Understand:
+
+- authentication/session architecture
+- role/permission guards
+- organizational scope implementation
+- organizational hierarchy services
+- users and roles models
+- OKR Cycle model and lifecycle
+- state management
+- persistence/API layer
+- routes
+- app shell
+- design system
+- forms
+- tables
+- dialogs
+- toast/notification components
+- reusable status components
+- validation utilities
+- test setup
+
+Continue the existing architecture.
+
+Do NOT:
+
+- replace the current stack
+- recreate the project
+- create duplicate organization/cycle/user models
+- bypass permission services
+- bypass organizational scope
+- create a second persistence layer
+- redesign Phase-1/2 UI unnecessarily
+
+Phase 3 must integrate directly with Phase 2 data.
+
+==================================================
+1. PHASE-3 PURPOSE
+==================================================
+
+At the end of this phase the prototype must support the complete
+PLANNING AND APPROVAL journey:
+
+Authorized User
+→ creates Objective
+→ attaches it to one OKR Cycle
+→ defines one or more Key Results
+→ saves Objective as Draft
+
+For organizational alignment:
+
+Department Manager / authorized organizational user
+→ creates Supporting Objective
+→ links it to one upstream Key Result
+→ sends it for review
+→ authorized reviewer approves it
+OR
+→ returns it for modification with a required reason
+
+For individual objectives:
+
+Direct Manager
+→ creates/assigns Individual Objective
+→ Employee views assignment
+→ Employee accepts
+OR
+→ Employee rejects and MUST provide a reason
+
+This is the Phase-3 boundary.
+
+==================================================
+2. IMPORTANT — DO NOT IMPLEMENT EXECUTION YET
+==================================================
+
+Phase 3 ends at approved/planned objectives and assignment decisions.
+
+Do NOT implement:
+
+- progress evidence submission
+- progress update requests
+- actual-value approval
+- Key Result progress calculation
+- Objective progress calculation
+- expected progress
+- performance states
+- overdue updates
+- alerts
+- execution notifications
+- escalation
+- final dashboard analytics
+- final reports
+
+Those belong to Phase 4 and Phase 5.
+
+You MAY prepare data structures required later,
+but do not expose working execution features.
+
+==================================================
+3. CORE OBJECTIVE MODEL
+==================================================
+
+Every Objective must be a real entity connected to the Phase-2 foundation.
+
+An Objective must contain appropriate fields including:
+
+- id
+- title
+- description
+- objective type / scope
+- owner
+- organizational unit
+- OKR Cycle
+- start date
+- end date
+- lifecycle state
+- Key Results
+- contributors where applicable
+- alignment information where applicable
+- audit/history metadata where required
+
+Use the current project's naming conventions.
+
+Do not duplicate Cycle/User/Organization objects inside Objective records.
+
+Reference stable IDs/entities from Phase 2.
+
+==================================================
+4. OBJECTIVE TYPES / CONTEXT
+==================================================
+
+The documented workflow distinguishes at minimum:
+
+- هدف مؤسسي
+- هدف تنظيمي
+- هدف فردي
+
+Treat a team objective, where applicable,
+as an organizational objective associated with the relevant
+organizational unit rather than inventing an unrelated lifecycle.
+
+Objective type/context affects:
+
+- organizational association
+- available owner
+- approval route
+- assignment behavior
+- alignment options
+
+Do not use one generic uncontrolled free-text objective type.
+
+==================================================
+5. EVERY OBJECTIVE MUST BELONG TO ONE CYCLE
+==================================================
+
+An Objective MUST be attached to exactly ONE OKR Cycle.
+
+An Objective cannot be valid for approval or execution
+without a Cycle.
+
+Use real Phase-2 Cycle data.
+
+Do not duplicate Cycle names as arbitrary text.
+
+The user should select from accessible/appropriate Cycles.
+
+==================================================
+6. OBJECTIVE DATES MUST FIT INSIDE THE CYCLE
+==================================================
+
+Every Objective must have:
+
+- start date
+- end date
+
+Rules:
+
+Objective end date > Objective start date
+
+AND
+
+Objective start date >= Cycle start date
+
+AND
+
+Objective end date <= Cycle end date
+
+The Objective may cover a shorter period than the Cycle.
+
+It may NOT extend outside the Cycle.
+
+Example:
+
+Cycle:
+2026-01-01 → 2026-03-31
+
+Allowed Objective:
+2026-01-15 → 2026-03-15
+
+Invalid Objective:
+2025-12-20 → 2026-03-15
+
+Invalid Objective:
+2026-02-01 → 2026-04-15
+
+Provide clear Arabic validation messages.
+
+==================================================
+7. OBJECTIVE OWNER
+==================================================
+
+Every Objective must have exactly ONE owner.
+
+The owner is the principal responsible person.
+
+Do not implement multiple co-owners.
+
+The owner must be selected from users allowed by:
+
+- permissions
+- organizational context
+- objective type
+- organizational scope
+
+==================================================
+8. CONTRIBUTORS
+==================================================
+
+An Objective may have additional:
+
+- users
+or
+- organizational units
+
+as contributors where appropriate.
+
+Contributors participate in execution later.
+
+They do NOT gain the owner's principal authority merely because
+they are contributors.
+
+Do not treat contributors as additional owners.
+
+==================================================
+9. ORGANIZATIONAL OBJECTIVES
+==================================================
+
+An organizational Objective must be attached to an actual
+organizational unit from the Phase-2 hierarchy.
+
+Do not store:
+
+"إدارة تقنية المعلومات"
+
+as disconnected text.
+
+Store a relationship to the real organizational unit.
+
+This relationship later affects:
+
+- scope
+- review routing
+- alignment
+- dashboards
+- reports
+
+==================================================
+10. KEY RESULTS — CORE RULE
+==================================================
+
+Every Objective MUST have at least ONE Key Result.
+
+An Objective may contain multiple Key Results.
+
+Do NOT allow submission for review with zero Key Results.
+
+Key Results are NOT standalone top-level records in the user experience.
+
+They belong to an Objective.
+
+The Objective and its Key Results are treated as one connected package.
+
+==================================================
+11. OBJECTIVE + KEY RESULTS AS ONE UNIT
+==================================================
+
+The system must treat:
+
+Objective
++
+its Key Results
+
+as one unit for:
+
+- creation
+- editing
+- review
+- approval
+- display
+
+Do not create a separate independent approval lifecycle for every Key Result.
+
+Approval of the Objective later means approval of its attached Key Results.
+
+==================================================
+12. KEY RESULT — PROGRESS SOURCE
+==================================================
+
+Each Key Result must have exactly ONE progress source.
+
+Allowed sources:
+
+1. قياس مباشر
+2. أهداف داعمة
+
+Do NOT allow both simultaneously.
+
+Do NOT allow undefined source once the Objective is ready
+for review.
+
+This is a critical business rule.
+
+==================================================
+13. DIRECT-MEASUREMENT KEY RESULT
+==================================================
+
+If:
+
+Progress Source = قياس مباشر
+
+then define the measurement configuration.
+
+Supported direct-measurement types:
+
+A. عددي
+B. إنجاز / عدم إنجاز
+
+==================================================
+14. NUMERIC KEY RESULT
+==================================================
+
+For numeric measurement,
+support fields such as:
+
+- unit
+- baseline value
+- target value
+
+The direction is derived automatically.
+
+IF:
+
+target > baseline
+
+direction = ascending
+
+IF:
+
+target < baseline
+
+direction = descending
+
+Do NOT require the user to manually select ascending/descending
+if it can be derived from baseline and target.
+
+Do not calculate progress percentage in Phase 3.
+
+Only configure the measurement.
+
+==================================================
+15. BASELINE = TARGET EDGE CASE
+==================================================
+
+The documentation anticipates baseline and target edge cases
+for later progress calculations.
+
+Phase 3 should allow or validate this consistently with the current model,
+but MUST NOT implement progress formulas yet.
+
+If the UI permits baseline == target,
+do not invent a progress value in Phase 3.
+
+Prepare the data correctly for Phase 4.
+
+==================================================
+16. BINARY KEY RESULT
+==================================================
+
+For:
+
+Measurement Type = إنجاز / عدم إنجاز
+
+do not require irrelevant numeric fields.
+
+Do not display:
+
+- baseline
+- numeric target
+- unit
+
+unless needed by the existing implementation.
+
+Keep the form context-aware.
+
+==================================================
+17. SUPPORTING-OBJECTIVES KEY RESULT
+==================================================
+
+If:
+
+Progress Source = أهداف داعمة
+
+the Key Result's progress will later come from approved Supporting Objectives.
+
+Therefore:
+
+Do NOT allow manual actual-value input.
+
+Do NOT create direct-measurement fields that would create a second truth source.
+
+This Key Result must clearly communicate:
+
+"يتم احتساب التقدم من الأهداف الداعمة"
+
+or equivalent.
+
+Actual progress calculation belongs to Phase 4.
+
+==================================================
+18. OBJECTIVE CREATION — REQUIRED UX
+==================================================
+
+Implement a professional Objective creation experience.
+
+It may be:
+
+- one structured page
+- stepper/wizard
+- multi-section form
+
+Choose the approach consistent with the existing product.
+
+But the user must clearly configure:
+
+A. بيانات الهدف
+
+- title
+- description
+- type/context
+- Cycle
+- organization
+- owner
+- dates
+- contributors if applicable
+
+B. النتائج الرئيسية
+
+- one or more Key Results
+- progress source
+- measurement configuration where relevant
+
+C. Alignment if this is a Supporting Objective
+
+Do not split the workflow into confusing disconnected pages.
+
+==================================================
+19. SEQUENCE DIAGRAM — CREATE OBJECTIVE + KEY RESULTS
+==================================================
+
+Implement the documented sequence behavior.
+
+Exact conceptual sequence:
+
+Authorized User
+→ chooses Create Objective
+
+System
+→ displays Objective + Key Results form
+
+User
+→ enters Objective data
+→ adds one or more Key Results
+→ submits
+
+System
+→ validates all data
+
+IF invalid:
+
+→ Objective is not finalized incorrectly
+→ show validation errors
+→ allow correction
+
+IF valid:
+
+System
+→ creates the Objective
+→ creates its Key Results
+→ associates each Key Result with the Objective
+→ saves Objective in Draft
+→ displays success feedback
+→ opens Objective details or appropriate next view
+
+The Objective must be created before/with its Key Results
+in a consistent transaction/state operation.
+
+Do not leave orphan Key Results.
+
+==================================================
+20. OBJECTIVE LIFECYCLE — EXACT STATES
+==================================================
+
+The Objective business lifecycle contains exactly:
+
+1. مسودة
+2. قيد المراجعة
+3. معتمد
+4. مغلق
+
+Do NOT invent additional Objective lifecycle states.
+
+Important:
+
+"Assignment response" for individual goals
+must NOT be implemented by inventing new Objective lifecycle states.
+
+Keep assignment response separate where necessary.
+
+==================================================
+21. DRAFT OBJECTIVE
+==================================================
+
+A newly created Objective starts as:
+
+مسودة
+
+In Draft:
+
+- owner/authorized user can edit allowed fields
+- Key Results can be added/edited/removed
+- dates can be changed
+- alignment can be configured
+- contributors can be changed
+
+The Objective is NOT executing merely because it exists.
+
+==================================================
+22. SUBMIT FOR REVIEW
+==================================================
+
+Provide the action:
+
+"إرسال للمراجعة"
+
+Submission is allowed only when the Objective is complete enough.
+
+At minimum:
+
+- valid Cycle
+- valid dates
+- valid owner
+- valid organizational context
+- at least one Key Result
+- every Key Result has a valid progress source
+- direct-measurement configuration is valid
+- supporting alignment is valid where required
+
+When successfully submitted:
+
+مسودة → قيد المراجعة
+
+Persist the transition.
+
+Show success feedback.
+
+==================================================
+23. UNDER REVIEW
+==================================================
+
+When Objective = قيد المراجعة:
+
+Normal planning fields should not be freely editable by the owner.
+
+The Objective should clearly show:
+
+"قيد المراجعة"
+
+Available actions depend on permissions and review responsibility.
+
+The owner should be able to view the submission,
+but not bypass the review process.
+
+==================================================
+24. REVIEW QUEUE
+==================================================
+
+Implement an actual Review / Approval workspace.
+
+Suggested page:
+
+"المراجعات والاعتمادات"
+
+The user sees only Objectives they are authorized to review.
+
+Do not create one global queue visible to everyone.
+
+Filtering must use:
+
+- permission
+- organizational scope
+- Objective type
+- hierarchy-based approval routing
+
+==================================================
+25. REVIEW DETAILS
+==================================================
+
+The reviewer must be able to inspect at least:
+
+- Objective title
+- description
+- owner
+- organizational unit
+- Cycle
+- dates
+- Objective type
+- all Key Results
+- measurement type/source
+- baseline/target/unit when applicable
+- supporting alignment where applicable
+- contributors where applicable
+
+Do not force approval from a table row without allowing
+the reviewer to inspect the Objective package.
+
+==================================================
+26. APPROVAL ROUTING — OWNER CANNOT SELF-APPROVE
+==================================================
+
+A fundamental rule:
+
+The Objective owner MUST NOT approve their own Objective.
+
+Enforce this even if they otherwise possess an approval permission.
+
+Do not only hide the button.
+
+The action/service must reject self-approval.
+
+==================================================
+27. INSTITUTIONAL OBJECTIVE APPROVAL
+==================================================
+
+For:
+
+هدف مؤسسي
+
+approval must come from:
+
+an authorized Top Management-level user
+
+who is NOT the Objective owner.
+
+Use actual permissions,
+not only a role-name string.
+
+==================================================
+28. ORGANIZATIONAL OBJECTIVE APPROVAL
+==================================================
+
+For:
+
+هدف تنظيمي
+
+approval must be routed to an authorized user
+in the DIRECT HIGHER ORGANIZATIONAL LEVEL
+according to the actual Phase-2 hierarchy.
+
+Example:
+
+المؤسسة
+└── قطاع تقنية المعلومات
+    └── إدارة تطوير الأنظمة
+
+An Objective for:
+
+إدارة تطوير الأنظمة
+
+should route upward according to:
+
+قطاع تقنية المعلومات
+
+not an unrelated organization.
+
+Do not hardcode titles like "General Manager".
+
+Use the hierarchy.
+
+==================================================
+29. DO NOT SKIP MISSING LEVELS BY ASSUMPTION
+==================================================
+
+Approval and alignment depend on the ACTUAL hierarchy.
+
+If the hierarchy is:
+
+Institution
+→ Branch
+→ Team
+
+then the direct higher level of Team is Branch.
+
+Do not assume a Department level exists.
+
+Use Parent/Child relationships from Phase 2.
+
+==================================================
+30. APPROVE OBJECTIVE
+==================================================
+
+Authorized reviewer:
+
+→ reviews Objective package
+→ chooses "اعتماد"
+
+System validates:
+
+- reviewer authorized
+- reviewer not owner
+- Objective currently under review
+- organizational routing valid
+
+Then:
+
+قيد المراجعة → معتمد
+
+Approval of Objective automatically means:
+
+ALL attached Key Results are approved with it.
+
+Do NOT create separate approve buttons for every Key Result.
+
+==================================================
+31. APPROVAL = ENTRY TO EXECUTION
+==================================================
+
+Once Objective becomes:
+
+معتمد
+
+it is considered approved for execution.
+
+There is NO additional "Activate Objective" step.
+
+Do NOT create:
+
+Approved
+→ Activated
+
+as a second business transition.
+
+Actual progress execution will only operate in Phase 4
+when the Cycle is also Active.
+
+==================================================
+32. ACTIVE CYCLE CONDITION — PREPARE
+==================================================
+
+The documented rule is:
+
+Progress execution begins only when:
+
+Objective = معتمد
+
+AND
+
+Cycle = نشطة
+
+Phase 3 does NOT implement progress.
+
+But prepare/show appropriate UI context.
+
+Examples:
+
+Approved Objective in Draft Cycle:
+
+"تم اعتماد الهدف، وسيبدأ التنفيذ عند تفعيل الدورة."
+
+Approved Objective in Active Cycle:
+
+"الهدف معتمد ومؤهل للتنفيذ."
+
+Do not fabricate progress values.
+
+==================================================
+33. RETURN OBJECTIVE FOR MODIFICATION
+==================================================
+
+The reviewer can choose:
+
+"إعادة للتعديل"
+
+A reason is REQUIRED.
+
+Do not permit return with an empty reason.
+
+On successful return:
+
+قيد المراجعة → مسودة
+
+Persist:
+
+- reviewer
+- timestamp
+- return reason
+
+The owner can then:
+
+- edit the Objective
+- fix Key Results
+- re-submit for review
+
+==================================================
+34. REVIEW HISTORY
+==================================================
+
+Show a useful lightweight review history.
+
+Examples:
+
+- submitted by
+- submitted at
+- approved by
+- approved at
+- returned by
+- returned at
+- return reason
+
+Do not create a huge workflow engine.
+
+But preserve enough history for the prototype to demonstrate
+the documented process.
+
+==================================================
+35. EDIT AFTER RETURN
+==================================================
+
+After Objective is returned:
+
+state = مسودة
+
+The owner may edit:
+
+- Objective data
+- dates
+- Key Results
+- contributors
+- alignment where applicable
+
+Then re-submit.
+
+The old return reason must remain visible in history.
+
+Do not overwrite review history.
+
+==================================================
+36. EDITING AFTER APPROVAL
+==================================================
+
+After Objective = معتمد:
+
+editing must be restricted.
+
+Do not allow normal unrestricted editing.
+
+The documentation permits exceptional date changes only when allowed,
+with audit information such as:
+
+- reason
+- user
+- timestamp
+
+For Phase 3:
+
+Implement either:
+
+A. a controlled exceptional edit flow,
+if it fits the existing prototype architecture,
+
+or
+
+B. keep approved planning data read-only
+and prepare the audit model for future exceptional edits.
+
+Do NOT allow silent edits to approved Objectives.
+
+==================================================
+37. SUPPORTING OBJECTIVES — CONCEPT
+==================================================
+
+A Supporting Objective is a complete Objective.
+
+It is NOT just a relationship row.
+
+A Supporting Objective has:
+
+- Objective information
+- owner
+- organization
+- dates
+- Cycle
+- Key Results
+- lifecycle
+- review/approval process
+
+In addition:
+
+it links upward to ONE upstream Key Result.
+
+==================================================
+38. SUPPORTING OBJECTIVE ALIGNMENT RULE
+==================================================
+
+A Supporting Objective may link to:
+
+ONE Key Result
+belonging to an Objective
+in the DIRECT HIGHER ORGANIZATIONAL LEVEL.
+
+And:
+
+the Supporting Objective
+and upstream Objective/Key Result
+
+must belong to the SAME OKR Cycle.
+
+Do not permit cross-cycle alignment.
+
+==================================================
+39. ALIGNMENT SOURCE FROM ACTUAL HIERARCHY
+==================================================
+
+When the user chooses to create/link a Supporting Objective:
+
+System must determine:
+
+current Objective organizational unit
+→ direct parent organizational unit
+
+Then show only appropriate upstream Objectives/Key Results
+from that direct higher organizational context.
+
+Do not display all Key Results in the organization.
+
+Do not allow arbitrary cross-branch linking.
+
+==================================================
+40. UPSTREAM OBJECTIVE MAY STILL BE DRAFT / UNDER REVIEW
+==================================================
+
+The documented rule allows creating alignment
+if the upstream Key Result already exists,
+even when its Objective is:
+
+- مسودة
+or
+- قيد المراجعة
+
+Therefore do NOT artificially require the upstream Objective
+to be Approved merely to establish the relationship.
+
+However:
+
+Phase 4 progress contribution from the Supporting Objective
+will occur only after the Supporting Objective itself is approved.
+
+==================================================
+41. ONE SUPPORTING OBJECTIVE → ONE UPSTREAM KEY RESULT
+==================================================
+
+Every Supporting Objective may support only:
+
+ONE upstream Key Result.
+
+Do not allow one Supporting Objective to support multiple
+upstream Key Results simultaneously.
+
+==================================================
+42. ONE UPSTREAM KEY RESULT → MANY SUPPORTING OBJECTIVES
+==================================================
+
+One upstream Key Result MAY have multiple Supporting Objectives.
+
+Design the details UI so the upstream Key Result
+can later display all linked supporting objectives.
+
+==================================================
+43. SUPPORTING OBJECTIVE APPROVAL
+==================================================
+
+A Supporting Objective follows the normal review process independently.
+
+Sequence:
+
+Supporting Objective Draft
+→ Send for Review
+→ Under Review
+
+Reviewer:
+→ Approve
+OR
+→ Return for Modification
+
+If approved:
+
+→ state = معتمد
+
+No additional approval from the owner of the upstream Objective
+is required after the Supporting Objective is properly approved.
+
+Do NOT create a second "upstream owner approval" step.
+
+==================================================
+44. SEQUENCE DIAGRAM — SUPPORTING OBJECTIVE REVIEW
+==================================================
+
+Implement this documented interaction:
+
+Department Manager / authorized owner
+→ sends Supporting Objective for review
+
+System
+→ changes state to قيد المراجعة
+
+Authorized Reviewer
+→ opens Supporting Objective
+→ inspects Objective + Key Results + relationship
+
+Reviewer chooses:
+
+A. APPROVE
+
+System:
+→ state = معتمد
+→ persist reviewer/time
+→ keep upstream alignment
+
+OR
+
+B. RETURN
+
+Reviewer:
+→ must provide reason
+
+System:
+→ state = مسودة
+→ preserve return reason/history
+→ owner may edit and resubmit
+
+This workflow must actually work.
+
+==================================================
+45. SUPPORTING OBJECTIVE DETAILS
+==================================================
+
+Clearly show alignment context.
+
+For example:
+
+يدعم النتيجة الرئيسية:
+"رفع نسبة الخدمات الإلكترونية إلى ..."
+
+الهدف الأعلى:
+"..."
+
+الجهة الأعلى:
+"..."
+
+الدورة:
+"..."
+
+Do not make users guess what the Objective supports.
+
+==================================================
+46. ALIGNMENT VISUALIZATION
+==================================================
+
+Provide a restrained, useful visual representation
+of the Objective's alignment.
+
+For example:
+
+Higher Objective
+↓
+Upstream Key Result
+↓
+Supporting Objective
+
+This can be:
+
+- hierarchy card
+- relationship panel
+- simple path
+- compact tree
+
+Do not create an over-engineered graph editor.
+
+The purpose is clarity.
+
+==================================================
+47. INDIVIDUAL OBJECTIVES
+==================================================
+
+The system supports Individual Objectives.
+
+A direct/authorized manager can create an Individual Objective
+derived from Objectives within their responsibility scope
+and assign it to a specific Employee.
+
+Use real:
+
+- users
+- organizational hierarchy
+- scope
+
+Do not allow arbitrary assignment to users outside the manager's
+allowed organizational scope.
+
+==================================================
+48. INDIVIDUAL OBJECTIVE DATA
+==================================================
+
+An Individual Objective is still an Objective.
+
+It must have appropriate:
+
+- Cycle
+- title
+- description
+- dates
+- Key Results
+- owner/assigned employee
+- organizational context
+
+Do not create a completely separate unrelated goal model.
+
+==================================================
+49. INDIVIDUAL ASSIGNMENT IS NOT A NEW OBJECTIVE LIFECYCLE
+==================================================
+
+Keep these concepts separate:
+
+OBJECTIVE LIFECYCLE:
+
+مسودة
+قيد المراجعة
+معتمد
+مغلق
+
+EMPLOYEE ASSIGNMENT RESPONSE:
+
+- بانتظار الرد
+- مقبول
+- مرفوض
+
+or equivalent internal/visible assignment-state labels.
+
+Do NOT add:
+
+"Rejected"
+or
+"Accepted"
+
+as new Objective lifecycle states.
+
+==================================================
+50. ASSIGN INDIVIDUAL OBJECTIVE
+==================================================
+
+Manager flow:
+
+Manager
+→ chooses appropriate Individual Objective
+→ selects Employee within scope
+→ reviews assignment
+→ submits assignment
+
+System:
+
+→ records Objective ↔ Employee assignment
+→ makes it available to the Employee
+→ marks assignment response as pending
+
+Do not send assignments to unrelated organizational users.
+
+==================================================
+51. EMPLOYEE ASSIGNMENTS PAGE
+==================================================
+
+Create an Employee-facing workspace such as:
+
+"الأهداف المسندة إلي"
+
+The Employee can see Objectives assigned to them.
+
+Show useful information:
+
+- Objective
+- manager/assigner
+- Cycle
+- dates
+- status
+- assignment response state
+
+No employee should see another employee's private assignments
+unless separately authorized.
+
+==================================================
+52. EMPLOYEE REVIEWS ASSIGNED OBJECTIVE
+==================================================
+
+The Employee must be able to open the assigned Objective
+before responding.
+
+Display:
+
+- title
+- description
+- dates
+- Cycle
+- Key Results
+- relevant context
+
+Do not provide Accept/Reject from an opaque list
+without details.
+
+==================================================
+53. ACCEPT INDIVIDUAL OBJECTIVE
+==================================================
+
+Employee can choose:
+
+"قبول الهدف"
+
+After confirmation:
+
+assignment response = accepted
+
+Persist:
+
+- employee
+- timestamp
+- response
+
+Do not invent progress at this point.
+
+Execution belongs to Phase 4.
+
+==================================================
+54. REJECT INDIVIDUAL OBJECTIVE
+==================================================
+
+Employee can choose:
+
+"رفض الهدف"
+
+A rejection reason is MANDATORY.
+
+Do not permit empty rejection.
+
+Persist:
+
+- rejected state
+- employee
+- timestamp
+- reason
+
+The responsible manager must later be able to see:
+
+- that the assignment was rejected
+- the rejection reason
+
+==================================================
+55. SEQUENCE DIAGRAM — INDIVIDUAL ASSIGNMENT
+==================================================
+
+Implement the documented sequence:
+
+Manager
+→ selects Individual Objective
+→ selects Employee
+→ submits assignment
+
+System
+→ records assignment
+→ associates Objective with Employee
+→ makes Objective visible to Employee
+
+Employee
+→ opens Objective
+→ reviews details
+
+Employee chooses:
+
+A. Accept
+
+System
+→ records acceptance
+
+OR
+
+B. Reject
+
+System
+→ requires rejection reason
+→ stores rejection + reason
+→ makes result visible to manager
+
+This must be actual prototype behavior.
+
+==================================================
+56. DO NOT INVENT WHAT HAPPENS AFTER REJECTION
+==================================================
+
+The source documentation states that the manager
+can view the rejection and reason
+and take an appropriate action.
+
+It does NOT fully define a separate new lifecycle
+for what happens next.
+
+Therefore:
+
+Do NOT invent a complex post-rejection workflow.
+
+Provide the manager with the rejection information
+and a clean planning/editing path consistent with permissions.
+
+Do not silently create undocumented states.
+
+==================================================
+57. OBJECTIVE LIST
+==================================================
+
+Build a professional Objectives list.
+
+Useful columns/fields may include:
+
+- Objective title
+- type
+- Cycle
+- organizational unit
+- owner
+- lifecycle state
+- alignment indicator
+- dates
+- actions
+
+Support actual filtering.
+
+==================================================
+58. OBJECTIVE SEARCH & FILTERING
+==================================================
+
+At minimum support:
+
+- text search
+- Cycle
+- organizational unit
+- owner
+- Objective type
+- lifecycle state
+
+If useful:
+
+- aligned/not aligned
+- assignment response
+
+Do not create decorative controls.
+
+All filters must affect actual data.
+
+==================================================
+59. ORGANIZATIONAL SCOPE ON OBJECTIVE LISTS
+==================================================
+
+Apply the Phase-2 organizational-scope service.
+
+Users should only see Objectives permitted by:
+
+- technical permission
+- organizational scope
+- ownership/assignment context
+- review responsibility
+
+Do not fetch globally then visually hide unauthorized rows.
+
+Use the shared data/service layer.
+
+==================================================
+60. OBJECTIVE DETAILS PAGE
+==================================================
+
+Build a strong Objective detail page.
+
+It should show logical sections:
+
+A. Objective summary
+
+- title
+- description
+- type
+- owner
+- organization
+- Cycle
+- dates
+- lifecycle state
+
+B. Key Results
+
+Show every Key Result and its measurement configuration.
+
+C. Alignment
+
+Show upstream relationship if Supporting Objective.
+
+Show supporting objectives if this Objective's Key Results
+are supported by other Objectives.
+
+D. Contributors
+
+E. Review / approval state
+
+F. Review history
+
+G. Individual assignment response where applicable
+
+Do not show fake execution analytics.
+
+==================================================
+61. KEY RESULT UI
+==================================================
+
+Each Key Result card/row should clearly indicate:
+
+- name/title
+- progress source
+- measurement type if direct
+- unit if applicable
+- baseline if applicable
+- target if applicable
+- upstream/supporting relationship if applicable
+
+Avoid showing irrelevant fields.
+
+==================================================
+62. KEY RESULT EDITING
+==================================================
+
+In Draft:
+
+Authorized owner/user may:
+
+- add Key Result
+- edit Key Result
+- remove Key Result
+
+But:
+
+Objective must still contain at least one Key Result
+when submitted for review.
+
+If the user removes the last Key Result:
+
+allow Draft save if desired by existing architecture,
+but prevent submission for review.
+
+==================================================
+63. CHANGE PROGRESS SOURCE SAFELY
+==================================================
+
+If user changes a Draft Key Result from:
+
+Direct Measurement
+→ Supporting Objectives
+
+clear or deactivate irrelevant direct-measurement fields appropriately.
+
+If changing:
+
+Supporting Objectives
+→ Direct Measurement
+
+require the relevant measurement configuration.
+
+Do not leave contradictory stored configuration.
+
+==================================================
+64. OBJECTIVE STATUS BADGES
+==================================================
+
+Use the existing reusable status architecture.
+
+Objective statuses:
+
+- مسودة
+- قيد المراجعة
+- معتمد
+- مغلق
+
+Keep review/assignment statuses visually distinct
+from Objective lifecycle statuses.
+
+==================================================
+65. CLOSED OBJECTIVE — PREPARE, DO NOT IMPLEMENT EXECUTION CLOSURE
+==================================================
+
+The documented Objective lifecycle includes:
+
+مغلق
+
+Objectives will later close through execution conditions,
+such as end date, completed progress,
+or authorized manual closure.
+
+Those behaviors depend on Phase 4 execution/progress.
+
+Therefore in Phase 3:
+
+- support the Closed state in model/read-only UI
+- prepare lifecycle rules
+- optionally seed a historical closed Objective for display if useful
+
+BUT:
+
+do NOT implement progress-based automatic closing
+before Phase 4.
+
+Do not fake 100% progress.
+
+==================================================
+66. APPROVAL HISTORY / AUDIT
+==================================================
+
+Preserve significant planning/review events:
+
+- created
+- edited where useful
+- submitted for review
+- returned with reason
+- resubmitted
+- approved
+- individual assignment
+- accepted/rejected
+
+Use concise history/timeline UI.
+
+Do not build a generic enterprise BPM engine.
+
+==================================================
+67. ROLE/PERMISSION FOUNDATION
+==================================================
+
+Reuse Phase-2 permissions.
+
+Add/activate Phase-3 permissions as appropriate.
+
+Examples:
+
+objectives.view
+objectives.create
+objectives.update
+objectives.submit
+
+objectives.review
+objectives.approve
+objectives.return
+
+alignment.create
+alignment.view
+
+individual_goals.assign
+individual_goals.respond
+
+Do not require these exact internal names
+if the project already has a naming convention.
+
+But enforce equivalent capabilities.
+
+==================================================
+68. PERMISSION + SCOPE TOGETHER
+==================================================
+
+Permission alone is not enough.
+
+Example:
+
+User has:
+objectives.review
+
+but their organizational scope does NOT cover the Objective.
+
+They must NOT review it.
+
+Likewise:
+
+A manager with assignment permission
+cannot assign objectives to arbitrary employees outside their scope.
+
+==================================================
+69. REVIEW ROUTING SERVICE
+==================================================
+
+Centralize approval-routing logic.
+
+Do not hardcode reviewers in individual pages.
+
+The logic should conceptually answer:
+
+getEligibleApprovers(objective)
+
+based on:
+
+- Objective type
+- owner
+- organizational unit
+- direct parent organization
+- user's permissions
+- user's organizational scope
+
+Use Phase-2 hierarchy services.
+
+==================================================
+70. ALIGNMENT ELIGIBILITY SERVICE
+==================================================
+
+Centralize the logic determining available upstream Key Results.
+
+Conceptually:
+
+getEligibleUpstreamKeyResults(objective)
+
+based on:
+
+- current organizational unit
+- direct parent organization
+- same Cycle
+- upstream Objective availability
+- permissions/scope
+
+Do not implement alignment filtering in random UI callbacks.
+
+==================================================
+71. ASSIGNMENT ELIGIBILITY SERVICE
+==================================================
+
+Centralize employee assignment eligibility.
+
+Conceptually:
+
+getAssignableEmployees(manager, objective)
+
+Use:
+
+- organizational scope
+- active account status
+- permissions/context
+
+Do not show disabled/unrelated users as valid assignment targets
+unless explicitly justified.
+
+==================================================
+72. AUTHORIZED ACTIONS DEPEND ON STATE
+==================================================
+
+Available actions must reflect lifecycle.
+
+DRAFT:
+
+- Edit
+- Manage Key Results
+- Submit for Review
+
+UNDER REVIEW:
+
+Owner:
+- View
+
+Reviewer:
+- Approve
+- Return for Modification
+
+APPROVED:
+
+- View approved planning data
+- limited exceptional actions only
+
+CLOSED:
+
+- historical/read-only
+
+Do not expose impossible actions.
+
+==================================================
+73. CYCLE STATE INTERACTION
+==================================================
+
+Respect the Phase-2 Cycle lifecycle.
+
+Planning may occur while Cycle is:
+
+مسودة
+
+Objectives may be created/edited and attached.
+
+Cycle may also be:
+
+نشطة
+
+and the system may still create/complete approval of new Objectives
+while the Cycle has not been completed.
+
+But if Cycle = مكتملة:
+
+do not allow new planning/execution-changing Objective operations
+that contradict the historical/read-only meaning of Completed Cycle.
+
+==================================================
+74. REVIEW QUEUE FILTERS
+==================================================
+
+Support useful review filtering such as:
+
+- Cycle
+- organizational unit
+- Objective type
+- submission state
+- owner
+
+Only within the current reviewer's allowed scope.
+
+==================================================
+75. USER EXPERIENCE — PLANNING FLOW
+==================================================
+
+Do not make users jump between too many pages for a simple flow.
+
+Create Objective + Key Results should feel like one coherent
+planning operation.
+
+Provide:
+
+- clear step/section hierarchy
+- save Draft
+- validation summary where useful
+- direct path to Submit for Review
+- meaningful status indicator
+
+==================================================
+76. DRAFT SAVING
+==================================================
+
+Allow the user to save an incomplete Objective as Draft
+if consistent with the current persistence design.
+
+But incomplete Draft MUST NOT be submitted for review.
+
+Submission validation is stricter than Draft saving.
+
+==================================================
+77. VALIDATION SUMMARY
+==================================================
+
+When a user tries to submit an incomplete Objective:
+
+show actionable errors.
+
+Example:
+
+- يجب إضافة نتيجة رئيسية واحدة على الأقل.
+- يجب تحديد مصدر تقدم النتيجة الرئيسية.
+- يجب أن تقع تواريخ الهدف ضمن فترة الدورة.
+- يجب تحديد مالك الهدف.
+- يجب تحديد الجهة التنظيمية.
+
+Do not only display:
+
+"Invalid data."
+
+==================================================
+78. RESPONSIVE RTL
+==================================================
+
+Maintain full Arabic RTL design.
+
+Verify:
+
+- forms
+- dynamic Key Result sections
+- steppers
+- status badges
+- review details
+- alignment relationship UI
+- assignment pages
+- dialogs
+- timeline/history
+- tables
+
+on:
+
+- desktop
+- laptop
+- tablet
+- mobile
+
+Do not break RTL chevrons/indentation.
+
+==================================================
+79. REALISTIC DEMO DATA
+==================================================
+
+Use the Phase-2 institution and users.
+
+Seed enough Phase-3 data to demonstrate:
+
+- institutional Objective
+- organizational Objective
+- Supporting Objective
+- Individual Objective
+- Objective in Draft
+- Objective Under Review
+- Approved Objective
+- returned Objective with reason
+- Supporting Objective linked to upstream Key Result
+- one Key Result with Direct Measurement
+- one Key Result sourced by Supporting Objectives
+- pending individual assignment
+- accepted assignment
+- rejected assignment with reason
+
+Do not use fake English filler.
+
+==================================================
+80. EXAMPLE DEMO CHAIN
+==================================================
+
+Create a realistic demonstration chain similar to:
+
+Higher Objective:
+"رفع كفاءة الخدمات الرقمية للمؤسسة"
+
+Key Result:
+"رفع نسبة الخدمات المؤتمتة إلى 80%"
+
+Supporting Objective:
+"تطوير الخدمات الإلكترونية لإدارة القبول"
+
+linked to the above Key Result.
+
+Then an Individual Objective for an appropriate employee
+under the responsible organizational branch.
+
+This is demo content only.
+
+Do not hardcode business rules around this example.
+
+==================================================
+81. NO DUPLICATED DATA
+==================================================
+
+Reuse:
+
+- users from Phase 2
+- roles/permissions from Phase 2
+- organization tree from Phase 2
+- cycles from Phase 2
+
+Do not create local fake copies only for Objective forms.
+
+All relationships must be real within the prototype data layer.
+
+==================================================
+82. TRANSACTIONAL CONSISTENCY
+==================================================
+
+Avoid partial inconsistent states.
+
+Examples:
+
+Do not save an Objective as successfully created
+while Key Results fail to associate.
+
+Do not approve an Objective without persisting review history.
+
+Do not save an assignment without associating the Employee.
+
+Do not create alignment pointing to nonexistent Key Result.
+
+Use the best consistency approach available in the current stack.
+
+==================================================
+83. DELETE / REMOVE RULES DURING PLANNING
+==================================================
+
+Draft planning data may support removal/editing where safe.
+
+Do NOT casually allow deleting Approved Objectives.
+
+After approval/history exists,
+preserve the record.
+
+For Phase 3 focus on:
+
+- Draft editing/removal
+- lifecycle protection
+- historical integrity
+
+Do not create destructive shortcuts.
+
+==================================================
+84. REQUIRED ROUTES
+==================================================
+
+Follow the existing routing conventions.
+
+Conceptually support:
+
+/objectives
+/objectives/new
+/objectives/:id
+/objectives/:id/edit
+
+/reviews
+/reviews/:objectiveId
+
+/my-assigned-objectives
+
+Possible supporting-goal creation can reuse Objective routes
+with appropriate mode/context.
+
+Avoid duplicate unrelated modules for each Objective type.
+
+==================================================
+85. NAVIGATION
+==================================================
+
+Activate appropriate Phase-3 navigation items, such as:
+
+- الأهداف والنتائج الرئيسية
+- المراجعات والاعتمادات
+- الأهداف المسندة إلي
+
+Visibility must depend on permissions/role/context.
+
+Do not expose review queue to ordinary Employees
+without review permission.
+
+==================================================
+86. ACTIVITY-DIAGRAM BEHAVIOR
+==================================================
+
+Phase 3 must implement the planning portion of this documented
+Activity flow:
+
+Top Management
+→ creates higher Objective
+→ defines Key Results
+
+Department Manager
+→ views higher Objective/Key Results
+→ creates Supporting Objective
+→ links it to upstream Key Result
+→ sends for review
+
+Authorized higher-level reviewer
+→ reviews Supporting Objective
+
+IF problems:
+→ returns Objective for modification
+→ reason required
+→ Department Manager edits
+→ resubmits
+
+IF accepted:
+→ approves Supporting Objective
+
+Department Manager
+→ creates Individual Objective
+→ assigns to Employee
+
+Employee
+→ reviews assigned Objective
+
+IF accepted:
+→ records acceptance
+
+IF rejected:
+→ records rejection reason
+→ manager can view reason
+
+STOP Phase 3 here.
+
+Do not continue into:
+
+progress evidence
+→ update review
+→ value approval
+→ progress calculation
+
+Those are Phase 4.
+
+==================================================
+87. TEST — CREATE OBJECTIVE + KEY RESULTS
+==================================================
+
+Test:
+
+Authorized user
+→ Create Objective
+→ choose Cycle
+→ choose organization
+→ choose owner
+→ valid dates
+→ add KR
+→ save Draft
+
+Verify:
+
+- Objective persists
+- KR persists
+- relationship correct
+- state = مسودة
+
+==================================================
+88. TEST — ZERO KEY RESULTS
+==================================================
+
+Draft Objective with zero Key Results
+→ attempt Submit for Review
+
+Expected:
+
+REJECT submission
+
+Message:
+
+must add at least one Key Result.
+
+==================================================
+89. TEST — OBJECTIVE OUTSIDE CYCLE
+==================================================
+
+Cycle:
+Jan 1 → Mar 31
+
+Objective:
+Dec 15 → Mar 15
+
+Expected:
+
+validation rejected.
+
+Also test:
+
+Objective end after Cycle end.
+
+==================================================
+90. TEST — DIRECT NUMERIC KR
+==================================================
+
+Create KR:
+
+progress source = direct
+type = numeric
+baseline = 20
+target = 80
+unit = %
+
+Verify:
+
+direction represented as ascending.
+
+Do NOT calculate progress.
+
+==================================================
+91. TEST — DESCENDING KR
+==================================================
+
+baseline = 100
+target = 60
+
+Verify:
+
+direction represented as descending.
+
+No progress calculation yet.
+
+==================================================
+92. TEST — BINARY KR
+==================================================
+
+measurement = achieved/not achieved
+
+Verify numeric-specific fields are not incorrectly required.
+
+==================================================
+93. TEST — SUPPORTING-SOURCE KR
+==================================================
+
+progress source = supporting objectives
+
+Verify:
+
+- no direct actual-value input
+- direct measurement configuration not conflicting
+- UI clearly indicates source
+
+==================================================
+94. TEST — SUBMIT FOR REVIEW
+==================================================
+
+Complete Draft
+→ Submit
+
+Expected:
+
+مسودة → قيد المراجعة
+
+Review queue receives Objective for eligible reviewer.
+
+==================================================
+95. TEST — SELF APPROVAL
+==================================================
+
+Objective owner also possesses approval permission.
+
+Owner attempts to approve own Objective.
+
+Expected:
+
+REJECT.
+
+Owner cannot self-approve.
+
+==================================================
+96. TEST — APPROVE OBJECTIVE
+==================================================
+
+Eligible reviewer
+→ opens Under Review Objective
+→ Approve
+
+Expected:
+
+قيد المراجعة → معتمد
+
+Key Results implicitly approved with Objective.
+
+No separate KR approval.
+
+==================================================
+97. TEST — RETURN FOR MODIFICATION
+==================================================
+
+Reviewer
+→ Return for Modification
+
+Without reason:
+
+Expected reject.
+
+With reason:
+
+Expected:
+
+قيد المراجعة → مسودة
+
+reason/history persisted.
+
+==================================================
+98. TEST — ORGANIZATIONAL APPROVAL ROUTING
+==================================================
+
+Create Objective in child Org Unit.
+
+Verify reviewer eligibility comes from
+the direct higher organizational level
+according to the actual tree.
+
+Verify unrelated manager cannot approve.
+
+==================================================
+99. TEST — SUPPORTING ALIGNMENT
+==================================================
+
+Create Supporting Objective.
+
+Verify:
+
+- selectable upstream Key Results belong to direct parent organization
+- same Cycle only
+- unrelated branch KRs unavailable
+- each Supporting Objective can select only one upstream KR
+
+==================================================
+100. TEST — MULTIPLE SUPPORTING OBJECTIVES
+==================================================
+
+Attach multiple approved/planned Supporting Objectives
+to the same upstream Key Result.
+
+Verify relationship is allowed.
+
+==================================================
+101. TEST — SUPPORTING OBJECTIVE REVIEW
+==================================================
+
+Supporting Objective
+→ Submit
+→ Under Review
+→ Approve
+
+Verify:
+
+- state becomes Approved
+- alignment preserved
+- no extra upstream-owner approval added
+
+==================================================
+102. TEST — INDIVIDUAL ASSIGNMENT
+==================================================
+
+Manager
+→ create/select Individual Objective
+→ choose Employee within organizational scope
+→ assign
+
+Verify Employee sees it under:
+
+"الأهداف المسندة إلي"
+
+==================================================
+103. TEST — EMPLOYEE ACCEPT
+==================================================
+
+Employee
+→ open assignment
+→ Accept
+
+Verify assignment response persisted as accepted.
+
+Do not create progress.
+
+==================================================
+104. TEST — EMPLOYEE REJECT
+==================================================
+
+Employee
+→ Reject without reason
+
+Expected reject.
+
+Employee
+→ enter reason
+→ Reject
+
+Expected:
+
+- rejected state persisted
+- reason persisted
+- manager can view reason
+
+==================================================
+105. TEST — OUT-OF-SCOPE ASSIGNMENT
+==================================================
+
+Manager attempts to assign Objective
+to Employee outside allowed organization scope.
+
+Expected:
+
+Employee not selectable
+and direct action rejected if forced.
+
+==================================================
+106. TEST — COMPLETED CYCLE
+==================================================
+
+Attempt to create/submit new planning Objective
+inside Completed Cycle.
+
+Expected:
+
+reject according to historical/read-only Cycle behavior.
+
+==================================================
+107. TEST — PERMISSION GUARDS
+==================================================
+
+Employee without objective creation permission
+attempts direct create URL.
+
+Expected:
+
+403/access denied.
+
+User without review permission
+attempts review URL.
+
+Expected:
+
+access denied.
+
+==================================================
+108. NON-FUNCTIONAL QUALITY
+==================================================
+
+Maintain:
+
+USABILITY
+
+- clean Arabic RTL forms
+- understandable planning flow
+- nontechnical user friendliness
+
+SECURITY
+
+- permission enforcement
+- scope enforcement
+- no cross-branch data leakage
+- no self-approval
+
+PERFORMANCE
+
+- avoid unnecessary repeated organization-tree traversal
+- efficient filtering
+- centralize derived relations
+
+SCALABILITY
+
+architecture must support many:
+
+- Objectives
+- KRs
+- org units
+- Cycles
+- users
+- alignment relationships
+
+MAINTAINABILITY
+
+- centralized business rules
+- typed models
+- reusable form components
+- no duplicated lifecycle logic
+
+==================================================
+109. NO FAKE FEATURES
+==================================================
+
+Do not implement dead:
+
+- Approve buttons
+- Submit buttons
+- Accept/Reject buttons
+- filters
+- alignment selectors
+
+Every Phase-3 operation shown to the user must actually work.
+
+==================================================
+110. PHASE-3 DEFINITION OF DONE
+==================================================
+
+Phase 3 is complete only when:
+
+OBJECTIVES
+
+✓ Objective list
+✓ Objective creation
+✓ Objective details
+✓ Draft editing
+✓ Objective type/context
+✓ one Cycle per Objective
+✓ valid Objective dates inside Cycle
+✓ one owner
+✓ contributors
+✓ organizational association
+
+KEY RESULTS
+
+✓ minimum one KR before review submission
+✓ multiple KRs
+✓ direct measurement
+✓ numeric measurement
+✓ binary measurement
+✓ baseline/target/unit
+✓ automatic measurement direction
+✓ supporting-objectives source
+✓ exactly one progress source
+
+LIFECYCLE
+
+✓ Draft
+✓ Under Review
+✓ Approved
+✓ Closed model/read-only preparation
+✓ valid lifecycle actions
+✓ no Objective activation step
+
+REVIEW/APPROVAL
+
+✓ Submit for Review
+✓ review queue
+✓ reviewer details page
+✓ approve
+✓ return for modification
+✓ required return reason
+✓ review history
+✓ no self-approval
+✓ hierarchy-based approval routing
+✓ Objective approval includes KRs
+
+ALIGNMENT
+
+✓ Supporting Objective
+✓ direct higher organizational level
+✓ same Cycle
+✓ one upstream KR per Supporting Objective
+✓ multiple Supporting Objectives per upstream KR
+✓ independent Supporting Objective review
+✓ alignment details/visualization
+
+INDIVIDUAL OBJECTIVES
+
+✓ Manager assignment
+✓ scoped Employee selection
+✓ Employee assigned-objectives page
+✓ Employee review
+✓ Accept
+✓ Reject
+✓ required rejection reason
+✓ manager can view response/reason
+✓ assignment response separated from Objective lifecycle
+
+SYSTEM
+
+✓ permission-aware routes
+✓ permission-aware navigation
+✓ organizational scope enforcement
+✓ real persistence
+✓ Arabic RTL
+✓ responsive UX
+✓ no dead actions
+✓ no Phase-4 execution logic
+
+==================================================
+111. FINAL VERIFICATION
+==================================================
+
+Before reporting completion:
+
+Run the project.
+
+Run available:
+
+- build
+- typecheck
+- lint
+- tests
+
+Inspect browser console.
+
+Verify:
+
+- no compile errors
+- no TypeScript errors
+- no broken routes
+- no runtime exceptions
+- no orphan Key Results
+- no broken Objective/Cycle relations
+- no invalid alignment
+- no cross-cycle alignment
+- no cross-scope assignment
+- no self-approval
+- no invalid lifecycle actions
+- no broken RTL
+- no broken mobile forms
+- no dead buttons
+
+Fix issues found before completion.
+
+==================================================
+112. FINAL REPORT REQUIRED
+==================================================
+
+After implementing Phase 3,
+DO NOT start Phase 4.
+
+Return a concise but technically useful report containing:
+
+1. Phase-3 implementation summary
+2. Files/modules created or changed
+3. Objective data model
+4. Key Result model/configuration
+5. Objective lifecycle implementation
+6. Review/approval workflow
+7. Approval routing logic
+8. Self-approval prevention
+9. Supporting Objective alignment logic
+10. Individual Objective assignment flow
+11. Employee Accept/Reject flow
+12. Permissions added/used
+13. Organizational-scope enforcement
+14. Routes/screens added
+15. Seed/demo scenarios created
+16. Tests executed and results
+17. Build/typecheck/lint status
+18. Known limitations
+19. Explicit Phase-4 items intentionally NOT implemented
+20. Confirmation that Phase 4 was NOT started
+
+==================================================
+FINAL INSTRUCTION
+==================================================
+
+Do not merely provide a plan.
+
+Actually inspect the current repository,
+implement Phase 3,
+run the system,
+test every critical planning/review/assignment workflow,
+fix discovered defects,
+and leave the repository in a clean working state.
+
+Do not begin Phase 4.

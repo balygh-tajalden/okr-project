@@ -65,13 +65,24 @@ export type Permission =
   | "cycles.update"
   | "cycles.activate"
   | "cycles.complete"
-  // الأهداف (Phase 3 — معرّفة الآن لتجهيز البنية)
+  // الأهداف (Phase 3)
   | "goals.view"
   | "goals.create"
   | "goals.update"
   | "goals.delete"
+  | "goals.submit" // إرسال الهدف للمراجعة
+  | "goals.review" // فتح قائمة المراجعات
+  | "goals.approve" // اعتماد الهدف
+  | "goals.return" // إعادة الهدف للتعديل
+  | "goals.assign" // إسناد الأهداف الفردية للموظفين
   | "keyresults.update"
-  // المراجعات والاعتمادات (Phase 3)
+  // المحاذاة (Phase 3)
+  | "alignment.create"
+  | "alignment.view"
+  // الأهداف الفردية (Phase 3)
+  | "individual_goals.view" // عرض الأهداف المسندة للموظف
+  | "individual_goals.respond" // قبول/رفض الإسناد
+  // المراجعات والاعتمادات (Phase 3 - يُفعّل عبر goals.review/approve/return)
   | "reviews.request"
   | "reviews.approve"
   | "reviews.reject"
@@ -125,12 +136,23 @@ export const PERMISSION_DEFS: PermissionDef[] = [
   { key: "cycles.activate", label: "تفعيل الدورة", description: "نقل الدورة من مسودة إلى نشطة.", group: "cycles" },
   { key: "cycles.complete", label: "إكمال الدورة", description: "إغلاق دورة نشطة وإكمالها.", group: "cycles" },
   // الأهداف
-  { key: "goals.view", label: "عرض الأهداف", description: "الاطّلاع على الأهداف والنتائج الرئيسية.", group: "goals" },
+  { key: "goals.view", label: "عرض الأهداف", description: "الاطّلاع على الأهداف والنتائج الرئيسية ضمن النطاق المسموح.", group: "goals" },
   { key: "goals.create", label: "إنشاء هدف", description: "إنشاء هدف جديد وربطه بدورة وجهة.", group: "goals" },
-  { key: "goals.update", label: "تعديل هدف", description: "تعديل بيانات الأهداف والنتائج.", group: "goals" },
-  { key: "goals.delete", label: "حذف هدف", description: "حذف الأهداف غير المرتبطة ببيانات منفذة.", group: "goals" },
-  { key: "keyresults.update", label: "تحديث النتائج الرئيسية", description: "تعديل قيم النتائج الرئيسية وأوزانها.", group: "goals" },
-  // المراجعات والاعتمادات
+  { key: "goals.update", label: "تعديل هدف", description: "تعديل بيانات الأهداف (في حالة المسودة).", group: "goals" },
+  { key: "goals.delete", label: "حذف هدف", description: "حذف الأهداف في حالة المسودة فقط.", group: "goals" },
+  { key: "goals.submit", label: "إرسال للمراجعة", description: "إرسال هدف مسودة لقائمة المراجعة.", group: "goals" },
+  { key: "goals.review", label: "فتح قائمة المراجعات", description: "الاطّلاع على قائمة الأهداف قيد المراجعة ضمن النطاق.", group: "goals" },
+  { key: "goals.approve", label: "اعتماد الهدف", description: "اعتماد هدف قيد المراجعة (لا يمكن للمالك الاعتماد).", group: "goals" },
+  { key: "goals.return", label: "إعادة الهدف للتعديل", description: "إعادة هدف قيد المراجعة لمالكه مع سبب إلزامي.", group: "goals" },
+  { key: "goals.assign", label: "إسناد الأهداف الفردية", description: "إسناد هدف فردي لموظف ضمن النطاق التنظيمي.", group: "goals" },
+  { key: "keyresults.update", label: "تعديل النتائج الرئيسية", description: "إضافة/تعديل/حذف النتائج الرئيسية للهدف.", group: "goals" },
+  // المحاذاة
+  { key: "alignment.create", label: "إنشاء محاذاة", description: "إنشاء هدف داعم وربطه بنتيجة رئيسية في الجهة الأعلى.", group: "goals" },
+  { key: "alignment.view", label: "عرض المحاذاة", description: "عرض علاقات المحاذاة للأهداف والنتائج.", group: "goals" },
+  // الأهداف الفردية
+  { key: "individual_goals.view", label: "عرض الأهداف المسندة", description: "الاطّلاع على الأهداف الفردية المسندة للمستخدم.", group: "goals" },
+  { key: "individual_goals.respond", label: "الرد على الإسناد", description: "قبول أو رفض الهدف الفردي المسند.", group: "goals" },
+  // المراجعات والاعتمادات (تُفعّل عبر goals.review/approve/return — تُترك للتوافق)
   { key: "reviews.request", label: "طلب اعتماد", description: "إرسال هدف للاعتماد من الجهة العليا.", group: "reviews" },
   { key: "reviews.approve", label: "اعتماد الطلبات", description: "اعتماد أو رفض طلبات المراجعة.", group: "reviews" },
   { key: "reviews.reject", label: "رفض الطلبات", description: "رفض طلب مراجعة مع سبب.", group: "reviews" },

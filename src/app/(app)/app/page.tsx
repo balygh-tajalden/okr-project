@@ -14,11 +14,16 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { Breadcrumbs } from "@/components/common/breadcrumbs";
 import { useCurrentInstitutionalUser } from "@/hooks/use-current-institutional-user";
 import { useInstitutionalStore } from "@/lib/data/store";
+import { usePhase3Store } from "@/lib/data/phase3-store";
+import {
+  filterObjectivesByScopeAndPermissions,
+  getReviewableObjectives,
+} from "@/lib/services/phase3-services";
 import { getUserPrimaryUnitName, getUserRoles } from "@/lib/services/institutional";
 import {
   Repeat,
-  Target,
-  GitPullRequestArrow,
+  Target as TargetIcon,
+  GitPullRequestArrow as GitPullRequestArrowIcon,
   Activity,
   BarChart3,
   ArrowLeft,
@@ -28,6 +33,7 @@ import {
   Users as UsersIcon,
   Network,
   KeyRound,
+  Inbox as InboxIcon,
 } from "lucide-react";
 import {
   NAV_SECTIONS,
@@ -47,6 +53,8 @@ export default function WelcomePage() {
   const orgUnits = useInstitutionalStore((s) => s.orgUnits);
   const users = useInstitutionalStore((s) => s.users);
   const cycles = useInstitutionalStore((s) => s.cycles);
+  const objectives = usePhase3Store((s) => s.objectives);
+  const assignments = usePhase3Store((s) => s.assignments);
 
   if (!user) return null;
 
@@ -60,13 +68,28 @@ export default function WelcomePage() {
   const primaryRoleName = userRoles[0]?.name ?? "—";
   const primaryRoleDesc = userRoles[0]?.description ?? "";
 
-  // مؤشرات حقيقية من بيانات Phase 2
+  // مؤشرات حقيقية من بيانات Phase 2 و 3
+  const scopedObjectives = filterObjectivesByScopeAndPermissions(
+    user,
+    roles,
+    objectives,
+    orgUnits,
+    assignments,
+    users
+  );
+  const reviewable = getReviewableObjectives(user, roles, objectives, orgUnits);
+  const myAssignments = assignments.filter((a) => a.assigneeUserId === user.id);
+  const pendingAssignments = myAssignments.filter((a) => a.response === "pending").length;
+
   const stats = {
     users: users.length,
     orgUnits: orgUnits.length,
     roles: roles.length,
     cycles: cycles.length,
     activeCycles: cycles.filter((c) => c.status === "active").length,
+    objectives: scopedObjectives.length,
+    pendingReviews: reviewable.length,
+    pendingAssignments,
   };
 
   // الروابط السريعة: عرض الوحدات الفعّالة المسموح بها
@@ -200,6 +223,33 @@ export default function WelcomePage() {
             href="/app/cycles"
             canAccess={canSvc(user, roles, "cycles.view")}
           />
+        </div>
+
+        {/* صفا Phase 3 */}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <StatCard
+            icon={<TargetIcon className="size-5" />}
+            label="الأهداف ضمن نطاقي"
+            value={stats.objectives}
+            href="/app/objectives"
+            canAccess={canSvc(user, roles, "goals.view")}
+          />
+          <StatCard
+            icon={<GitPullRequestArrowIcon className="size-5" />}
+            label="بانتظار المراجعة"
+            value={stats.pendingReviews}
+            href="/app/reviews"
+            canAccess={canSvc(user, roles, "goals.review") || canSvc(user, roles, "goals.approve")}
+          />
+          {canSvc(user, roles, "individual_goals.view") && (
+            <StatCard
+              icon={<InboxIcon className="size-5" />}
+              label="بانتظار ردي على الأهداف"
+              value={stats.pendingAssignments}
+              href="/app/my-objectives"
+              canAccess={canSvc(user, roles, "individual_goals.view")}
+            />
+          )}
         </div>
       </section>
 

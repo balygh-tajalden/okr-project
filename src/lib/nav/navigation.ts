@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   User as UserIcon,
   KeyRound,
+  Inbox,
 } from "lucide-react";
 
 /**
@@ -103,22 +104,22 @@ export const NAV_SECTIONS: NavSection[] = [
         requiredAnyPermission: ["cycles.view", "cycles.create"],
       },
       {
-        key: "goals",
+        key: "objectives",
         label: "الأهداف والنتائج الرئيسية",
         description: "إنشاء ومتابعة الأهداف والنتائج",
-        href: "/app/goals",
+        href: "/app/objectives",
         icon: Target,
-        status: "upcoming",
+        status: "active",
         requiredAnyPermission: ["goals.view"],
       },
       {
         key: "reviews",
         label: "المراجعات والاعتمادات",
-        description: "طلب ومراجعة اعتماد الأهداف",
+        description: "مراجعة واعتماد الأهداف المُرسلة",
         href: "/app/reviews",
         icon: GitPullRequestArrow,
-        status: "upcoming",
-        requiredAnyPermission: ["reviews.request", "reviews.approve"],
+        status: "active",
+        requiredAnyPermission: ["goals.review", "goals.approve"],
       },
       {
         key: "updates",
@@ -128,6 +129,15 @@ export const NAV_SECTIONS: NavSection[] = [
         icon: Activity,
         status: "upcoming",
         requiredAnyPermission: ["progress.view", "progress.update"],
+      },
+      {
+        key: "my-objectives",
+        label: "الأهداف المسندة إلي",
+        description: "الأهداف الفردية التي سُنّدت إليك",
+        href: "/app/my-objectives",
+        icon: Inbox,
+        status: "active",
+        requiredPermissions: ["individual_goals.view"],
       },
     ],
   },
