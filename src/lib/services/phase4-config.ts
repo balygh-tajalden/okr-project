@@ -1,24 +1,42 @@
 /**
  * إعدادات الطور الرابع المركزية (Phase 4 Configuration)
  * ===================================================================
- * مرجع موحّد لكل القيم القابلة للضبط لاحقاً في الطور الخامس.
- * لا تُكتب هذه القيم مبعثرة في المكوّنات — تُقرأ من هنا فقط.
+ * يقرأ القيم من مخزن الإعدادات (settings-store) القابل للتعديل.
+ * القيم الافتراضية مأخوذة من المواصفات (Phase 4).
+ *
+ * ملاحظة: getSettingsConfig() يقرأ الحالة الحالية للمخزن.
+ * للحصول على قيم تفاعلية في React، استخدم useSettingsStore مباشرة.
  */
+
+import { useSettingsStore } from "@/lib/data/settings-store";
 
 /**
- * إعدادات التنفيذ والمراقبة.
- * القيم الافتراضية مأخوذة من المواصفات (Phase 4).
+ * يُرجع إعدادات Phase 4 الحالية (من المخزن، قابل للتعديل من واجهة الإعدادات).
+ */
+export function getSettingsConfig() {
+  const state = useSettingsStore.getState();
+  return {
+    directKrUpdateIntervalDays: state.directKrUpdateIntervalDays,
+    delayedStalledThresholdPoints: state.delayedStalledThresholdPoints,
+    unreadReminderDays: state.unreadReminderDays,
+  };
+}
+
+/**
+ * @deprecated استخدم getSettingsConfig() بدلاً منها.
+ * محفوظة للتوافق مع المراحل السابقة.
  */
 export const PHASE4_CONFIG = {
-  /** فترة التحديث المسموحة لـ KR المباشر قبل إصدار تنبيه تأخّر */
-  directKrUpdateIntervalDays: 7,
-
-  /** حدّ الفرق بين التقدّم الفعلي والمتوقّع لتمييز "متأخر" عن "متعثر" (نقطة مئوية) */
-  delayedStalledThresholdPoints: 25,
-
-  /** فترة التذكير بالتنبيهات غير المقروءة */
-  unreadReminderDays: 2,
-} as const;
+  get directKrUpdateIntervalDays() {
+    return useSettingsStore.getState().directKrUpdateIntervalDays;
+  },
+  get delayedStalledThresholdPoints() {
+    return useSettingsStore.getState().delayedStalledThresholdPoints;
+  },
+  get unreadReminderDays() {
+    return useSettingsStore.getState().unreadReminderDays;
+  },
+};
 
 /**
  * الساعة القابلة للحقن — لدعم الاختبارات الزمنية الحتمية.

@@ -341,13 +341,16 @@ import { PHASE4_CONFIG } from "./phase4-config";
  * - actual < expected والفرق ≤ الحد → متأخر (delayed)
  * - actual < expected والفرق > الحد → متعثر (stalled)
  *
- * الحد الافتراضي: 25 نقطة مئوية (من PHASE4_CONFIG).
+ * الحد يُقرأ من مخزن الإعدادات (قابل للتعديل من واجهة الإعدادات).
  */
 export function calculatePerformanceStatus(
   actualProgress: number,
   expectedProgress: number,
-  threshold: number = PHASE4_CONFIG.delayedStalledThresholdPoints
+  threshold?: number
 ): PerformanceStatus {
+  // استخدم الحد الممرّر، أو اقرأ من مخزن الإعدادات
+  const effectiveThreshold = threshold ?? PHASE4_CONFIG.delayedStalledThresholdPoints;
+
   // التقريب لأقرب نقطة مئوية صحيحة للتمييز بين متقدّم وعلى المسار
   const roundedActual = Math.round(actualProgress);
   const roundedExpected = Math.round(expectedProgress);
@@ -357,7 +360,7 @@ export function calculatePerformanceStatus(
 
   // actual < expected
   const diff = roundedExpected - roundedActual;
-  if (diff <= threshold) return "delayed";
+  if (diff <= effectiveThreshold) return "delayed";
   return "stalled";
 }
 
