@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -21,10 +21,14 @@ import { StatusBadge } from "@/components/common/status-badge";
 import { EmptyState } from "@/components/common/empty-state";
 import { FilterBar } from "@/components/data-table/filter-bar";
 import { Breadcrumbs } from "@/components/common/breadcrumbs";
+import { FormDialog } from "@/components/common/form-dialog";
 import { ProtectedRoute } from "@/components/auth/protected-route-v2";
+import { RoleFormFields, type RoleFormValues } from "@/components/forms/role-form-fields";
 import { useInstitutionalStore } from "@/lib/data/store";
 import { useCurrentInstitutionalUser } from "@/hooks/use-current-institutional-user";
+import type { Role } from "@/lib/data/types";
 import { Eye, Pencil, KeyRound, Plus, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
 
 export default function RolesPage() {
   return (
@@ -37,9 +41,29 @@ export default function RolesPage() {
 function RolesList() {
   const roles = useInstitutionalStore((s) => s.roles);
   const users = useInstitutionalStore((s) => s.users);
+  const createRole = useInstitutionalStore((s) => s.createRole);
+  const updateRole = useInstitutionalStore((s) => s.updateRole);
   const { can } = useCurrentInstitutionalUser();
   const [search, setSearch] = useState("");
   const [systemFilter, setSystemFilter] = useState("");
+  const [isPending, startTransition] = useTransition();
+
+  // Modal state
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingRole, setEditingRole] = useState<Role | null>(null);
+  const [createValues, setCreateValues] = useState<RoleFormValues>({
+    name: "",
+    description: "",
+    permissions: [],
+  });
+  const [createErrors, setCreateErrors] = useState<Partial<Record<keyof RoleFormValues, string>>>({});
+  const [editValues, setEditValues] = useState<RoleFormValues>({
+    name: "",
+    description: "",
+    permissions: [],
+  });
+  const [editErrors, setEditErrors] = useState<Partial<Record<keyof RoleFormValues, string>>>({});
 
   const filtered = useMemo(() => {
     let list = [...roles];
@@ -58,7 +82,6 @@ function RolesList() {
 
   const hasFilters = !!search || !!systemFilter;
 
-  // عدّ المستخدمين لكل دور
   const usersPerRole = useMemo(() => {
     const map = new Map<string, number>();
     for (const u of users) {
@@ -68,6 +91,72 @@ function RolesList() {
     }
     return map;
   }, [users]);
+
+  // Create handlers
+  const openCreateModal = () => {
+    setCreateValues({ name: "", description: "", permissions: [] });
+    setCreateErrors({});
+    setCreateModalOpen(true);
+  };
+
+  const handleCreate = () => {
+    const e: Partial<Record<keyof RoleFormValues, string>> = {};
+    if (!createValues.name.trim()) e.name = "اسم الدور مطلوب.";
+    if (roles.some((r) => r.name === createValues.name.trim()))
+      e.name = "يوجد دور بنفس الاسم. اختر اسماً آخر.";
+    if (createValues.permissions.length === 0)
+      e.permissions = "يجب اختيار صلاحية واحدة على الأقل.";
+    setCreateErrors(e);
+    if (Object.keys(e).length > 0) {
+      toast.error("يرجى تصحيح الأخطاء قبل الحفظ.");
+      return;
+    }
+    startTransition(() => {
+      const created = createRole({
+        name: createValues.name.trim(),
+        description: createValues.description.trim() || undefined,
+        permissions: createValues.permissions,
+      });
+      toast.success(`تم إنشاء الدور "${created.name}" بنجاح.`);
+      setCreateModalOpen(false);
+    });
+  };
+
+  // Edit handlers
+  const openEditModal = (role: Role) => {
+    setEditingRole(role);
+    setEditValues({
+      name: role.name,
+      description: role.description ?? "",
+      permissions: [...role.permissions],
+    });
+    setEditErrors({});
+    setEditModalOpen(true);
+  };
+
+  const handleEdit = () => {
+    if (!editingRole) return;
+    const e: Partial<Record<keyof RoleFormValues, string>> = {};
+    if (!editValues.name.trim()) e.name = "اسم الدور مطلوب.";
+    if (roles.some((r) => r.id !== editingRole.id && r.name === editValues.name.trim()))
+      e.name = "يوجد دور آخر بنفس الاسم. اختر اسماً آخر.";
+    if (editValues.permissions.length === 0)
+      e.permissions = "يجب اختيار صلاحية واحدة على الأقل.";
+    setEditErrors(e);
+    if (Object.keys(e).length > 0) {
+      toast.error("يرجى تصحيح الأخطاء قبل الحفظ.");
+      return;
+    }
+    startTransition(() => {
+      updateRole(editingRole.id, {
+        name: editValues.name.trim(),
+        description: editValues.description.trim() || undefined,
+        permissions: editValues.permissions,
+      });
+      toast.success("تم حفظ التعديلات بنجاح.");
+      setEditModalOpen(false);
+    });
+  };
 
   return (
     <div className="space-y-5">
@@ -83,11 +172,9 @@ function RolesList() {
         description="إدارة الأدوار المؤسسية والصلاحيات المُسندة إليها."
         actions={
           can("roles.manage") && (
-            <Button asChild>
-              <Link href="/app/roles/new">
-                <Plus className="size-4" />
-                إنشاء دور
-              </Link>
+            <Button onClick={openCreateModal}>
+              <Plus className="size-4" />
+              إنشاء دور
             </Button>
           )
         }
@@ -124,11 +211,7 @@ function RolesList() {
             <EmptyState
               icon={<KeyRound className="size-6" />}
               title={hasFilters ? "لا توجد نتائج مطابقة" : "لا توجد أدوار"}
-              description={
-                hasFilters
-                  ? "جرّب تعديل عوامل التصفية."
-                  : "لم يتم إنشاء أي أدوار بعد."
-              }
+              description={hasFilters ? "جرّب تعديل عوامل التصفية." : "لم يتم إنشاء أي أدوار بعد."}
               className="border-0"
             />
           ) : (
@@ -197,15 +280,13 @@ function RolesList() {
                           </Button>
                           {can("roles.manage") && (
                             <Button
-                              asChild
                               size="sm"
                               variant="ghost"
                               className="h-8 gap-1.5"
+                              onClick={() => openEditModal(r)}
                             >
-                              <Link href={`/app/roles/${r.id}/edit`}>
-                                <Pencil className="size-3.5" />
-                                تعديل
-                              </Link>
+                              <Pencil className="size-3.5" />
+                              تعديل
                             </Button>
                           )}
                         </div>
@@ -218,6 +299,45 @@ function RolesList() {
           )}
         </CardContent>
       </Card>
+
+      {/* Modal: إنشاء دور */}
+      <FormDialog
+        open={createModalOpen}
+        onOpenChange={setCreateModalOpen}
+        title="إنشاء دور"
+        description="أنشئ دوراً جديداً واختر الصلاحيات المُسندة إليه."
+        submitLabel="حفظ الدور"
+        onSubmit={handleCreate}
+        isSubmitting={isPending}
+        size="lg"
+      >
+        <RoleFormFields
+          values={createValues}
+          onChange={(patch) => setCreateValues((v) => ({ ...v, ...patch }))}
+          errors={createErrors}
+        />
+      </FormDialog>
+
+      {/* Modal: تعديل دور */}
+      {editingRole && (
+        <FormDialog
+          open={editModalOpen}
+          onOpenChange={setEditModalOpen}
+          title={`تعديل: ${editingRole.name}`}
+          description="عدّل اسم الدور ووصفه وصلاحياته."
+          submitLabel="حفظ التعديلات"
+          onSubmit={handleEdit}
+          isSubmitting={isPending}
+          size="lg"
+        >
+          <RoleFormFields
+            values={editValues}
+            onChange={(patch) => setEditValues((v) => ({ ...v, ...patch }))}
+            errors={editErrors}
+            isSystem={editingRole.isSystem}
+          />
+        </FormDialog>
+      )}
     </div>
   );
 }

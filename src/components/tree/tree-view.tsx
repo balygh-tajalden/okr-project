@@ -1,17 +1,18 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { useState, useMemo, useCallback, useEffect } from "react";
-import { ChevronLeft, ChevronDown } from "lucide-react";
+import { useState, useCallback } from "react";
+import { ChevronLeft } from "lucide-react";
 
 /**
- * TreeView — عرض شجري قابل للطي/التوسع
+ * TreeView — عرض شجري محسّن مع خطوط ربط وهرمية بصرية واضحة
  * ===================================================================
  * مخصّص للهيكل التنظيمي. يدعم:
- * - توسيع/طي العقد
- * - تحديد عقدة
- * - عرض أزرار إجراءات لكل عقدة
- * - تمرير معرّفات الأبناء ديناميكياً
+ * - توسيع/طي العقد مع أيقونة chevron واضحة
+ * - خطوط ربط عمودية بين العقد (connector lines)
+ * - تحديد عقدة (selected state) واضح
+ * - أيقونات حسب نوع العقدة (عبر renderNode)
+ * - تجاوب مع الجوال
  */
 export interface TreeNode<T> {
   id: string;
@@ -30,7 +31,6 @@ interface TreeViewProps<T> {
   ) => React.ReactNode;
   defaultExpandedIds?: string[];
   className?: string;
-  /** عند true: وسّع كل العقد افتراضياً */
   defaultExpandAll?: boolean;
 }
 
@@ -58,33 +58,75 @@ export function TreeView<T>({
     });
   }, []);
 
-  const renderTree = (ids: string[], depth: number): React.ReactNode => {
-    return ids.map((id) => {
+  const renderTree = (ids: string[], depth: number, isLast: boolean[]): React.ReactNode => {
+    return ids.map((id, index) => {
       const node = nodes.get(id);
       if (!node) return null;
       const hasChildren = node.childrenIds.length > 0;
       const isExpanded = expanded.has(id);
       const isSelected = selectedId === id;
+      const isLastChild = index === ids.length - 1;
+
       return (
         <li
           key={id}
           role="treeitem"
           aria-expanded={hasChildren ? isExpanded : undefined}
           aria-selected={isSelected}
+          className="relative"
         >
+          {/* خطوط الربط العمودية — لكل مستوى عمق */}
+          {depth > 0 && (
+            <div className="absolute top-0 bottom-0 right-0 pointer-events-none" aria-hidden="true">
+              {isLast.map((last, i) => (
+                <div
+                  key={i}
+                  className={cn(
+                    "absolute border-r border-border/60",
+                    last ? "bottom-1/2" : "bottom-0"
+                  )}
+                  style={{ right: `${i * 24 + 16}px`, top: 0 }}
+                />
+              ))}
+              {/* الخط الأفقي للعقدة الحالية */}
+              <div
+                className="absolute border-t border-border/60"
+                style={{
+                  right: `${(isLast.length - 1) * 24 + 16}px`,
+                  top: "18px",
+                  width: "16px",
+                }}
+              />
+            </div>
+          )}
+
+          {/* العقدة نفسها */}
           <div
             className={cn(
-              "flex items-center gap-1 rounded-md transition-colors",
-              selectedId === id && "bg-accent/40"
+              "flex items-center gap-1 rounded-md transition-colors cursor-pointer",
+              isSelected
+                ? "bg-primary/10 ring-1 ring-primary/20"
+                : "hover:bg-muted/40"
             )}
-            style={{ paddingInlineStart: `${depth * 16 + 4}px` }}
+            style={{ paddingInlineStart: `${depth * 24 + 4}px` }}
+            onClick={() => onSelect?.(id)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                onSelect?.(id);
+              }
+            }}
+            tabIndex={0}
           >
             {hasChildren ? (
               <button
                 type="button"
-                onClick={() => toggle(id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggle(id);
+                }}
                 aria-label={isExpanded ? "طي" : "توسيع"}
-                className="flex size-6 shrink-0 items-center justify-center text-muted-foreground hover:bg-accent rounded"
+                className="flex size-6 shrink-0 items-center justify-center text-muted-foreground hover:bg-accent hover:text-foreground rounded transition-colors"
               >
                 <ChevronLeft
                   className={cn(
@@ -94,19 +136,18 @@ export function TreeView<T>({
                 />
               </button>
             ) : (
-              <span className="size-6 shrink-0" aria-hidden />
+              <span className="size-6 shrink-0 flex items-center justify-center" aria-hidden="true">
+                <span className="size-1.5 rounded-full bg-border" />
+              </span>
             )}
-            <button
-              type="button"
-              onClick={() => onSelect?.(id)}
-              className="flex-1 text-right"
-            >
+            <div className="flex-1 min-w-0">
               {renderNode(node, { depth, isExpanded, toggle: () => toggle(id) })}
-            </button>
+            </div>
           </div>
+
           {hasChildren && isExpanded && (
             <ul role="group" className="py-0.5">
-              {renderTree(node.childrenIds, depth + 1)}
+              {renderTree(node.childrenIds, depth + 1, [...isLast, isLastChild])}
             </ul>
           )}
         </li>
@@ -124,7 +165,7 @@ export function TreeView<T>({
 
   return (
     <ul role="tree" className={cn("space-y-0.5", className)}>
-      {renderTree(rootIds, 0)}
+      {renderTree(rootIds, 0, [])}
     </ul>
   );
 }
@@ -135,11 +176,9 @@ export function buildTree<T extends { id: string; parentId: string | null }>(
 ): { nodes: Map<string, TreeNode<T>>; rootIds: string[] } {
   const nodes = new Map<string, TreeNode<T>>();
   const rootIds: string[] = [];
-  // إنشاء العقد
   for (const item of items) {
     nodes.set(item.id, { id: item.id, data: item, childrenIds: [] });
   }
-  // بناء الروابط
   for (const item of items) {
     if (item.parentId && nodes.has(item.parentId)) {
       nodes.get(item.parentId)!.childrenIds.push(item.id);

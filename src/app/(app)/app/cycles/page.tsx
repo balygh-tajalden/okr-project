@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -22,24 +22,27 @@ import { EmptyState } from "@/components/common/empty-state";
 import { FilterBar, FilterSelect } from "@/components/data-table/filter-bar";
 import { Pagination } from "@/components/data-table/pagination";
 import { Breadcrumbs } from "@/components/common/breadcrumbs";
+import { FormDialog } from "@/components/common/form-dialog";
 import { ProtectedRoute } from "@/components/auth/protected-route-v2";
+import { CycleFormFields, type CycleFormValues } from "@/components/forms/cycle-form-fields";
 import { useCurrentInstitutionalUser } from "@/hooks/use-current-institutional-user";
 import { useInstitutionalStore } from "@/lib/data/store";
+import { validateCycleDates, getCycleEditableFields, canEditCycle } from "@/lib/services/institutional";
 import {
   CYCLE_TYPE_LABELS,
   CYCLE_STATUS_LABELS,
   type CycleStatus,
   type CycleType,
+  type Cycle,
 } from "@/lib/data/types";
 import {
   Repeat,
   Plus,
   Eye,
   Pencil,
-  PlayCircle,
-  CheckCircle2,
   Calendar,
 } from "lucide-react";
+import { toast } from "sonner";
 
 const PAGE_SIZE = 10;
 
@@ -52,12 +55,36 @@ export default function CyclesPage() {
 }
 
 function CyclesList() {
-  const { can } = useCurrentInstitutionalUser();
+  const { can, user } = useCurrentInstitutionalUser();
   const cycles = useInstitutionalStore((s) => s.cycles);
+  const createCycle = useInstitutionalStore((s) => s.createCycle);
+  const updateCycle = useInstitutionalStore((s) => s.updateCycle);
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
+  const [isPending, startTransition] = useTransition();
+
+  // Modal state
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingCycle, setEditingCycle] = useState<Cycle | null>(null);
+  const [createValues, setCreateValues] = useState<CycleFormValues>({
+    name: "",
+    description: "",
+    type: "quarterly",
+    startDate: "",
+    endDate: "",
+  });
+  const [createErrors, setCreateErrors] = useState<Partial<Record<keyof CycleFormValues, string>>>({});
+  const [editValues, setEditValues] = useState<CycleFormValues>({
+    name: "",
+    description: "",
+    type: "quarterly",
+    startDate: "",
+    endDate: "",
+  });
+  const [editErrors, setEditErrors] = useState<Partial<Record<keyof CycleFormValues, string>>>({});
 
   const filtered = useMemo(() => {
     let list = [...cycles];
@@ -90,11 +117,88 @@ function CyclesList() {
     setPage(1);
   };
 
+  // Create handlers
+  const openCreateModal = () => {
+    setCreateValues({ name: "", description: "", type: "quarterly", startDate: "", endDate: "" });
+    setCreateErrors({});
+    setCreateModalOpen(true);
+  };
+
+  const handleCreate = () => {
+    const e: Partial<Record<keyof CycleFormValues, string>> = {};
+    if (!createValues.name.trim()) e.name = "اسم الدورة مطلوب.";
+    if (!createValues.type) e.type = "نوع الدورة مطلوب.";
+    if (!createValues.startDate) e.startDate = "تاريخ البداية مطلوب.";
+    if (!createValues.endDate) e.endDate = "تاريخ النهاية مطلوب.";
+    if (createValues.startDate && createValues.endDate) {
+      const dateResult = validateCycleDates(createValues.startDate, createValues.endDate);
+      if (!dateResult.valid) e.endDate = dateResult.error;
+    }
+    setCreateErrors(e);
+    if (Object.keys(e).length > 0) {
+      toast.error("يرجى تصحيح الأخطاء قبل الحفظ.");
+      return;
+    }
+    startTransition(() => {
+      const created = createCycle(
+        {
+          name: createValues.name.trim(),
+          description: createValues.description.trim() || undefined,
+          type: createValues.type as CycleType,
+          startDate: createValues.startDate,
+          endDate: createValues.endDate,
+        },
+        user!.id
+      );
+      toast.success(`تم إنشاء الدورة "${created.name}" بحالة مسودة.`);
+      setCreateModalOpen(false);
+    });
+  };
+
+  // Edit handlers
+  const openEditModal = (cycle: Cycle) => {
+    setEditingCycle(cycle);
+    setEditValues({
+      name: cycle.name,
+      description: cycle.description ?? "",
+      type: cycle.type,
+      startDate: cycle.startDate,
+      endDate: cycle.endDate,
+    });
+    setEditErrors({});
+    setEditModalOpen(true);
+  };
+
+  const handleEdit = () => {
+    if (!editingCycle) return;
+    const editableFields = getCycleEditableFields(editingCycle.status);
+    const e: Partial<Record<keyof CycleFormValues, string>> = {};
+    if (!editValues.name.trim()) e.name = "اسم الدورة مطلوب.";
+    if (editValues.startDate && editValues.endDate) {
+      const dateResult = validateCycleDates(editValues.startDate, editValues.endDate);
+      if (!dateResult.valid) e.endDate = dateResult.error;
+    }
+    setEditErrors(e);
+    if (Object.keys(e).length > 0) {
+      toast.error("يرجى تصحيح الأخطاء قبل الحفظ.");
+      return;
+    }
+    startTransition(() => {
+      const patch: Partial<CycleFormValues> = {};
+      for (const field of editableFields) {
+        (patch as any)[field] = (editValues as any)[field];
+      }
+      updateCycle(editingCycle.id, patch as any);
+      toast.success("تم حفظ التعديلات بنجاح.");
+      setEditModalOpen(false);
+    });
+  };
+
   return (
     <div className="space-y-5">
       <Breadcrumbs
         items={[
-          { label: "الئيسية", href: "/app" },
+          { label: "الرئيسية", href: "/app" },
           { label: "دورات OKR" },
         ]}
       />
@@ -104,11 +208,9 @@ function CyclesList() {
         description="إدارة دورات التخطيط الفصلية والسنوية التي تحكم الأهداف."
         actions={
           can("cycles.create") && (
-            <Button asChild>
-              <Link href="/app/cycles/new">
-                <Plus className="size-4" />
-                إنشاء دورة
-              </Link>
+            <Button onClick={openCreateModal}>
+              <Plus className="size-4" />
+              إنشاء دورة
             </Button>
           )
         }
@@ -223,15 +325,13 @@ function CyclesList() {
                             </Button>
                             {can("cycles.update") && c.status === "draft" && (
                               <Button
-                                asChild
                                 size="sm"
                                 variant="ghost"
                                 className="h-8 gap-1.5"
+                                onClick={() => openEditModal(c)}
                               >
-                                <Link href={`/app/cycles/${c.id}/edit`}>
-                                  <Pencil className="size-3.5" />
-                                  تعديل
-                                </Link>
+                                <Pencil className="size-3.5" />
+                                تعديل
                               </Button>
                             )}
                           </div>
@@ -251,6 +351,43 @@ function CyclesList() {
           )}
         </CardContent>
       </Card>
+
+      {/* Modal: إنشاء دورة */}
+      <FormDialog
+        open={createModalOpen}
+        onOpenChange={setCreateModalOpen}
+        title="إنشاء دورة OKR"
+        description="تبدأ الدورة دائماً في حالة مسودة."
+        submitLabel="حفظ الدورة"
+        onSubmit={handleCreate}
+        isSubmitting={isPending}
+      >
+        <CycleFormFields
+          values={createValues}
+          onChange={(patch) => setCreateValues((v) => ({ ...v, ...patch }))}
+          errors={createErrors}
+        />
+      </FormDialog>
+
+      {/* Modal: تعديل دورة */}
+      {editingCycle && (
+        <FormDialog
+          open={editModalOpen}
+          onOpenChange={setEditModalOpen}
+          title={`تعديل: ${editingCycle.name}`}
+          description="عدّل بيانات الدورة. الحقول المقيدة تُعرض مع شرح."
+          submitLabel="حفظ التعديلات"
+          onSubmit={handleEdit}
+          isSubmitting={isPending}
+        >
+          <CycleFormFields
+            values={editValues}
+            onChange={(patch) => setEditValues((v) => ({ ...v, ...patch }))}
+            errors={editErrors}
+            editableFields={getCycleEditableFields(editingCycle.status)}
+          />
+        </FormDialog>
+      )}
     </div>
   );
 }
