@@ -1,0 +1,2435 @@
+You are a senior Software Engineer, Product Architect, UX Designer,
+and Frontend/Full-Stack Prototype Engineer.
+
+You are continuing an existing project:
+
+"نظام إدارة الأهداف المؤسسية وفق منهجية الأهداف والنتائج الرئيسية (OKR)"
+
+The project is an Arabic institutional OKR management system.
+
+PHASE 1 has already been implemented or is being completed.
+
+PHASE 1 included the technical/product foundation such as:
+
+- Arabic RTL application foundation
+- Authentication
+- Login / Logout
+- Forgot/Reset Password
+- Protected Routes
+- Application Shell
+- Sidebar
+- Header
+- Role/Permission architectural foundation
+- User profile
+- Global loading/error/empty states
+- Design system and reusable components
+
+DO NOT rebuild Phase 1.
+
+Your task now is to implement PHASE 2 ONLY.
+
+The project documentation itself is NOT available to you.
+
+Therefore, every business rule, actor responsibility,
+workflow rule, and diagram-derived behavior relevant to Phase 2
+is explicitly included in this prompt.
+
+Do NOT assume generic OKR behavior that contradicts this specification.
+
+==================================================
+PHASE 2
+INSTITUTIONAL FOUNDATION
+==================================================
+
+Implement:
+
+1. User Management
+2. Roles and Permissions
+3. Organizational Structure
+4. Organizational Scope
+5. OKR Cycle Management
+
+The purpose of Phase 2 is to construct the institutional environment
+that all objectives, Key Results, approvals, progress updates,
+alerts, dashboards, and reports will depend on in later phases.
+
+This is NOT simply four CRUD pages.
+
+These modules are strongly related:
+
+USER
+→ belongs to one current primary organizational unit
+
+USER
+→ may have one or more roles
+
+ROLE
+→ contains technical permissions
+
+USER EFFECTIVE PERMISSIONS
+→ union of all permissions from assigned roles
+
+ORGANIZATIONAL STRUCTURE
+→ determines the user's accessible institutional scope
+
+OKR CYCLE
+→ becomes the mandatory time framework for objectives in Phase 3
+
+All Phase-2 modules must use one coherent data model.
+
+==================================================
+1. FIRST — INSPECT THE CURRENT PROJECT
+==================================================
+
+Before implementing anything:
+
+Inspect the entire existing project created in Phase 1.
+
+Identify:
+
+- frontend framework
+- backend if one exists
+- routing system
+- authentication/session implementation
+- permission architecture
+- reusable components
+- state management
+- API/data layer
+- design tokens
+- typography
+- RTL implementation
+- app shell
+- layouts
+- forms
+- dialogs
+- tables
+- notification/toast system
+- demo/mock persistence strategy
+- testing setup
+- file/folder architecture
+
+Then continue the CURRENT architecture.
+
+Do NOT:
+
+- replace the framework
+- recreate the application from scratch
+- rewrite working Phase-1 functionality unnecessarily
+- introduce a second design system
+- create duplicate versions of reusable components
+- break authentication
+- break protected routing
+- change existing routes unnecessarily
+
+Phase 2 must look and behave like a natural continuation of Phase 1.
+
+==================================================
+2. IMPORTANT SOURCE-OF-TRUTH RULE
+==================================================
+
+For this phase, the business behavior described in this prompt
+is authoritative.
+
+Do NOT independently reinterpret the system as a generic SaaS,
+HR system, task manager, or generic OKR product.
+
+The system is specifically an:
+
+"نظام إدارة الأهداف المؤسسية وفق منهجية OKR"
+
+The Phase-2 implementation must prepare the exact foundation needed
+for the documented later workflow:
+
+Top Management
+→ organizational objectives
+→ Department Manager
+→ supporting objectives
+→ review/approval
+→ individual objective assignment
+→ Employee
+→ execution/evidence
+→ review
+→ progress calculation
+
+Phase 2 does NOT implement that objective workflow yet.
+
+But its architecture MUST support it without needing a redesign later.
+
+==================================================
+3. ACTORS RELEVANT TO THE SYSTEM
+==================================================
+
+The broader system contains institutional actors/roles such as:
+
+- مدير النظام
+- الإدارة العليا
+- مدير الإدارة
+- قائد الفريق
+- الموظف
+
+Roles must NOT be treated as the same thing as organizational units.
+
+For example:
+
+"مدير الإدارة"
+is a role.
+
+"إدارة تقنية المعلومات"
+is an organizational unit.
+
+A user can have:
+
+- one current primary organizational unit
+- one or more roles
+
+Do not confuse these concepts.
+
+==================================================
+4. USE-CASE BEHAVIOR — SYSTEM ADMINISTRATOR
+==================================================
+
+The documented System Administrator use cases relevant to this stage are:
+
+- تسجيل الدخول
+- إدارة المستخدمين
+- تسجيل الخروج
+
+"إدارة المستخدمين" includes managing user accounts,
+their account data,
+and their associated roles
+according to granted permissions.
+
+The System Administrator experience must therefore provide
+strong user/account administration capability.
+
+However, the architecture must still use permissions rather than:
+
+if role == admin then allow everything
+
+Avoid hardcoded identity checks.
+
+Use technical permission checks.
+
+==================================================
+5. USE-CASE BEHAVIOR — TOP MANAGEMENT
+==================================================
+
+The documented Top Management capabilities include:
+
+- إدارة دورات الأهداف OKR
+- إدارة الهيكل التنظيمي according to granted permissions
+
+Other Top Management use cases such as:
+
+- إدارة الأهداف
+- متابعة الأداء
+- مراجعة الأهداف الداعمة
+- قبول/إعادة الهدف
+- التنبيهات
+- لوحة المعلومات
+- التقارير
+
+belong to later phases.
+
+DO NOT implement them now.
+
+But Phase 2 must prepare the data and permissions required for them.
+
+Top Management must NOT automatically inherit System Administrator
+account-management capabilities merely because it is a senior role.
+
+Functional permission and organizational authority must remain distinct.
+
+==================================================
+6. USE-CASE BEHAVIOR — DEPARTMENT MANAGER
+==================================================
+
+The documented Department Manager has a use case:
+
+"إدارة الموظفين/الأعضاء"
+
+This means the manager can interact with users located within
+the manager's organizational responsibility scope,
+according to granted permissions.
+
+Do NOT interpret this as unrestricted global administration.
+
+A Department Manager must NOT see or control users from unrelated
+organizational branches unless explicitly granted wider access.
+
+Later Department Manager functions include:
+
+- supporting objectives
+- goal assignment
+- progress monitoring
+- progress approval
+- manual alerts
+- reports
+
+Those are NOT implemented in Phase 2.
+
+Only prepare their organizational/user foundation.
+
+==================================================
+7. USE-CASE BEHAVIOR — EMPLOYEE
+==================================================
+
+The Employee's documented workflow later centers on:
+
+- assigned objectives
+- reviewing assigned objectives
+- accepting/rejecting them
+- evidence/progress submission
+- search/filter within allowed data
+
+The Employee is NOT an institutional administration actor by default.
+
+Therefore the normal Employee experience in Phase 2 must NOT expose:
+
+- global user management
+- role management
+- permission management
+- organization restructuring
+- OKR cycle administration
+
+unless that specific user has explicitly been granted those permissions.
+
+==================================================
+8. ROLE ≠ ORGANIZATIONAL SCOPE
+==================================================
+
+This is one of the most important architectural rules.
+
+ROLE / PERMISSION determines:
+
+WHAT can the user do?
+
+ORGANIZATIONAL SCOPE determines:
+
+ON WHICH DATA can the user do it?
+
+Example:
+
+Two users may both have:
+
+Role:
+مدير الإدارة
+
+But:
+
+Manager A belongs to:
+إدارة الموارد البشرية
+
+Manager B belongs to:
+إدارة تقنية المعلومات
+
+They must not automatically see each other's subordinate data.
+
+Prepare one centralized organizational-scope mechanism.
+
+Conceptually:
+
+getAccessibleOrgUnits(user)
+
+or equivalent.
+
+Do NOT duplicate scope filtering separately in every page.
+
+Later this same mechanism must be reusable for:
+
+- Objectives
+- Key Results
+- Progress updates
+- Approval queues
+- Alerts
+- Search
+- Dashboard
+- Reports
+
+==================================================
+9. USER MANAGEMENT — REQUIRED SCREENS
+==================================================
+
+Implement a professional User Management module.
+
+Required screens:
+
+1. قائمة المستخدمين
+2. إنشاء مستخدم
+3. تفاصيل المستخدم
+4. تعديل المستخدم
+
+The implementation must be functional, not decorative.
+
+==================================================
+10. USERS LIST
+==================================================
+
+Create a professional data-management page.
+
+Display useful fields such as:
+
+- الاسم الكامل
+- اسم المستخدم
+- البريد الإلكتروني
+- الجهة التنظيمية
+- الدور / الأدوار
+- حالة الحساب
+- actions permitted to current user
+
+Support:
+
+- text search
+- role filter
+- organizational-unit filter
+- account-status filter
+- clear/reset filters
+- scalable pagination or equivalent list handling
+- empty state
+- loading state
+- no-results state
+
+Do not show users outside the current user's allowed organizational scope.
+
+Do not fetch/build everything globally and merely hide rows visually.
+
+Apply the scope in the data/service layer appropriate to the project.
+
+==================================================
+11. USER ACCOUNT DATA
+==================================================
+
+Each user must support at least:
+
+- full name
+- username
+- email
+- primary organizational unit
+- one or more roles
+- account status
+
+Account status has exactly two operational states:
+
+- فعال
+- موقوف
+
+Do not invent extra states such as:
+
+Pending
+Archived
+Suspended
+Deleted
+
+unless the existing Phase-1 authentication layer already requires
+an internal technical status that is not presented as a new business state.
+
+==================================================
+12. USERNAME UNIQUENESS
+==================================================
+
+The system must validate that:
+
+username is unique within the system/institution.
+
+Do not allow creation of two accounts with the same username.
+
+Provide a clear Arabic validation message.
+
+Example:
+
+"اسم المستخدم مستخدم بالفعل."
+
+Do not silently modify the username.
+
+==================================================
+13. EMAIL VALIDATION
+==================================================
+
+Validate email format.
+
+If the current project architecture treats email as unique,
+preserve that constraint consistently.
+
+Do not create conflicting account identities between Phase 1 and Phase 2.
+
+==================================================
+14. USER CREATE/EDIT FORM
+==================================================
+
+Create a well-structured Arabic RTL form.
+
+At minimum:
+
+- الاسم الكامل
+- اسم المستخدم
+- البريد الإلكتروني
+- الجهة التنظيمية الأساسية
+- الأدوار
+- حالة الحساب
+
+Use proper:
+
+- labels
+- help text where needed
+- validation
+- loading state
+- disabled submission state
+- success feedback
+- error feedback
+
+Do not use alert().
+
+Use the Phase-1 dialog/toast/form architecture.
+
+==================================================
+15. USER DETAILS PAGE
+==================================================
+
+The user-detail page must be useful,
+not simply a read-only copy of the form.
+
+Organize it into meaningful areas such as:
+
+A. معلومات الحساب
+
+- full name
+- username
+- email
+- status
+
+B. الارتباط التنظيمي
+
+- current organizational unit
+- parent context where useful
+
+C. الأدوار
+
+- assigned roles
+
+D. الصلاحيات الفعلية
+
+Display a readable summary of effective permissions
+calculated from assigned roles.
+
+E. السجل التنظيمي
+
+Display historical organizational placement where available.
+
+==================================================
+16. ACCOUNT ACTIVATION / DISABLING
+==================================================
+
+Provide:
+
+- تفعيل الحساب
+- إيقاف الحساب
+
+Before changing state:
+
+show a confirmation dialog.
+
+When an account becomes "موقوف":
+
+- do not delete it
+- preserve its references
+- preserve its organizational history
+- preserve future historical OKR relationships
+- prevent normal login through the Phase-1 authentication layer
+
+When reactivated:
+
+login may work again according to normal authentication rules.
+
+Do not create a "hard delete" as the normal account-management action.
+
+==================================================
+17. USER ORGANIZATIONAL ASSOCIATION
+==================================================
+
+Every user must have ONE current primary organizational unit.
+
+The data model must support:
+
+current organizational association
++
+historical organizational associations
+
+If a user moves from:
+
+إدارة تقنية المعلومات
+
+to:
+
+إدارة التحول الرقمي
+
+the system must NOT rewrite history as if the user had always belonged
+to the new unit.
+
+Maintain historical association metadata.
+
+A reasonable prototype structure can track:
+
+- org unit
+- valid from
+- valid to
+- current flag or equivalent
+
+The UI should show the current association and historical associations.
+
+Do not build a full HR transfer module.
+
+Only implement what is necessary to preserve organizational context.
+
+==================================================
+18. ROLES MANAGEMENT
+==================================================
+
+Create a professional Roles module.
+
+Required screens:
+
+- قائمة الأدوار
+- إنشاء دور
+- تفاصيل الدور
+- تعديل الدور
+
+The system must support built-in/seed roles such as:
+
+- مدير النظام
+- الإدارة العليا
+- مدير الإدارة
+- قائد الفريق
+- الموظف
+
+But the architecture must permit creating additional roles.
+
+Do not hardcode all authorization logic around these role names.
+
+==================================================
+19. MULTIPLE ROLES PER USER
+==================================================
+
+A user may have more than one role.
+
+Effective permissions are calculated as the UNION
+of all permissions granted by those roles.
+
+Example:
+
+Role A:
+- users.view
+- cycles.view
+
+Role B:
+- reports.view
+
+Effective user permissions:
+
+- users.view
+- cycles.view
+- reports.view
+
+If the same permission appears in multiple roles,
+it appears only once in the effective permission set.
+
+Centralize this calculation.
+
+Do not recalculate it differently on different pages.
+
+==================================================
+20. PERMISSION MANAGEMENT
+==================================================
+
+Inside the Role create/edit experience,
+provide a clear permissions interface.
+
+Group permissions by system module.
+
+Recommended permission groups:
+
+المستخدمون
+الأدوار والصلاحيات
+الهيكل التنظيمي
+دورات OKR
+الأهداف
+الاعتمادات والمراجعات
+تحديثات الإنجاز
+التنبيهات
+البحث والتصفية
+لوحة المعلومات
+التقارير
+الإعدادات
+
+Not all future modules are implemented now.
+
+However,
+their permission definitions may already exist
+so the authorization architecture is ready.
+
+Display human-readable Arabic permission names.
+
+Internal code may use stable keys such as:
+
+users.view
+users.create
+users.update
+users.status.manage
+
+roles.view
+roles.manage
+
+organization.view
+organization.manage
+
+cycles.view
+cycles.create
+cycles.update
+cycles.activate
+cycles.complete
+
+Do not expose ugly raw permission codes as the primary UI labels.
+
+==================================================
+21. PERMISSION GUARDS
+==================================================
+
+Use the Phase-1 authorization foundation.
+
+Protect:
+
+- navigation
+- routes
+- buttons/actions
+- data operations
+
+Examples:
+
+Without users.view:
+→ cannot open user list.
+
+Without users.create:
+→ cannot create user.
+
+Without roles.manage:
+→ cannot modify roles.
+
+Without organization.manage:
+→ cannot change organizational structure.
+
+Without cycles.create:
+→ cannot create a cycle.
+
+Without cycles.activate:
+→ cannot activate a cycle.
+
+Do not rely only on hiding a button.
+
+Action handlers/services/routes must enforce authorization too.
+
+==================================================
+22. ORGANIZATIONAL STRUCTURE — CORE MODEL
+==================================================
+
+The institutional structure must be dynamic and hierarchical.
+
+Use Parent/Child relationships.
+
+Do NOT hardcode a fixed number of levels.
+
+The institution may contain unit types such as:
+
+- قطاع
+- فرع
+- إدارة عامة
+- إدارة
+- قسم
+- وحدة
+- فريق
+
+These are examples.
+
+The hierarchy may vary between organizations.
+
+The architecture must allow:
+
+N-level structure.
+
+Do NOT force:
+
+Organization
+→ Directorate
+→ Department
+→ Team
+
+as a permanent schema.
+
+==================================================
+23. ORGANIZATIONAL UNIT MODEL
+==================================================
+
+Each organizational unit should have a clean model
+appropriate for the current architecture.
+
+At minimum consider:
+
+- id
+- name
+- type
+- parent unit
+- description if useful
+- metadata needed for hierarchy/navigation
+
+Do not overload it with unrelated HR information.
+
+==================================================
+24. ORGANIZATIONAL STRUCTURE REQUIRED SCREENS
+==================================================
+
+Implement:
+
+1. Organizational Structure main page
+2. Organizational unit details
+3. Create organizational unit
+4. Edit organizational unit
+
+The interface must make the hierarchy understandable.
+
+==================================================
+25. ORGANIZATIONAL TREE UX
+==================================================
+
+Desktop:
+
+Provide a professional tree/hierarchy experience.
+
+The user should be able to:
+
+- expand node
+- collapse node
+- select node
+- see parent
+- see children
+- open details
+- create child unit when authorized
+- edit unit when authorized
+
+If useful, show basic member/user counts.
+
+Do not overload the tree with unnecessary information.
+
+Mobile:
+
+Do not squeeze a giant desktop tree into the viewport.
+
+Use a usable hierarchical list,
+drill-down,
+or responsive tree behavior.
+
+==================================================
+26. ORGANIZATIONAL HIERARCHY INTEGRITY
+==================================================
+
+Prevent invalid structures.
+
+A unit cannot be:
+
+- its own parent
+
+Prevent cycles such as:
+
+A → B → C → A
+
+Validate parent changes before applying them.
+
+Provide understandable Arabic error feedback.
+
+The hierarchy must always remain a valid tree/forest
+appropriate to the institutional model.
+
+==================================================
+27. ROOT UNIT HANDLING
+==================================================
+
+Support the institutional root correctly.
+
+Do not require every node to have a parent.
+
+The institution/root level may be parentless.
+
+Do not create fake placeholder parents.
+
+==================================================
+28. ORGANIZATIONAL SCOPE FROM THE TREE
+==================================================
+
+The hierarchy must determine accessible subordinate scope.
+
+For a scoped manager:
+
+current unit
++
+descendant units
+
+must be representable.
+
+For example:
+
+قطاع تقنية المعلومات
+├── إدارة تطوير الأنظمة
+│   ├── فريق الويب
+│   └── فريق التطبيقات
+└── إدارة البنية التحتية
+
+A properly authorized manager at:
+
+قطاع تقنية المعلومات
+
+may access data from the descendant units.
+
+A manager at:
+
+إدارة تطوير الأنظمة
+
+must not automatically gain access to:
+
+إدارة البنية التحتية.
+
+Implement this through the centralized scope mechanism.
+
+==================================================
+29. WHY THE ORGANIZATIONAL TREE MATTERS LATER
+==================================================
+
+The hierarchy is NOT only decorative.
+
+Later phases use it for:
+
+- data access scope
+- objective ownership
+- organizational objectives
+- approval routing
+- supporting-objective alignment
+- identifying the direct higher organizational level
+- dashboards
+- reports
+- alerts/escalation
+
+Therefore use stable organizational IDs.
+
+Do not model the hierarchy only as text labels.
+
+==================================================
+30. HISTORICAL ORGANIZATIONAL CONTEXT
+==================================================
+
+The documented system must preserve historical organizational context.
+
+Future examples:
+
+- objective created while department belonged to Branch A
+- department later moved under Branch B
+
+Historical OKR data must not suddenly appear as if it originally
+belonged to Branch B.
+
+Phase 2 does NOT implement objective history yet.
+
+But its data model must make future historical snapshots/context possible.
+
+At minimum:
+
+- stable organization IDs
+- current hierarchy
+- user affiliation history
+
+Do not design destructive restructuring behavior.
+
+==================================================
+31. ORGANIZATION MANAGEMENT AUTHORIZATION
+==================================================
+
+The documented Top Management use cases include:
+
+"إدارة الهيكل التنظيمي"
+
+according to granted permissions.
+
+Therefore allow organization administration based on permissions.
+
+Do NOT assume only one role can ever manage the tree.
+
+Do NOT give everyone organization.manage by default.
+
+==================================================
+32. OKR CYCLES — BUSINESS PURPOSE
+==================================================
+
+An OKR Cycle is the time period that governs objectives.
+
+Phase 3 objectives will be attached to exactly one cycle.
+
+Cycle management must therefore be a real business module,
+not simply a decorative filter.
+
+==================================================
+33. OKR CYCLE REQUIRED SCREENS
+==================================================
+
+Implement:
+
+1. قائمة دورات OKR
+2. إنشاء دورة
+3. تفاصيل الدورة
+4. تعديل الدورة
+
+Use professional Arabic RTL UI.
+
+==================================================
+34. CYCLE DATA
+==================================================
+
+A cycle contains:
+
+- الاسم
+- الوصف
+- النوع
+- تاريخ البداية
+- تاريخ النهاية
+- الحالة
+
+Use centralized types/configuration.
+
+Do not duplicate state strings throughout the codebase.
+
+==================================================
+35. CYCLE STATES — EXACT BUSINESS STATES
+==================================================
+
+The cycle supports exactly three business states:
+
+1. مسودة
+2. نشطة
+3. مكتملة
+
+Do NOT introduce extra business states.
+
+A newly created cycle MUST begin as:
+
+مسودة
+
+==================================================
+36. CYCLE CREATE — SEQUENCE-DIAGRAM BEHAVIOR
+==================================================
+
+The documented Sequence Diagram for creating an OKR cycle
+must be implemented as an actual interactive workflow.
+
+Exact behavior:
+
+Authorized User
+→ chooses "إنشاء دورة"
+
+System
+→ displays cycle creation form
+
+User
+→ enters cycle data
+
+User
+→ submits form
+
+System
+→ validates data
+
+IF validation fails:
+
+System
+→ does NOT create the cycle
+→ keeps the form available
+→ displays relevant validation errors
+→ allows correction and resubmission
+
+IF validation succeeds:
+
+System
+→ creates the Cycle
+→ sets state = "مسودة"
+→ persists the Cycle
+→ displays a success confirmation
+→ allows navigation to Cycle details/list
+
+This sequence must actually work.
+
+Do not make Create Cycle a fake button.
+
+==================================================
+37. CYCLE DATE VALIDATION
+==================================================
+
+A cycle has:
+
+Start Date
+End Date
+
+Required rule:
+
+END DATE MUST BE LATER THAN START DATE.
+
+Reject:
+
+end == start
+
+Reject:
+
+end < start
+
+Use clear Arabic feedback such as:
+
+"يجب أن يكون تاريخ نهاية الدورة لاحقًا لتاريخ البداية."
+
+==================================================
+38. CYCLE TYPE
+==================================================
+
+Support cycle type as a controlled field.
+
+Use the types defined/needed by the project's current model.
+
+Examples may include periodic cycles such as:
+
+- شهري
+- ربع سنوي
+- سنوي
+
+Keep cycle type as an attribute of one Cycle model.
+
+Do NOT create separate Cycle classes/tables for each type.
+
+==================================================
+39. DRAFT CYCLE
+==================================================
+
+Initial state:
+
+مسودة
+
+In Draft:
+
+The cycle exists for planning.
+
+Later objectives may be:
+
+- created
+- edited
+- attached to this cycle
+
+But progress execution must NOT start yet.
+
+In Draft:
+
+- no actual progress execution
+- no expected-progress calculation
+- no operational execution alerts
+
+Phase 2 does NOT implement goals.
+
+The Cycle details page may show:
+
+"لم تتم إضافة أهداف إلى هذه الدورة بعد"
+
+or a suitable Phase-3 placeholder.
+
+Do not fabricate fake objectives merely to fill the screen.
+
+==================================================
+40. ACTIVATE CYCLE
+==================================================
+
+Provide an authorized action:
+
+"تفعيل الدورة"
+
+Valid transition:
+
+مسودة → نشطة
+
+Before activation:
+
+Show confirmation.
+
+Include useful context:
+
+- اسم الدورة
+- تاريخ البداية
+- تاريخ النهاية
+
+After confirmation:
+
+- update status
+- persist state
+- update UI
+- show success feedback
+
+Once Active,
+the future system may allow:
+
+- execution
+- progress calculations
+- alerts
+- continued creation/approval of objectives while the cycle is not completed
+
+Do not implement those future operations in Phase 2.
+
+==================================================
+41. ACTIVE CYCLE
+==================================================
+
+The UI must clearly distinguish Active state.
+
+Do not treat state as only visual text.
+
+Available actions must depend on state.
+
+For example:
+
+An Active cycle must not show:
+
+"تفعيل الدورة"
+
+again.
+
+==================================================
+42. CYCLE COMPLETION
+==================================================
+
+The documented lifecycle supports:
+
+نشطة → مكتملة
+
+Completion can occur:
+
+A. automatically when the end date is reached
+B. manually by an authorized user before that when needed
+
+For the Prototype:
+
+Implement reliable lifecycle logic appropriate to the existing architecture.
+
+Do not create fragile infrastructure merely to simulate a production scheduler.
+
+However,
+the behavior/data model must clearly support automatic completion
+when the end date has passed.
+
+Provide manual:
+
+"إغلاق الدورة" / "إكمال الدورة"
+
+according to the established Arabic UX terminology.
+
+Use confirmation.
+
+==================================================
+43. COMPLETED CYCLE
+==================================================
+
+When Cycle = مكتملة:
+
+Future execution-changing updates are forbidden.
+
+Historical data remains available for:
+
+- viewing
+- reports
+- historical reference
+
+In Phase 2:
+
+Treat completed cycle information as primarily read-only.
+
+Do not provide invalid actions such as:
+
+مكتملة → نشطة
+
+unless a later specification explicitly introduces reopening.
+
+Currently, it does not.
+
+==================================================
+44. CYCLE STATE MACHINE
+==================================================
+
+Allowed primary transitions:
+
+NEW
+→ مسودة
+
+مسودة
+→ نشطة
+
+نشطة
+→ مكتملة
+
+Do not allow:
+
+مكتملة → نشطة
+
+Do not allow:
+
+مسودة → مكتملة
+
+unless the documented lifecycle explicitly supports such direct transition.
+Do not invent it.
+
+Centralize lifecycle validation.
+
+Do not leave state transition rules inside random button components.
+
+==================================================
+45. CYCLE EDITING BY STATE
+==================================================
+
+Use sensible restrictions based on lifecycle.
+
+DRAFT:
+
+normal editing allowed.
+
+ACTIVE:
+
+protect fields whose arbitrary modification could invalidate execution context.
+
+COMPLETED:
+
+mostly read-only historical state.
+
+If an action is unavailable:
+
+Do not simply disable it without explanation.
+
+Use:
+
+- explanatory hint
+- status information
+- tooltip/message
+
+where useful.
+
+==================================================
+46. CYCLE DETAILS PAGE
+==================================================
+
+The details page should show:
+
+- اسم الدورة
+- الوصف
+- النوع
+- الحالة
+- تاريخ البداية
+- تاريخ النهاية
+- duration/timeline where useful
+- available state actions
+
+Prepare areas that Phase 3 can extend:
+
+- الأهداف
+- تقدم الدورة
+- الإحصائيات
+
+For now these should use meaningful empty/future states.
+
+Do NOT implement fake Phase-3 functionality.
+
+==================================================
+47. CYCLE LIST
+==================================================
+
+List cycles with useful information such as:
+
+- name
+- type
+- date range
+- status
+- actions
+
+Support:
+
+- search
+- type filter
+- state filter
+- date/year filtering if useful
+- empty state
+- loading state
+- no-results state
+
+Filters must actually work.
+
+Do not add decorative filters.
+
+==================================================
+48. CYCLE ACCESS CONTROL
+==================================================
+
+The documented Top Management use cases include:
+
+"إدارة دورات الأهداف"
+
+But actual actions must still depend on granted permissions.
+
+Prepare/use permissions such as:
+
+cycles.view
+cycles.create
+cycles.update
+cycles.activate
+cycles.complete
+
+Do not grant all cycle operations to every role automatically.
+
+==================================================
+49. FUTURE OBJECTIVE DATE RULE — PREPARE ONLY
+==================================================
+
+The documented system rule for Phase 3 is:
+
+Every objective belongs to one Cycle.
+
+The objective execution dates must fall completely within
+the Cycle date range.
+
+An objective may use a shorter period than the Cycle,
+but cannot extend outside it.
+
+DO NOT implement Objective creation in Phase 2.
+
+However:
+
+Make Cycle data/querying clean enough for Phase 3 to enforce this rule.
+
+==================================================
+50. INTER-MODULE CONSISTENCY
+==================================================
+
+All modules must use a shared source of truth.
+
+Do NOT have:
+
+one roles dataset in User Management
+and another roles dataset in Roles Management.
+
+Do NOT have:
+
+one organization tree for users
+and another tree for future objectives.
+
+Do NOT have:
+
+one cycle dataset in list view
+and disconnected local cycle objects in details view.
+
+Relationships must be real within the prototype state/data layer.
+
+==================================================
+51. REFERENTIAL INTEGRITY
+==================================================
+
+Prevent invalid relationships.
+
+Examples:
+
+Do not assign a user to a nonexistent Org Unit.
+
+Do not assign a nonexistent Role.
+
+Do not keep dangling role assignments after role changes.
+
+Do not allow invalid organizational parent relationships.
+
+Do not allow impossible Cycle transitions.
+
+If deletion is implemented for a configuration entity,
+handle references safely.
+
+Do not silently corrupt relationships.
+
+==================================================
+52. DO NOT OVERBUILD DELETION
+==================================================
+
+User accounts should primarily use:
+
+Active / Disabled
+
+rather than physical deletion.
+
+For organizational units and roles,
+do not casually provide destructive delete behavior
+that could invalidate user references.
+
+If deletion is not needed for this prototype stage,
+prefer not to expose it.
+
+Focus on:
+
+create
+view
+edit
+status/integrity
+
+==================================================
+53. SEARCH & FILTER — ACTUAL FUNCTIONALITY
+==================================================
+
+USER LIST:
+
+support:
+
+- text
+- organization
+- role
+- status
+
+CYCLE LIST:
+
+support:
+
+- text
+- type
+- state
+- relevant date/year
+
+Organization tree:
+
+support reasonable navigation/search if tree size makes it useful.
+
+All controls must change the displayed data.
+
+==================================================
+54. ARABIC RTL UX
+==================================================
+
+The whole Phase-2 UI must remain:
+
+- Arabic-first
+- RTL
+- responsive
+- professional
+- institutional
+- consistent with Phase 1
+
+Correctly handle:
+
+- icon direction
+- chevrons
+- breadcrumbs
+- dropdown alignment
+- table actions
+- dialogs
+- forms
+- date controls
+- pagination
+- tree indentation
+
+Do not accidentally create LTR patterns inside RTL pages.
+
+==================================================
+55. DATA-DENSE ENTERPRISE UX
+==================================================
+
+This is an institutional system.
+
+For desktop administration pages:
+
+Prefer clear information density.
+
+Use tables for tabular datasets.
+
+Do not convert every row into a giant card.
+
+Use:
+
+- table
+- toolbar
+- search
+- filters
+- badges
+- dialogs
+- drawers
+- detail pages
+
+where appropriate.
+
+==================================================
+56. REUSABLE STATUS SYSTEM
+==================================================
+
+Centralize status badges.
+
+USER:
+
+فعال
+موقوف
+
+CYCLE:
+
+مسودة
+نشطة
+مكتملة
+
+Do not separately invent status presentation on every page.
+
+Use one reusable architecture.
+
+==================================================
+57. FORMS
+==================================================
+
+All forms must support:
+
+- clear field labels
+- required-state indication
+- inline validation
+- submission loading
+- duplicate submission prevention
+- error feedback
+- success feedback
+- cancel/back flow
+- unsaved-change protection if already supported or easy to implement consistently
+
+Do not use raw browser alert/confirm
+when the design system already has dialogs/toasts.
+
+==================================================
+58. CONFIRMATION ACTIONS
+==================================================
+
+Use confirmation dialogs for meaningful state changes, including:
+
+- تعطيل مستخدم
+- تفعيل مستخدم if appropriate
+- تفعيل دورة
+- إغلاق/إكمال دورة
+- structural organizational changes that may affect descendants
+
+The dialog must state the action clearly.
+
+Avoid generic:
+
+"Are you sure?"
+
+Use contextual Arabic messaging.
+
+==================================================
+59. EMPTY STATES
+==================================================
+
+Provide meaningful empty states.
+
+Examples:
+
+No users in scope:
+
+"لا يوجد مستخدمون ضمن النطاق الحالي."
+
+No roles:
+
+"لا توجد أدوار متاحة."
+
+No child units:
+
+"لا توجد جهات تنظيمية تابعة."
+
+No cycles:
+
+"لم يتم إنشاء دورات OKR بعد."
+
+No goals in Cycle:
+
+"لم تتم إضافة أهداف إلى هذه الدورة بعد."
+
+Do not use generic blank whitespace.
+
+==================================================
+60. LOADING AND ERROR STATES
+==================================================
+
+Reuse Phase-1 loading/error architecture.
+
+Every important asynchronous or stateful screen must support:
+
+- loading
+- successful result
+- empty
+- failure
+
+Avoid layout jumps where reasonable.
+
+Do not leave buttons active during critical save operations.
+
+==================================================
+61. DEMO / PROTOTYPE DATA
+==================================================
+
+Provide enough realistic Arabic sample data
+to demonstrate all Phase-2 rules.
+
+Example organizational structure:
+
+المؤسسة
+├── الإدارة العليا
+├── قطاع تقنية المعلومات
+│   ├── إدارة تطوير الأنظمة
+│   │   ├── فريق تطبيقات الويب
+│   │   └── فريق تطبيقات الجوال
+│   └── إدارة البنية التحتية
+├── قطاع الشؤون الإدارية
+│   ├── إدارة الموارد البشرية
+│   └── إدارة الخدمات
+└── فرع آخر إن احتجت لشرح النطاق
+
+This is DEMO DATA only.
+
+Do not hardcode the hierarchy model around this exact structure.
+
+==================================================
+62. DEMO USERS
+==================================================
+
+Provide users across different organizational branches.
+
+Include examples of:
+
+- System Administrator
+- Top Management
+- Department Manager
+- Team Leader
+- Employee
+- user with multiple roles
+- disabled user
+
+Use realistic Arabic names/content.
+
+Do not use:
+
+User 1
+Test User
+Department A
+
+==================================================
+63. DEMO ROLES / PERMISSIONS
+==================================================
+
+Seed roles so we can demonstrate:
+
+- full account administration
+- organization management
+- cycle management
+- scoped employee/member visibility
+- standard employee access
+- multi-role permission union
+
+Do not grant every role every permission.
+
+The demo data must reveal authorization differences.
+
+==================================================
+64. DEMO CYCLES
+==================================================
+
+Seed enough cycles to show lifecycle differences.
+
+For example:
+
+- دورة في حالة مسودة
+- دورة نشطة
+- دورة مكتملة
+
+Use realistic dates.
+
+Do not fake progress/goal data yet.
+
+==================================================
+65. PROTOTYPE PERSISTENCE
+==================================================
+
+Operations must actually persist during prototype usage
+according to the existing project's data approach.
+
+These actions must work:
+
+- create user
+- edit user
+- change user status
+- assign roles
+- move user organizationally
+- create role
+- edit role
+- change permissions
+- create organization unit
+- edit organization unit
+- re-parent a valid organization unit
+- create Cycle
+- edit Draft Cycle
+- activate Cycle
+- complete Cycle
+- search/filter
+
+If there is no backend:
+
+Use the project's centralized prototype persistence strategy,
+for example a well-structured local data/service layer.
+
+Do not scatter localStorage calls across individual components.
+
+If a backend already exists:
+
+continue using it.
+
+Do not create a second fake persistence system.
+
+==================================================
+66. FUTURE ACTIVITY-DIAGRAM COMPATIBILITY
+==================================================
+
+The future documented Activity flow is approximately:
+
+Top Management
+→ creates higher-level Objective + Key Results
+
+Department Manager
+→ views them
+→ creates a supporting Objective
+→ links it to an upstream Key Result
+→ sends it for review
+
+Top Management / authorized reviewer
+→ approves
+OR
+→ returns for modification with reason
+
+Department Manager
+→ creates individual Objective
+→ assigns to Employee
+
+Employee
+→ reviews assignment
+→ accepts
+OR
+→ rejects with reason
+
+Employee
+→ executes
+→ submits progress report/evidence
+
+Authorized Manager/Reviewer
+→ reviews evidence
+→ records approved actual value
+
+System
+→ recalculates progress
+
+PHASE 2 MUST NOT IMPLEMENT THIS WORKFLOW.
+
+But verify that:
+
+- Users exist
+- Roles exist
+- Permissions exist
+- Org hierarchy exists
+- Scope exists
+- Cycles exist
+
+in a way that Phase 3/4 can implement this workflow directly.
+
+If Phase 3 would require rewriting Phase-2 foundations,
+your architecture is wrong.
+
+==================================================
+67. PHASE-2 ROUTE STRUCTURE
+==================================================
+
+Use clean routes compatible with the existing project.
+
+Exact naming may follow the current codebase,
+but conceptually support:
+
+/users
+/users/new
+/users/:id
+/users/:id/edit
+
+/roles
+/roles/new
+/roles/:id
+/roles/:id/edit
+
+/organization
+/organization/:id
+
+/cycles
+/cycles/new
+/cycles/:id
+/cycles/:id/edit
+
+Do not create strange duplicate route conventions.
+
+Keep protected routes behind authentication.
+
+Apply permissions to protected route access.
+
+==================================================
+68. NAVIGATION
+==================================================
+
+Activate/add the Phase-2 navigation entries created as placeholders
+during Phase 1.
+
+Examples:
+
+- المستخدمون
+- الأدوار والصلاحيات
+- الهيكل التنظيمي
+- دورات OKR
+
+Navigation must be permission-aware.
+
+If a user cannot access a module,
+do not show a misleading navigation entry.
+
+Do not remove future Phase-3/4 placeholders if the current design uses them;
+leave them clearly unavailable/upcoming where appropriate.
+
+==================================================
+69. MOBILE RESPONSIVENESS
+==================================================
+
+Verify specifically:
+
+User list
+Role permissions
+Organization tree
+Cycle list
+Forms
+Details pages
+Dialogs
+
+on mobile/tablet.
+
+Tables may use:
+
+- controlled horizontal scrolling
+- responsive column reduction
+- alternate list presentation
+
+Use whichever best matches Phase-1 design.
+
+Do not allow broken overflow.
+
+==================================================
+70. SECURITY / SESSION CONSISTENCY
+==================================================
+
+Preserve Phase-1 session/security behavior.
+
+When a user is disabled:
+
+their current/future access must behave consistently
+with the project's authentication abstraction.
+
+Do not leave a disabled user effectively fully usable indefinitely
+if the current architecture can invalidate/check status.
+
+Do not expose permissions only through client-visible cosmetic state
+if the project has server/API enforcement capability.
+
+==================================================
+71. NON-FUNCTIONAL REQUIREMENTS
+==================================================
+
+Maintain the project's documented quality expectations.
+
+USABILITY:
+
+- clear Arabic UI
+- suitable for nontechnical institutional users
+- easy access to functions/data
+- RTL correctness
+
+SECURITY:
+
+- authorization before protected functionality/data
+- safe authenticated-session handling
+- no accidental cross-scope exposure
+
+PERFORMANCE:
+
+- lists and trees should remain responsive
+- avoid unnecessary repeated computations
+- do not create obviously inefficient recursive UI behavior
+
+SCALABILITY:
+
+architecture must allow adding:
+
+- users
+- organization units
+- roles
+- cycles
+
+without structural rewrite.
+
+MAINTAINABILITY:
+
+- modular code
+- shared types
+- centralized rules
+- reusable components
+- avoid duplicated business logic
+
+COMPATIBILITY:
+
+- modern browsers
+- desktop
+- tablet
+- mobile
+- correct Arabic RTL rendering
+
+==================================================
+72. REQUIRED CENTRALIZED BUSINESS SERVICES / LOGIC
+==================================================
+
+Do not bury important business rules in UI components.
+
+Centralize equivalent concepts for:
+
+- effective permission calculation
+- organizational scope resolution
+- hierarchy cycle validation
+- user-account status validation
+- cycle lifecycle validation
+- cycle date validation
+
+Names depend on the stack,
+but the architecture must make the rules testable/reusable.
+
+==================================================
+73. REQUIRED PHASE-2 TEST SCENARIOS
+==================================================
+
+Test all of the following.
+
+TEST 1 — Create User
+
+Authorized actor
+→ opens new user
+→ enters valid information
+→ assigns org unit
+→ assigns role
+→ save
+→ user appears in list
+
+TEST 2 — Duplicate Username
+
+Create another user with existing username
+→ reject
+→ display Arabic validation error
+
+TEST 3 — Disable User
+
+Active user
+→ disable
+→ status becomes موقوف
+→ historical data remains
+→ authentication rejects disabled account
+
+TEST 4 — Reactivate User
+
+Disabled user
+→ authorized reactivation
+→ status becomes فعال
+
+TEST 5 — Multiple Roles
+
+Assign two roles
+→ calculate union of permissions
+→ no duplicate effective permissions
+
+TEST 6 — Organizational Scope
+
+Manager in Unit A
+→ views users
+→ can see own permitted branch/descendants
+→ cannot see unrelated Unit B users
+
+TEST 7 — Create Organization Unit
+
+Authorized actor
+→ select parent
+→ create child
+→ tree updates correctly
+
+TEST 8 — Invalid Self Parent
+
+Attempt:
+A.parent = A
+→ reject
+
+TEST 9 — Circular Hierarchy
+
+A → B → C
+
+Attempt:
+A.parent = C
+
+→ reject
+
+TEST 10 — Move User
+
+User currently in Org A
+→ move to Org B
+→ current affiliation = Org B
+→ historical affiliation to Org A retained
+
+TEST 11 — Create Cycle
+
+Authorized actor
+→ Create Cycle
+→ valid data
+→ saved
+→ status automatically = مسودة
+
+TEST 12 — Invalid Cycle Dates
+
+End <= Start
+→ reject
+→ clear Arabic validation
+
+TEST 13 — Activate Cycle
+
+Draft
+→ click تفعيل الدورة
+→ confirmation
+→ Active
+
+TEST 14 — Complete Cycle
+
+Active
+→ authorized manual close
+→ confirmation
+→ Completed
+
+TEST 15 — Invalid Reverse Transition
+
+Completed
+→ attempt activation/edit transition that violates lifecycle
+→ reject / action absent
+
+TEST 16 — Unauthorized User
+
+Employee without management permissions
+→ cannot access Users/Roles/Organization/Cycle management routes
+
+TEST 17 — UI Permission Hiding
+
+Unauthorized operations
+→ action not presented
+
+TEST 18 — Direct Route Protection
+
+Manually enter protected URL
+→ permission check rejects access
+
+==================================================
+74. DO NOT IMPLEMENT PHASE 3
+==================================================
+
+STRICTLY DO NOT IMPLEMENT:
+
+- Objective creation
+- Key Result creation
+- objective lifecycle
+- objective review
+- objective approval
+- objective return-for-edit
+- supporting objective creation
+- alignment to parent Key Result
+- individual objective assignment
+- employee accept/reject
+- reject reason
+- objective contributors
+
+Those belong to Phase 3.
+
+Even if you create data types/placeholders needed for future compatibility,
+do not expose working Phase-3 business features.
+
+==================================================
+75. DO NOT IMPLEMENT PHASE 4
+==================================================
+
+STRICTLY DO NOT IMPLEMENT:
+
+- evidence submission
+- progress-update requests
+- update review
+- actual-value approval
+- Key Result progress formulas
+- Objective progress calculation
+- expected progress
+- performance classification
+- automatic recalculation chain
+- overdue-update alert engine
+- performance alerts
+- manual operational alerts
+
+Those belong to Phase 4.
+
+==================================================
+76. DO NOT IMPLEMENT PHASE 5
+==================================================
+
+STRICTLY DO NOT IMPLEMENT:
+
+- final analytical Dashboard
+- production reporting
+- PDF/export workflow
+- spreadsheet exports
+- final institutional analytics
+- final settings module
+
+Those belong to Phase 5.
+
+==================================================
+77. IMPORTANT — NO FAKE FEATURES
+==================================================
+
+Do not create buttons that do nothing.
+
+Do not create filters that do nothing.
+
+Do not create fake success messages for changes that were not persisted.
+
+Do not create pages merely to look complete.
+
+Phase 2 should be smaller than the full product,
+but everything included in Phase 2 must actually work.
+
+==================================================
+78. IMPORTANT — NO GENERIC OKR ASSUMPTIONS
+==================================================
+
+Do NOT add features such as:
+
+- check-ins unrelated to specified workflow
+- arbitrary scoring systems
+- CFR
+- KPI libraries
+- employee ranking
+- gamification
+- rewards
+- comments/social feeds
+- generic task management
+- kanban boards
+
+unless they are explicitly required in a later phase.
+
+Do not expand product scope.
+
+==================================================
+79. REQUIRED TRACEABILITY
+==================================================
+
+Before finishing,
+verify that the implementation maps correctly:
+
+USER MANAGEMENT
+→ System Administrator / authorized scoped user
+→ Users
+→ Roles
+→ Account state
+→ Organizational assignment
+
+ROLE MANAGEMENT
+→ Roles
+→ Permissions
+→ Multiple roles
+→ Union of permissions
+
+ORGANIZATION
+→ hierarchical Parent/Child tree
+→ organizational scope
+→ future alignment/approval routing
+
+CYCLES
+→ Top Management / authorized users
+→ Create
+→ Draft
+→ Activate
+→ Active
+→ Complete
+→ Completed
+
+Do not implement behavior that contradicts these relationships.
+
+==================================================
+80. PHASE-2 DEFINITION OF DONE
+==================================================
+
+Phase 2 is complete only when ALL of the following are working:
+
+USER MANAGEMENT
+
+✓ User list
+✓ User search
+✓ User filters
+✓ Create user
+✓ Edit user
+✓ View user
+✓ Active/Disabled states
+✓ Username validation
+✓ Organization association
+✓ Organization history foundation
+✓ Multiple roles
+✓ Effective permissions
+
+ROLES/PERMISSIONS
+
+✓ Roles list
+✓ Create role
+✓ Edit role
+✓ Role detail
+✓ Permission grouping
+✓ Permission enforcement
+✓ Multi-role permission union
+
+ORGANIZATION
+
+✓ Dynamic N-level structure
+✓ Parent/Child relationships
+✓ Tree/list interface
+✓ Unit create
+✓ Unit edit
+✓ Detail view
+✓ Self-parent prevention
+✓ Circular-reference prevention
+✓ Stable IDs
+✓ Organizational-scope resolution
+
+OKR CYCLES
+
+✓ Cycle list
+✓ Create cycle
+✓ Edit cycle according to lifecycle
+✓ Cycle details
+✓ Start/end validation
+✓ Draft as initial state
+✓ Draft → Active
+✓ Active → Completed
+✓ invalid transition prevention
+✓ manual completion
+✓ automatic-end-date behavior represented correctly
+✓ Completed historical/read-only behavior
+
+SYSTEM
+
+✓ Permission-aware navigation
+✓ Protected routes
+✓ Scope-aware data access
+✓ Arabic RTL
+✓ Responsive design
+✓ Loading states
+✓ Error states
+✓ Empty states
+✓ Confirmation flows
+✓ Persistence
+✓ No dead buttons
+✓ No console errors
+✓ No obvious runtime errors
+
+==================================================
+81. FINAL TECHNICAL VERIFICATION
+==================================================
+
+Before finishing:
+
+Run the project.
+
+Run available build/typecheck/lint/tests.
+
+Inspect browser console.
+
+Verify:
+
+- no compile errors
+- no broken imports
+- no TypeScript errors
+- no obvious runtime exceptions
+- no broken routes
+- no incorrect RTL alignment
+- no broken mobile layout
+- no unauthorized data leakage
+- no invalid hierarchy
+- no invalid lifecycle transitions
+- no dead UI actions
+
+Fix discovered issues before reporting completion.
+
+==================================================
+82. FINAL REPORT REQUIRED
+==================================================
+
+When Phase 2 implementation is complete,
+DO NOT start Phase 3.
+
+Return a concise but technically useful completion report containing:
+
+1. Phase 2 implementation summary
+
+2. Files/modules created or modified
+
+3. User Management implemented
+
+4. Roles and Permissions implemented
+
+5. How multiple-role permission union works
+
+6. How organizational scope works
+
+7. Organizational Structure implementation
+
+8. How circular hierarchy prevention works
+
+9. User organizational-history approach
+
+10. OKR Cycle implementation
+
+11. Cycle state-machine rules implemented
+
+12. Permission guards/routes implemented
+
+13. Seed/demo accounts and data available
+
+14. Test scenarios executed and their results
+
+15. Build/typecheck/lint/test results
+
+16. Known limitations, if any
+
+17. Explicit list of features intentionally deferred to Phase 3
+
+18. Confirmation that Phase 3 was NOT started
+
+==================================================
+FINAL INSTRUCTION
+==================================================
+
+Do not merely propose a plan.
+
+Actually inspect the current repository,
+implement Phase 2,
+run the application,
+test the workflows,
+fix defects,
+and leave the repository in a clean working state.
+
+Do not begin Phase 3.

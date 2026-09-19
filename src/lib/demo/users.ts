@@ -89,6 +89,43 @@ export const DEMO_USERS: User[] = [
     status: "disabled",
     employeeId: "EMP-1006",
   },
+  // === مستخدمو الطور الثاني (لإظهار سيناريوهات النطاق وتعدد الأدوار) ===
+  {
+    id: "u-007",
+    username: "r.alzahrani",
+    fullName: "ريم بنت عبدالله الزهراني",
+    email: "r.alzahrani@org.dev",
+    initials: "رز",
+    role: "department_manager",
+    organizationalUnit: "إدارة الموارد البشرية",
+    jobTitle: "مدير إدارة الموارد البشرية",
+    status: "active",
+    employeeId: "EMP-1007",
+  },
+  {
+    id: "u-008",
+    username: "h.almutairi",
+    fullName: "حسن بن فهد المطيري",
+    email: "h.almutairi@org.dev",
+    initials: "حم",
+    role: "employee",
+    organizationalUnit: "فريق تطبيقات الجوال",
+    jobTitle: "مطوّر تطبيقات أول",
+    status: "active",
+    employeeId: "EMP-1008",
+  },
+  {
+    id: "u-009",
+    username: "t.alghamdi",
+    fullName: "طارق بن سعد الغامدي",
+    email: "t.alghamdi@org.dev",
+    initials: "طغ",
+    role: "team_lead",
+    organizationalUnit: "إدارة مكتب المشاريع",
+    jobTitle: "قائد فريق مكتب المشاريع",
+    status: "active",
+    employeeId: "EMP-1009",
+  },
 ];
 
 /**

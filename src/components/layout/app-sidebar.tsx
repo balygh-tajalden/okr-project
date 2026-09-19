@@ -17,18 +17,13 @@ import {
   SidebarSeparator,
   useSidebar,
 } from "@/components/ui/sidebar";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { SystemLogo } from "./system-logo";
 import { NAV_SECTIONS, type NavItem } from "@/lib/nav/navigation";
-import { useCurrentUser } from "@/lib/auth/session";
-import { can, hasAnyRole } from "@/lib/auth/permissions";
+import { useCurrentInstitutionalUser } from "@/hooks/use-current-institutional-user";
 import { StatusBadge } from "@/components/common/status-badge";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { Permission } from "@/lib/auth/permissions-v2";
 
 /**
  * AppSidebar
@@ -37,7 +32,7 @@ import { cn } from "@/lib/utils";
  *
  * الميزات:
  * - قابل للطي (collapsible=icon) مع إظهار tooltips عند الطي.
- * - يقفل التنقّل على الأدوار والصلاحيات (data-driven).
+ * - يقفل التنقّل على الأدوار والصلاحيات (data-driven, Phase 2 v2 permissions).
  * - يميّز العنصر النشط تلقائياً حسب المسار الحالي.
  * - يدعم الحالة "قريباً" للأقسام القادمة.
  *
@@ -45,7 +40,7 @@ import { cn } from "@/lib/utils";
  */
 export function AppSidebar() {
   const pathname = usePathname();
-  const user = useCurrentUser();
+  const { user, can, canAny } = useCurrentInstitutionalUser();
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
 
@@ -60,7 +55,7 @@ export function AppSidebar() {
       <SidebarContent className="px-2">
         {NAV_SECTIONS.map((section) => {
           const visibleItems = section.items.filter((item) =>
-            isItemVisible(item, user)
+            isItemVisible(item, user, can, canAny)
           );
           if (visibleItems.length === 0) return null;
           return (
@@ -141,15 +136,19 @@ export function AppSidebar() {
 }
 
 /** هل العنصر مرئي للمستخدم الحالي؟ */
-function isItemVisible(item: NavItem, user: ReturnType<typeof useCurrentUser>): boolean {
+function isItemVisible(
+  item: NavItem,
+  user: ReturnType<typeof useCurrentInstitutionalUser>["user"],
+  can: (p: Permission) => boolean,
+  canAny: (ps: Permission[]) => boolean
+): boolean {
   if (!user) return false;
   if (user.status !== "active") return false;
-  if (item.requiredRoles && !hasAnyRole(user, item.requiredRoles)) {
+  if (item.requiredPermissions && !item.requiredPermissions.every((p) => can(p))) {
     return false;
   }
-  if (item.requiredPermissions) {
-    const hasAny = item.requiredPermissions.some((p) => can(user, p));
-    if (!hasAny) return false;
+  if (item.requiredAnyPermission && !canAny(item.requiredAnyPermission)) {
+    return false;
   }
   return true;
 }

@@ -16,9 +16,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { useCurrentUser } from "@/lib/auth/session";
 import { useAuthSession } from "@/lib/auth/session";
-import { ROLE_LABELS } from "@/lib/auth/types";
+import { useCurrentInstitutionalUser } from "@/hooks/use-current-institutional-user";
+import { useInstitutionalStore } from "@/lib/data/store";
+import { getUserPrimaryUnitName, getUserRoles } from "@/lib/services/institutional";
 import {
   User as UserIcon,
   Settings,
@@ -26,25 +27,30 @@ import {
   ChevronDown,
   ShieldCheck,
 } from "lucide-react";
-import { hasRole } from "@/lib/auth/permissions";
 import { toast } from "sonner";
 
 /**
- * UserMenu
+ * UserMenu (Phase 2)
  * ===================================================================
  * قائمة المستخدم في الترويسة — تعرض:
  * - الأفاتار / الأحرف الأولى من الاسم
  * - اسم المستخدم الكامل
- * - الدور
- * - روابط: الملف الشخصي، الإعدادات، إدارة النظام (لمن يملك الصلاحية)
+ * - الدور الأساسي (+ عدّاد الأدوار الإضافية إن وجدت)
+ * - روابط: الملف الشخصي، الإعدادات، إدارة النظام (لمن يملك system.admin)
  * - إجراء: تسجيل الخروج
  */
 export function UserMenu() {
-  const user = useCurrentUser();
+  const { user, can, roles } = useCurrentInstitutionalUser();
+  const orgUnits = useInstitutionalStore((s) => s.orgUnits);
   const clearSession = useAuthSession((s) => s.clearSession);
   const router = useRouter();
 
   if (!user) return null;
+
+  const userRoles = getUserRoles(user, roles);
+  const primaryUnitName = getUserPrimaryUnitName(user, orgUnits);
+  const primaryRoleName = userRoles[0]?.name ?? "—";
+  const hasAdditionalRoles = userRoles.length > 1;
 
   const handleLogout = () => {
     clearSession();
@@ -71,7 +77,8 @@ export function UserMenu() {
               {user.fullName}
             </span>
             <span className="text-[11px] text-muted-foreground">
-              {ROLE_LABELS[user.role]}
+              {primaryRoleName}
+              {hasAdditionalRoles && ` +${userRoles.length - 1}`}
             </span>
           </div>
           <ChevronDown className="size-4 text-muted-foreground" />
@@ -85,14 +92,19 @@ export function UserMenu() {
           <span className="text-xs text-muted-foreground font-normal">
             {user.email}
           </span>
-          <div className="mt-1 flex items-center gap-2">
+          <div className="mt-1 flex flex-wrap items-center gap-1.5">
             <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
-              {ROLE_LABELS[user.role]}
+              {primaryRoleName}
             </span>
-            <span className="text-[11px] text-muted-foreground">
-              {user.organizationalUnit}
-            </span>
+            {hasAdditionalRoles && (
+              <span className="text-[11px] text-muted-foreground">
+                +{userRoles.length - 1} دور إضافي
+              </span>
+            )}
           </div>
+          <span className="mt-0.5 text-[11px] text-muted-foreground">
+            {primaryUnitName}
+          </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
@@ -101,7 +113,7 @@ export function UserMenu() {
             <span>ملفي الشخصي</span>
           </Link>
         </DropdownMenuItem>
-        {hasRole(user, "system_admin") && (
+        {can("system.admin") && (
           <DropdownMenuItem asChild>
             <Link href="/app/admin">
               <ShieldCheck className="size-4" />

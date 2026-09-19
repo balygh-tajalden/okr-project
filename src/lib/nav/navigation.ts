@@ -1,4 +1,4 @@
-import type { Permission, Role } from "@/lib/auth/types";
+import type { Permission } from "@/lib/auth/permissions-v2";
 import type { LucideIcon } from "lucide-react";
 import {
   LayoutDashboard,
@@ -15,17 +15,19 @@ import {
   Settings,
   ShieldCheck,
   User as UserIcon,
+  KeyRound,
 } from "lucide-react";
 
 /**
- * إعدادات التنقّل (Navigation Configuration)
+ * إعدادات التنقّل (Navigation Configuration) — Phase 2
  * ===================================================================
  * مصدر بيانات موحّد لقائمة التنقّل في الشريط الجانبي.
  *
  * مبادئ:
  * - التنقّل مُدار بالبيانات (data-driven) بدل التكرار في كل مكوّن.
  * - كل عنصر يحمل: مفتاحاً، مساراً، أيقونة، حالة (متاح/قادم)،
- *   والصلاحيات/الأدوار المطلوبة لعرضه.
+ *   والصلاحيات المطلوبة لعرضه.
+ * - يستخدم نظام صلاحيات Phase 2 (permissions-v2): users.view, cycles.view...
  *
  * - العناصر القادمة (status = "upcoming") تُعرض مع شارة "قريباً"
  *   وتُسلك إلى صفحة مكان مؤقتة دون منطق أعمال فعلي.
@@ -40,10 +42,10 @@ export interface NavItem {
   href: string;
   icon: LucideIcon;
   status: NavItemStatus;
-  /** الصلاحيات المطلوبة لرؤية العنصر — إن لم تُحدد فالعنصر عام */
+  /** الصلاحيات المطلوبة لرؤية العنصر. البديل: requiredAnyPermission */
   requiredPermissions?: Permission[];
-  /** الأدوار المسموح لها برؤية العنصر — بديل عن الصلاحيات */
-  requiredRoles?: Role[];
+  /** إن توفّر أي صلاحية من هذه القائمة يُعرض العنصر */
+  requiredAnyPermission?: Permission[];
 }
 
 export interface NavSection {
@@ -54,9 +56,8 @@ export interface NavSection {
 
 /**
  * الأقسام الرئيسية للتنقّل.
- *
- * ملاحظة: الأقسام القادمة (تحديثات الإنجاز، التقارير، إلخ) تشير إلى صفحات
- * placeholder ولن تحتوي على منطق أعمال في هذا الطور.
+ * Phase 2 فعّال: المستخدمون، الأدوار، الهيكل التنظيمي، دورات OKR
+ * القادمة (Phase 3+): الأهداف، المراجعات، التحديثات، التنبيهات، التقارير، لوحة المعلومات
  */
 export const NAV_SECTIONS: NavSection[] = [
   {
@@ -98,8 +99,8 @@ export const NAV_SECTIONS: NavSection[] = [
         description: "إدارة دورات التخطيط الفصلية والسنوية",
         href: "/app/cycles",
         icon: Repeat,
-        status: "upcoming",
-        requiredPermissions: ["okr.cycles.view"],
+        status: "active",
+        requiredAnyPermission: ["cycles.view", "cycles.create"],
       },
       {
         key: "goals",
@@ -108,7 +109,7 @@ export const NAV_SECTIONS: NavSection[] = [
         href: "/app/goals",
         icon: Target,
         status: "upcoming",
-        requiredPermissions: ["okr.goals.view"],
+        requiredAnyPermission: ["goals.view"],
       },
       {
         key: "reviews",
@@ -117,7 +118,7 @@ export const NAV_SECTIONS: NavSection[] = [
         href: "/app/reviews",
         icon: GitPullRequestArrow,
         status: "upcoming",
-        requiredPermissions: ["okr.review.request", "okr.review.approve"],
+        requiredAnyPermission: ["reviews.request", "reviews.approve"],
       },
       {
         key: "updates",
@@ -126,7 +127,7 @@ export const NAV_SECTIONS: NavSection[] = [
         href: "/app/updates",
         icon: Activity,
         status: "upcoming",
-        requiredPermissions: ["okr.progress.view"],
+        requiredAnyPermission: ["progress.view", "progress.update"],
       },
     ],
   },
@@ -140,8 +141,8 @@ export const NAV_SECTIONS: NavSection[] = [
         description: "الإدارات والأقسام والفرق",
         href: "/app/organization",
         icon: Network,
-        status: "upcoming",
-        requiredPermissions: ["org.structure.view"],
+        status: "active",
+        requiredPermissions: ["organization.view"],
       },
       {
         key: "users",
@@ -149,8 +150,17 @@ export const NAV_SECTIONS: NavSection[] = [
         description: "إدارة حسابات المستخدمين",
         href: "/app/users",
         icon: Users,
-        status: "upcoming",
-        requiredPermissions: ["system.users.manage"],
+        status: "active",
+        requiredPermissions: ["users.view"],
+      },
+      {
+        key: "roles",
+        label: "الأدوار والصلاحيات",
+        description: "إدارة الأدوار والصلاحيات",
+        href: "/app/roles",
+        icon: KeyRound,
+        status: "active",
+        requiredPermissions: ["roles.view"],
       },
     ],
   },
@@ -203,7 +213,7 @@ export const NAV_SECTIONS: NavSection[] = [
         href: "/app/admin",
         icon: ShieldCheck,
         status: "active",
-        requiredRoles: ["system_admin"],
+        requiredPermissions: ["system.admin"],
       },
     ],
   },
