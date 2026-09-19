@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import type {
   InstitutionalState,
   User,
@@ -259,33 +259,24 @@ export const useInstitutionalStore = create<InstitutionalStore>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 4,
-      storage: {
-        getItem: (name) => {
-          try {
-            const raw = localStorage.getItem(name);
-            return raw ? JSON.parse(raw) : null;
-          } catch {
-            return null;
-          }
-        },
-        setItem: (name, value) => {
-          try {
-            localStorage.setItem(name, JSON.stringify(value));
-          } catch {
-            /* ignore quota */
-          }
-        },
-        removeItem: (name) => {
-          try {
-            localStorage.removeItem(name);
-          } catch {
-            /* ignore */
-          }
-        },
-      },
+      version: 5,
+      storage: createJSONStorage(() => {
+        try {
+          return {
+            getItem: (name) => localStorage.getItem(name),
+            setItem: (name, value) => localStorage.setItem(name, value),
+            removeItem: (name) => localStorage.removeItem(name),
+          };
+        } catch {
+          return {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {},
+          };
+        }
+      }),
       // عند تغيير الإصدار: استبدل البيانات بالنسخة الأولية الجديدة
-      migrate: () => ({ state: { ...SEED_DATA }, version: 4 }),
+      migrate: () => ({ ...SEED_DATA }),
     }
   )
 );

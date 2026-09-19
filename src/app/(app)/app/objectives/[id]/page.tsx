@@ -31,6 +31,25 @@ import {
 import { KeyResultCard } from "@/components/common/key-result-card";
 import { ReviewHistoryTimeline } from "@/components/common/review-history-timeline";
 import { AlignmentPath } from "@/components/common/alignment-path";
+import { ExecutionPanel } from "@/components/common/execution-panel";
+import {
+  UpdateRequestStatusBadge,
+  EvidenceList,
+} from "@/components/common/phase4-badges";
+import { usePhase4Store, getEvidenceForUpdateRequest } from "@/lib/data/phase4-store";
+import {
+  isObjectiveExecutable,
+  canSubmitUpdateRequest,
+  canCloseObjective,
+} from "@/lib/services/phase4-authorization";
+import {
+  calculateObjectiveProgress,
+  calculateExpectedProgress,
+  calculatePerformanceStatus,
+  calculateKRProgress,
+  getLatestApprovedValue,
+  formatProgress,
+} from "@/lib/services/phase4-calculations";
 import { useCurrentInstitutionalUser } from "@/hooks/use-current-institutional-user";
 import { useInstitutionalStore } from "@/lib/data/store";
 import {
@@ -64,6 +83,7 @@ import {
   Inbox,
   AlertTriangle,
   Sparkles,
+  Activity,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useState as useReactState } from "react";
@@ -89,15 +109,21 @@ function ObjectiveDetails({ objectiveId }: { objectiveId: string }) {
   const cycles = useInstitutionalStore((s) => s.cycles);
 
   const objective = usePhase3Store((s) => s.objectives.find((o) => o.id === objectiveId));
+  const allObjectives = usePhase3Store((s) => s.objectives);
   const allKeyResults = usePhase3Store((s) => s.keyResults);
   const setObjectiveStatus = usePhase3Store((s) => s.setObjectiveStatus);
   const addReviewEvent = usePhase3Store((s) => s.addReviewEvent);
   const createAssignment = usePhase3Store((s) => s.createAssignment);
 
+  // ===== Phase 4: hooks (تُستدعى قبل أي return مبكر) =====
+  const updateRequests = usePhase4Store((s) => s.updateRequests);
+  const allReviewEvents = usePhase3Store((s) => s.reviewEvents);
+
   const [confirmAction, setConfirmAction] = useState<
-    null | "submit" | "approve" | "return"
+    null | "submit" | "approve" | "return" | "close"
   >(null);
   const [returnReason, setReturnReason] = useState("");
+  const [closeReason, setCloseReason] = useState("");
   const [showAssignDialog, setShowAssignDialog] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState("");
 
@@ -134,7 +160,7 @@ function ObjectiveDetails({ objectiveId }: { objectiveId: string }) {
     ? allKeyResults.find((k) => k.id === objective.upstreamKeyResultId)
     : undefined;
   const upstreamObjective = upstreamKR
-    ? usePhase3Store.getState().objectives.find((o) => o.id === upstreamKR.objectiveId)
+    ? allObjectives.find((o) => o.id === upstreamKR.objectiveId)
     : undefined;
   const upstreamOrgUnit = upstreamObjective
     ? orgUnits.find((u) => u.id === upstreamObjective.orgUnitId)
@@ -157,7 +183,58 @@ function ObjectiveDetails({ objectiveId }: { objectiveId: string }) {
 
   const executionMsg = cycle ? getExecutionReadinessMessage(objective, cycle) : null;
 
-  // التحقق من جاهزية الإرسال
+  // ===== Phase 4: التنفيذ والتقدّم =====
+  const allObjectivesForCalc = allObjectives; // كل الأهداف للحساب الكامل
+
+  const execCheck = cycle ? isObjectiveExecutable(objective, cycle) : { eligible: false, reason: "الدورة غير موجودة." };
+  const submitUpdateCheck = canSubmitUpdateRequest(currentUser, roles, objective);
+  const canSubmitUpdate = execCheck.eligible && submitUpdateCheck.canSubmit && can("progress.update");
+
+  // حساب التقدّم الفعلي والمتوقّع
+  const approvalTimestamp = allReviewEvents.find(
+    (e) => e.objectiveId === objective.id && e.eventType === "approved"
+  )?.at;
+  let actualProgress = 0;
+  let expectedProgress = 0;
+  let expectedProgressData = { expected: 0, effectiveStart: "", effectiveEnd: "" };
+  let performanceStatus: "advanced" | "on_track" | "delayed" | "stalled" | undefined;
+  try {
+    actualProgress = calculateObjectiveProgress(
+      objective,
+      allKeyResults,
+      updateRequests,
+      allObjectivesForCalc
+    );
+    if (cycle) {
+      const epd = calculateExpectedProgress(objective, cycle, approvalTimestamp, undefined);
+      expectedProgress = epd.expected;
+      expectedProgressData = epd;
+    }
+    if (execCheck.eligible) {
+      performanceStatus = calculatePerformanceStatus(actualProgress, expectedProgress);
+    }
+  } catch (e) {
+    console.error("Phase 4 calculation error:", e);
+  }
+
+  // آخر تحديث معتمد للهدف
+  const lastApprovedUpdate = updateRequests
+    .filter((r) => r.objectiveId === objective.id && r.status === "approved" && r.reviewedAt)
+    .sort((a, b) => (b.reviewedAt! < a.reviewedAt! ? -1 : 1))[0];
+
+  // طلبات التحديث المرتبطة بالهدف
+  const objectiveUpdateRequests = updateRequests
+    .filter((r) => r.objectiveId === objective.id)
+    .sort((a, b) => (a.submittedAt < b.submittedAt ? 1 : -1));
+
+  // أهلية الإغلاق اليدوي
+  const closeCheck = cycle
+    ? canCloseObjective(currentUser, roles, objective, orgUnits)
+    : { canClose: false };
+  const canManuallyClose =
+    objective.status === "approved" && closeCheck.canClose;
+
+  // التحقق من جاهزية الإرسال للمراجعة (Phase 3)
   const submissionCheck = cycle
     ? validateObjectiveForSubmission(objective, cycle, allKeyResults)
     : { valid: false, errors: ["الدورة غير موجودة."] };
@@ -200,6 +277,21 @@ function ObjectiveDetails({ objectiveId }: { objectiveId: string }) {
       });
       toast.success("تمت إعادة الهدف للمالك للتعديل.");
       setReturnReason("");
+    } else if (confirmAction === "close") {
+      // إغلاق يدوي للهدف (Phase 4) — يحتاج سبباً
+      if (!closeReason.trim()) {
+        toast.error("سبب الإغلاق مطلوب.");
+        return;
+      }
+      setObjectiveStatus(objective.id, "closed");
+      addReviewEvent({
+        objectiveId: objective.id,
+        eventType: "approved", // نعيد استخدام النوع — الهدف مغلق يدوياً
+        actorUserId: currentUser.id,
+        reason: `إغلاق يدوي: ${closeReason.trim()}`,
+      });
+      toast.success("تم إغلاق الهدف. التقدّم النهائي محفوظ كمرجع تاريخي.");
+      setCloseReason("");
     }
     setConfirmAction(null);
   };
@@ -269,6 +361,23 @@ function ObjectiveDetails({ objectiveId }: { objectiveId: string }) {
               <Button onClick={() => setShowAssignDialog(true)}>
                 <Plus className="size-4" />
                 إسناد لموظف
+              </Button>
+            )}
+            {canSubmitUpdate && (
+              <Button asChild variant="default">
+                <Link href={`/app/objectives/${objective.id}/updates/new`}>
+                  <Activity className="size-4" />
+                  تسجيل تحديث إنجاز
+                </Link>
+              </Button>
+            )}
+            {canManuallyClose && (
+              <Button
+                variant="outline"
+                onClick={() => setConfirmAction("close")}
+              >
+                <CheckCircle2 className="size-4" />
+                إغلاق الهدف
               </Button>
             )}
             {canDelete && (
@@ -389,6 +498,77 @@ function ObjectiveDetails({ objectiveId }: { objectiveId: string }) {
           )}
         </CardContent>
       </Card>
+
+      {/* ===== Execution Panel (Phase 4) ===== */}
+      {objective.status === "approved" && cycle && (
+        <ExecutionPanel
+          actualProgress={actualProgress}
+          expectedProgress={expectedProgress}
+          performanceStatus={performanceStatus}
+          isExecutable={execCheck.eligible}
+          eligibilityReason={execCheck.reason}
+          lastApprovedUpdateAt={lastApprovedUpdate?.reviewedAt}
+          effectiveStart={expectedProgressData.effectiveStart}
+          effectiveEnd={expectedProgressData.effectiveEnd}
+        />
+      )}
+
+      {/* ===== Update Requests History (Phase 4) ===== */}
+      {objectiveUpdateRequests.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Activity className="size-4" />
+              سجل تحديثات الإنجاز ({objectiveUpdateRequests.length})
+            </CardTitle>
+            <CardDescription>
+              كل طلبات تحديث التقدّم لهذا الهدف — معتمدة، مُعادة، أو بانتظار المراجعة.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="divide-y divide-border">
+              {objectiveUpdateRequests.map((r) => {
+                const kr = allKeyResults.find((k) => k.id === r.keyResultId);
+                const submitter = users.find((u) => u.id === r.submitterUserId);
+                return (
+                  <Link
+                    key={r.id}
+                    href={`/app/updates/${r.id}`}
+                    className="flex items-start justify-between gap-3 p-3 hover:bg-muted/30 transition-colors"
+                  >
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-medium text-foreground line-clamp-1">
+                          {kr?.title ?? "—"}
+                        </span>
+                        <UpdateRequestStatusBadge status={r.status} size="sm" />
+                      </div>
+                      <div className="text-[11px] text-muted-foreground">
+                        {submitter?.fullName ?? "—"} • {formatDateTime(r.submittedAt)}
+                      </div>
+                      {r.status === "approved" && r.approvedValue && (
+                        <div className="text-[11px] text-success">
+                          القيمة المعتمدة:{" "}
+                          {r.approvedValue.kind === "numeric"
+                            ? r.approvedValue.numericValue
+                            : r.approvedValue.binaryValue
+                              ? "تحقق"
+                              : "لم يتحقق"}
+                        </div>
+                      )}
+                      {r.status === "returned" && r.returnReason && (
+                        <div className="text-[11px] text-destructive line-clamp-1">
+                          سبب الإعادة: {r.returnReason}
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* الأهداف الداعمة المرتبطة */}
       {supportingObjectives.length > 0 && (
@@ -570,6 +750,48 @@ function ObjectiveDetails({ objectiveId }: { objectiveId: string }) {
         </div>
       )}
 
+      {/* نافذة الإغلاق اليدوي (Phase 4) */}
+      {confirmAction === "close" && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle className="text-base">إغلاق الهدف</CardTitle>
+              <CardDescription>
+                سيُغلق "{objective.title}". يُحفظ التقدّم النهائي كمرجع تاريخي. سبب الإغلاق إلزامي.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-1.5">
+                <Label className="text-sm font-medium">
+                  سبب الإغلاق <span className="text-destructive">*</span>
+                </Label>
+                <Textarea
+                  value={closeReason}
+                  onChange={(e) => setCloseReason(e.target.value)}
+                  placeholder="مثال: تحقق الهدف بالكامل، أو تغيّرت الأولويات..."
+                  rows={3}
+                  className="resize-none"
+                  autoFocus
+                />
+              </div>
+              <div className="flex items-center justify-end gap-2 pt-2">
+                <Button variant="ghost" onClick={() => { setConfirmAction(null); setCloseReason(""); }}>
+                  إلغاء
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleAction}
+                  disabled={!closeReason.trim()}
+                >
+                  <CheckCircle2 className="size-4" />
+                  تأكيد الإغلاق
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       {/* نافذة الإسناد */}
       {showAssignDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -657,6 +879,20 @@ function formatDate(iso: string): string {
       year: "numeric",
       month: "long",
       day: "numeric",
+    });
+  } catch {
+    return iso;
+  }
+}
+
+function formatDateTime(iso: string): string {
+  try {
+    return new Date(iso).toLocaleString("ar-SA-u-ca-gregory", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   } catch {
     return iso;

@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import type {
   Objective,
   KeyResult,
@@ -227,30 +227,21 @@ export const usePhase3Store = create<Phase3Store>()(
     {
       name: STORAGE_KEY,
       version: 1,
-      storage: {
-        getItem: (name) => {
-          try {
-            const raw = localStorage.getItem(name);
-            return raw ? JSON.parse(raw) : null;
-          } catch {
-            return null;
-          }
-        },
-        setItem: (name, value) => {
-          try {
-            localStorage.setItem(name, JSON.stringify(value));
-          } catch {
-            /* ignore */
-          }
-        },
-        removeItem: (name) => {
-          try {
-            localStorage.removeItem(name);
-          } catch {
-            /* ignore */
-          }
-        },
-      },
+      storage: createJSONStorage(() => {
+        try {
+          return {
+            getItem: (name) => localStorage.getItem(name),
+            setItem: (name, value) => localStorage.setItem(name, value),
+            removeItem: (name) => localStorage.removeItem(name),
+          };
+        } catch {
+          return {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {},
+          };
+        }
+      }),
     }
   )
 );

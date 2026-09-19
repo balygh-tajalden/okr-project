@@ -1,0 +1,2556 @@
+You are a senior Software Engineer, Product Architect,
+Data/Analytics Engineer, UX Designer,
+QA Engineer, and Full-Stack Prototype Engineer.
+
+You are continuing an existing Arabic institutional OKR system:
+
+"نظام إدارة الأهداف المؤسسية وفق منهجية الأهداف والنتائج الرئيسية (OKR)"
+
+PHASE 1 already implemented:
+- Authentication
+- Arabic RTL application shell
+- protected routing
+- design system
+- session/authorization foundation
+
+PHASE 2 already implemented:
+- Users
+- Roles
+- Permissions
+- Organizational Structure
+- Organizational Scope
+- OKR Cycles
+
+PHASE 3 already implemented:
+- Objectives
+- Key Results
+- Supporting Objectives
+- Alignment
+- Review & Approval
+- Individual Objectives
+- Employee Accept/Reject
+- Objective lifecycle
+
+PHASE 4 already implemented:
+- Progress Update Requests
+- Evidence
+- Update Review & Approval
+- Actual-value source of truth
+- Automatic KR progress calculations
+- Objective progress calculations
+- Cascading recalculation
+- Expected Progress
+- Performance Status
+- Objective closure
+- Alerts & Notifications
+
+DO NOT rebuild previous phases.
+
+Your task is now:
+
+==================================================
+PHASE 5 — FINAL PHASE
+DASHBOARD + SEARCH & FILTERING
++ REPORTS & EXPORT
++ GENERAL SETTINGS
++ END-TO-END INTEGRATION
++ FINAL PROTOTYPE POLISH & QA
+==================================================
+
+The project documentation itself is NOT available to you.
+
+Therefore this prompt contains the authoritative requirements
+for this final phase.
+
+This phase must complete the prototype as one coherent system.
+
+Do NOT introduce unrelated generic OKR features.
+
+==================================================
+1. FIRST — INSPECT THE COMPLETE CURRENT PROJECT
+==================================================
+
+Before implementing Phase 5:
+
+Inspect the entire repository after Phase 4.
+
+Understand and verify:
+
+- authentication/session
+- users
+- roles
+- permissions
+- organizational scope
+- organizational hierarchy
+- OKR Cycles
+- Objectives
+- Key Results
+- alignment
+- Supporting Objectives
+- approval workflow
+- individual assignments
+- progress updates
+- evidence
+- progress calculations
+- expected progress
+- performance status
+- alerts
+- persistence/database/data layer
+- design system
+- routing
+- state management
+- date utilities
+- existing charting libraries
+- export libraries
+- test setup
+
+Do not assume all earlier phases are perfect.
+
+If Phase 5 integration reveals defects from earlier phases
+that prevent documented end-to-end behavior,
+fix those defects.
+
+Do NOT redesign working modules unnecessarily.
+
+==================================================
+2. FINAL PHASE OBJECTIVE
+==================================================
+
+At the end of Phase 5,
+the prototype must demonstrate the entire institutional OKR journey:
+
+User/Organization setup
+→ OKR Cycle
+→ Objective + Key Results
+→ Alignment
+→ Review & Approval
+→ Individual Assignment
+→ Employee Accept/Reject
+→ Execution
+→ Evidence Submission
+→ Update Review
+→ Actual Value Approval
+→ Automatic Progress Calculation
+→ Cascading Progress
+→ Performance Evaluation
+→ Alerts
+→ Dashboard
+→ Search
+→ Reports
+→ Historical View
+
+The result must feel like ONE application,
+not five disconnected development phases.
+
+==================================================
+3. IMPORTANT — DATA STRATEGY
+==================================================
+
+Do NOT automatically replace the project's current data architecture.
+
+Inspect the project first.
+
+IF a real backend/database already exists:
+
+- continue using it
+- use existing entities/tables/APIs
+- create only necessary additions
+- preserve relationships
+- do not create a parallel fake data system
+
+IF the project is intentionally a frontend-only prototype:
+
+- keep one centralized prototype data/persistence layer
+- use realistic seeded demo data
+- persist interactive changes consistently
+- do not scatter hardcoded arrays across pages
+- do not pretend there is a production database when there is not
+
+Do NOT introduce PostgreSQL/MySQL/SQLite solely because this is Phase 5
+unless the existing project architecture already expects it.
+
+This remains a working prototype.
+
+==================================================
+4. DEMO DATA MUST BE CLEARLY DEMO DATA
+==================================================
+
+The prototype may contain realistic seeded/demo institutional data.
+
+It should demonstrate all workflows,
+but it must remain structurally separate from business rules.
+
+Do not hardcode calculations or permissions around sample names.
+
+Provide a clean centralized mechanism for:
+
+- initial seed/demo data
+- optional reset to demo state if appropriate to the current architecture
+
+Do not expose developer/debug controls prominently in the production-style UI.
+
+==================================================
+5. DASHBOARD — BUSINESS PURPOSE
+==================================================
+
+Implement the final management Dashboard.
+
+The Dashboard is:
+
+A MONITORING AND ANALYTICAL VIEW.
+
+It is NOT an operational transaction screen.
+
+Do NOT allow direct actions such as:
+
+- Create Objective
+- Approve Update
+- Submit Evidence
+- Change Actual Value
+
+inside dashboard KPI cards/charts.
+
+Those actions belong to their dedicated workflows.
+
+==================================================
+6. WHO MAY USE THE DASHBOARD?
+==================================================
+
+The Dashboard is available to:
+
+- الإدارة العليا
+- مديرو الإدارات
+
+within their permissions and organizational scope.
+
+The ordinary Employee does NOT receive
+the aggregate management Dashboard by default.
+
+Team/employee users rely primarily on:
+
+- their relevant objective lists
+- search/filtering
+- assigned objectives
+- progress/evidence workflows
+
+unless explicitly granted an equivalent dashboard permission.
+
+==================================================
+7. DASHBOARD AUTHORIZATION
+==================================================
+
+Use:
+
+dashboard.view
+
+or equivalent existing permission.
+
+But permission alone is not enough.
+
+All dashboard data must also obey:
+
+organizational scope.
+
+Example:
+
+Manager of إدارة تقنية المعلومات
+
+must not receive aggregate metrics
+for إدارة الموارد البشرية
+unless their scope permits it.
+
+Apply scope BEFORE aggregation.
+
+Do not calculate global data
+and merely hide some visual rows later.
+
+==================================================
+8. DASHBOARD REQUIRED KPIs
+==================================================
+
+Display at minimum:
+
+1. إجمالي الأهداف ضمن النطاق
+
+2. عدد المشاركين / الموظفين العاملين على الأهداف المعروضة
+
+3. معدل الإنجاز العام المجمع
+
+4. توزيع حالات الأداء:
+   - متقدم
+   - على المسار
+   - متأخر
+   - متعثر
+
+5. إبراز الحالات التي تحتاج إلى متابعة
+
+All values must be calculated from actual prototype data.
+
+Do not hardcode KPI numbers.
+
+==================================================
+9. TOTAL OBJECTIVES
+==================================================
+
+"إجمالي الأهداف" must respect:
+
+- current user's organizational scope
+- selected Cycle
+- selected organizational filter
+- selected period
+- allowed Objective data
+
+Avoid accidental double-counting.
+
+==================================================
+10. PARTICIPANTS COUNT
+==================================================
+
+Calculate unique participants relevant to
+the currently displayed Objective set.
+
+Do not count the same user multiple times
+just because they appear in several Objectives.
+
+Use a clearly defined unique-user calculation.
+
+==================================================
+11. AGGREGATE COMPLETION
+==================================================
+
+Use the already calculated Objective progress values
+from Phase 4.
+
+Do not create a second conflicting progress formula.
+
+The Dashboard consumes authoritative progress results.
+
+Do not manually recalculate from arbitrary raw values
+inside chart components.
+
+==================================================
+12. PERFORMANCE DISTRIBUTION
+==================================================
+
+Display the distribution of:
+
+- متقدم
+- على المسار
+- متأخر
+- متعثر
+
+using current authoritative performance status.
+
+Use an appropriate chart/visual representation
+consistent with the existing design system.
+
+Do not invent new performance categories.
+
+==================================================
+13. ATTENTION-NEEDED VIEW
+==================================================
+
+Highlight Objectives requiring management attention.
+
+At minimum include relevant:
+
+- متأخر
+- متعثر
+
+You may also visually surface meaningful overdue-update conditions
+already produced by Phase 4,
+as long as this does not invent a new performance state.
+
+Provide direct navigation to the Objective details
+when the current user has access.
+
+==================================================
+14. DASHBOARD FILTERS
+==================================================
+
+Support Dashboard filtering by:
+
+- OKR Cycle
+- organizational unit / branch
+- relevant time period
+
+Filters must combine.
+
+Changing filters must update ALL Dashboard metrics consistently:
+
+- KPI cards
+- charts
+- attention list
+
+Do not leave some widgets using stale/global data.
+
+==================================================
+15. ORGANIZATIONAL FILTER RULE
+==================================================
+
+The organizational filter must only expose units
+inside the current user's accessible scope.
+
+Do not allow a manager to choose an unauthorized branch
+through a hidden query parameter or URL.
+
+==================================================
+16. DASHBOARD TIME FILTER
+==================================================
+
+Support a relevant time-period filter
+consistent with stored Objective/Cycle data.
+
+Do not fake a period selector that does not affect metrics.
+
+Keep time filtering clear and understandable.
+
+==================================================
+17. DASHBOARD AUTO-REFLECTION
+==================================================
+
+The Dashboard should reflect approved changes automatically.
+
+Example:
+
+A Progress Update is approved
+→ KR progress changes
+→ Objective progress changes
+→ performance status changes
+→ Dashboard values/charts reflect the new state
+
+No manual "rebuild dashboard" step.
+
+==================================================
+18. DASHBOARD EMPTY STATE
+==================================================
+
+If the selected scope/filter has no Objectives:
+
+show a meaningful Arabic empty state.
+
+Do not show misleading:
+
+0%
+performance distribution charts with invented data.
+
+==================================================
+19. DASHBOARD RESPONSIVENESS
+==================================================
+
+Desktop:
+provide professional management analytics.
+
+Tablet/mobile:
+adapt cards and charts cleanly.
+
+Do not create unreadable tiny charts.
+
+Do not rely on hover-only information.
+
+==================================================
+20. SEARCH & FILTERING — SYSTEM-WIDE PURPOSE
+==================================================
+
+Implement the final detailed search/filter experience.
+
+This is distinct from the aggregate Dashboard.
+
+Search/filtering is the main detailed access mechanism
+for authorized users,
+including employees/team users who do not have
+the management Dashboard.
+
+==================================================
+21. SEARCHABLE ENTITIES
+==================================================
+
+At minimum support detailed search over:
+
+- Objectives
+- Key Results
+
+Use appropriate fields including:
+
+- title
+- description
+
+Results must respect authorization.
+
+==================================================
+22. SEARCH RESULT SCOPE
+==================================================
+
+NEVER display search results outside:
+
+- user's permissions
+- user's organizational scope
+- ownership/assignment rules where relevant
+
+Authorization must be enforced before result delivery/display.
+
+Do not leak titles of inaccessible Objectives.
+
+==================================================
+23. SEARCH FILTERS
+==================================================
+
+Support combinations of:
+
+- OKR Cycle
+- organizational unit / branch
+- date period / year / date range as appropriate
+- Objective lifecycle:
+  - مسودة
+  - قيد المراجعة
+  - معتمد
+  - مغلق
+- performance:
+  - متقدم
+  - على المسار
+  - متأخر
+  - متعثر
+- Objective owner
+- responsible user where relevant
+- KR progress source:
+  - قياس مباشر
+  - أهداف داعمة
+
+Use entity-appropriate filters.
+
+==================================================
+24. COMBINED FILTERING
+==================================================
+
+Users must be able to combine:
+
+text search
++
+multiple filters
+
+Example:
+
+"التحول الرقمي"
++
+Cycle Q3
++
+إدارة تقنية المعلومات
++
+Approved
++
+Delayed
+
+Results must satisfy all active criteria appropriately.
+
+==================================================
+25. FILTER STATE UX
+==================================================
+
+Show active filters clearly.
+
+Support:
+
+- remove one filter
+- clear all
+- result count
+- empty/no-result state
+
+Avoid confusing invisible filter state.
+
+==================================================
+26. SEARCH RESULTS
+==================================================
+
+Display enough information to distinguish results.
+
+For Objectives:
+
+- title
+- Cycle
+- organization
+- owner
+- lifecycle
+- performance
+- progress
+
+For KRs:
+
+- KR title
+- parent Objective
+- source
+- current relevant progress/value
+- organization/Cycle context
+
+Do not overload results with all detail.
+
+==================================================
+27. OPEN SEARCH RESULT
+==================================================
+
+User may open Objective/KR details
+only if authorization remains valid.
+
+Recheck access on navigation/direct URL.
+
+A search result does not grant access by itself.
+
+==================================================
+28. PAGINATION / SCALABILITY
+==================================================
+
+Use the existing list/pagination architecture.
+
+Do not render a huge unbounded list
+if the project already supports pagination.
+
+Search must remain reasonably responsive
+as seeded data grows.
+
+==================================================
+29. REPORTING — PURPOSE
+==================================================
+
+Implement a dedicated Reports module.
+
+Reports are formal structured outputs
+for reviewing and analyzing OKR data.
+
+Reports are separate from:
+
+Dashboard
+= aggregated current analytics
+
+Search
+= detailed interactive navigation
+
+Reports
+= structured view/print/export output
+
+Do not collapse all three into one page.
+
+==================================================
+30. WHO MAY ACCESS REPORTS?
+==================================================
+
+Reports may be available to authorized administrative users such as:
+
+- الإدارة العليا
+- مدير الإدارة
+- authorized Reviewer when explicitly granted report permission
+
+Always use actual permissions + organizational scope.
+
+Do not expose reports globally.
+
+==================================================
+31. REPORTABLE CONTENT
+==================================================
+
+Allow reports covering:
+
+- Objectives
+- Key Results
+- progress levels
+- performance states
+
+Build the report from authoritative system data.
+
+Do not duplicate calculation logic.
+
+==================================================
+32. REPORT FILTERS / SCOPE
+==================================================
+
+Support report scope by:
+
+- Cycle
+- organizational unit
+- period
+- status
+- responsible person
+
+Use combinations where relevant.
+
+The report must clearly state the selected scope.
+
+==================================================
+33. HISTORICAL CYCLE REPORTS
+==================================================
+
+Support reports for previous/completed Cycles.
+
+Historical reports must preserve
+the appropriate historical organizational context.
+
+Do not reinterpret old Objective records
+using only the organization's current structure
+if historical context was stored in earlier phases.
+
+==================================================
+34. REPORT AUTHORIZATION
+==================================================
+
+The report must NEVER contain data
+outside current user's authorized scope.
+
+This includes:
+
+- screen preview
+- print
+- exported documents
+- exported spreadsheets
+
+Export is NOT a bypass around authorization.
+
+==================================================
+35. REPORT PREVIEW
+==================================================
+
+Create a professional report preview.
+
+Include appropriate information such as:
+
+- institution name
+- report title
+- generated date/time
+- Cycle
+- organization/scope
+- selected period
+- applied filters
+- structured report table/content
+
+Do not add unsupported claims or fake totals.
+
+==================================================
+36. PRINTING
+==================================================
+
+Provide a clean printable report output.
+
+Printing should remove inappropriate application chrome such as:
+
+- sidebar
+- navigation
+- interactive buttons
+
+Keep:
+
+- report title
+- scope
+- date
+- data
+- summary where appropriate
+
+Ensure Arabic RTL printing remains correct.
+
+==================================================
+37. DOCUMENT EXPORT
+==================================================
+
+Provide export to a printable document format
+appropriate to the current project architecture.
+
+If a reliable PDF/document export capability already exists,
+use it.
+
+If not,
+implement the safest realistic printable/export path
+available in the current stack.
+
+Do not fake a downloaded file.
+
+==================================================
+38. SPREADSHEET EXPORT
+==================================================
+
+Support spreadsheet/tabular export.
+
+Use a format/library appropriate to the current project.
+
+The exported file must reflect:
+
+THE SAME FILTERED DATA
+currently represented by the report.
+
+Do not export global unfiltered data.
+
+==================================================
+39. EXPORT FILE CONTENT
+==================================================
+
+Spreadsheet/document export should include
+useful metadata where practical:
+
+- report name
+- selected Cycle
+- selected organizational scope
+- date range
+- generated at
+
+Then report records.
+
+Keep Arabic text correctly encoded.
+
+==================================================
+40. EXPORT CONSISTENCY TEST
+==================================================
+
+If visible report = 17 records,
+
+export should not unexpectedly contain 86 records.
+
+Verify consistency between:
+
+- preview
+- print
+- document export
+- spreadsheet export
+
+for the selected scope and filters.
+
+==================================================
+41. GENERAL SETTINGS — PURPOSE
+==================================================
+
+Implement the final General Settings module.
+
+This module DOES NOT introduce new business concepts.
+
+It provides an authorized UI
+for modifying values already used by Phase 4.
+
+==================================================
+42. WHO MAY MANAGE SETTINGS?
+==================================================
+
+Settings access is limited to:
+
+- مدير النظام
+OR
+- user explicitly granted equivalent settings permission
+
+Do not expose settings editing
+to ordinary operational roles.
+
+Use permission enforcement.
+
+==================================================
+43. ORGANIZATION BASIC INFORMATION
+==================================================
+
+Allow authorized administrator to view/edit
+basic institutional information required by the application.
+
+At minimum:
+
+- institution name
+
+Include other already-existing basic identification fields
+only if the current project model supports them.
+
+Do NOT turn this into a full organization-profile/HR module.
+
+==================================================
+44. EXECUTION MONITORING SETTINGS
+==================================================
+
+Expose these Phase-4 configuration values:
+
+1. Direct-measurement KR update interval
+
+Default:
+7 days
+
+Arabic concept:
+"فترة تحديث النتائج ذات القياس المباشر"
+
+2. Delayed vs Stalled threshold
+
+Default:
+25 percentage points
+
+Arabic concept:
+"حد الفصل بين حالتي التأخر والتعثر"
+
+3. Unread-alert reminder interval
+
+Default:
+2 days
+
+Arabic concept:
+"فترة تذكير التنبيه غير المقروء"
+
+==================================================
+45. SETTINGS MUST USE PHASE-4 SOURCE OF TRUTH
+==================================================
+
+Phase 4 already uses centralized configuration.
+
+Phase 5 must connect the Settings UI
+to THAT configuration.
+
+Do NOT create:
+
+settings UI value = 10
+
+while monitoring logic still hardcodes:
+
+7
+
+There must be one authoritative source.
+
+==================================================
+46. SETTINGS VALIDATION
+==================================================
+
+Validate values appropriately.
+
+Examples:
+
+Update interval:
+positive valid day count
+
+Performance threshold:
+valid percentage-point value
+
+Reminder interval:
+positive valid day count
+
+Provide Arabic validation messages.
+
+Do not accept nonsensical values silently.
+
+==================================================
+47. SETTINGS APPLICATION
+==================================================
+
+After settings are saved:
+
+the approved configuration applies
+to SUBSEQUENT monitoring/evaluation/alert/reminder operations.
+
+Examples:
+
+Change update interval:
+7 → 5 days
+
+Future overdue evaluations use 5.
+
+Change performance threshold:
+25 → 15 points
+
+Subsequent performance evaluation uses 15.
+
+Change reminder:
+2 → 1 day
+
+Subsequent unread-reminder evaluation uses 1.
+
+Do not require duplicating these values elsewhere.
+
+==================================================
+48. SETTINGS AUDIT / FEEDBACK
+==================================================
+
+At minimum provide:
+
+- save success/error feedback
+- clear current values
+
+If the existing application already has audit/history infrastructure,
+record setting changes consistently.
+
+Do not build a giant configuration-management system solely for this.
+
+==================================================
+49. FINAL NAVIGATION
+==================================================
+
+Review the complete application navigation.
+
+It should now expose appropriate modules based on permissions.
+
+Conceptually:
+
+- الرئيسية / appropriate home
+- المستخدمون
+- الأدوار والصلاحيات
+- الهيكل التنظيمي
+- دورات OKR
+- الأهداف والنتائج الرئيسية
+- المراجعات والاعتمادات
+- تحديثات الإنجاز
+- الأهداف المسندة إلي
+- التنبيهات والإشعارات
+- البحث والتصفية
+- لوحة المعلومات
+- التقارير
+- الإعدادات
+
+Do not show every module to every user.
+
+==================================================
+50. ROLE-SPECIFIC NAVIGATION
+==================================================
+
+Verify navigation separately for:
+
+- System Administrator
+- Top Management
+- Department Manager
+- Team Leader
+- Employee
+
+Users should see only functionality
+available through their effective permissions/context.
+
+==================================================
+51. SYSTEM ADMINISTRATOR EXPERIENCE
+==================================================
+
+The System Administrator should primarily have
+system-administration capabilities such as:
+
+- users
+- roles/permissions
+- organizational setup where permitted
+- settings
+
+Do not automatically treat admin
+as the owner of all operational OKR workflows
+unless permissions intentionally grant them.
+
+==================================================
+52. TOP MANAGEMENT EXPERIENCE
+==================================================
+
+Top Management should be able,
+according to its permissions/scope,
+to access relevant:
+
+- cycles
+- institutional objectives
+- approvals
+- organizational structure
+- progress monitoring
+- alerts
+- dashboard
+- search
+- reports
+
+Keep operational actions aligned
+with existing permissions.
+
+==================================================
+53. DEPARTMENT MANAGER EXPERIENCE
+==================================================
+
+Department Manager should,
+within organizational scope,
+have access to relevant:
+
+- members/employees
+- objectives
+- Supporting Objectives
+- assignments
+- progress-review workflow
+- alerts
+- dashboard
+- search
+- reports
+
+Do not leak sibling/unrelated organizational data.
+
+==================================================
+54. EMPLOYEE EXPERIENCE
+==================================================
+
+Employee should have a focused interface.
+
+Relevant capabilities include:
+
+- assigned Objectives
+- Objective details
+- assignment accept/reject
+- eligible progress/evidence submission
+- update result/history
+- alerts
+- search/filter within allowed scope
+
+Do NOT give the ordinary Employee
+the aggregate management Dashboard.
+
+==================================================
+55. TEAM LEADER EXPERIENCE
+==================================================
+
+Use actual effective permissions and organizational position.
+
+Do not invent a special separate product
+just because the role exists.
+
+Team Leader access should be derived consistently
+from Phase-2 role/scope architecture.
+
+==================================================
+56. FINAL HOME / LANDING EXPERIENCE
+==================================================
+
+The authenticated landing page should be useful.
+
+Do not show fake management KPI cards
+to users who do not have Dashboard access.
+
+Route/compose the home experience according to role/permissions.
+
+Examples:
+
+Management user:
+may access Dashboard.
+
+Employee:
+may see appropriate shortcuts/status for own work,
+without pretending to have aggregate institutional analytics.
+
+Keep behavior consistent with documented roles.
+
+==================================================
+57. END-TO-END SCENARIO — ORGANIZATION SETUP
+==================================================
+
+Verify complete flow:
+
+Admin/authorized user
+→ creates/uses users
+→ roles
+→ permissions
+→ organization hierarchy
+
+Verify relationships remain valid.
+
+==================================================
+58. END-TO-END SCENARIO — CYCLE
+==================================================
+
+Authorized user:
+
+Create Cycle
+→ Draft
+→ Activate
+→ Active
+
+Verify Objective workflows can use it.
+
+==================================================
+59. END-TO-END SCENARIO — HIGHER OBJECTIVE
+==================================================
+
+Authorized management user:
+
+Create Objective
+→ add KRs
+→ save Draft
+→ submit
+→ approve through correct reviewer
+
+Verify status and review history.
+
+==================================================
+60. END-TO-END SCENARIO — ALIGNMENT
+==================================================
+
+Department Manager:
+
+View upstream Objective/KR
+→ create Supporting Objective
+→ link to direct higher-level KR
+→ submit for review
+
+Authorized reviewer:
+
+Approve or return
+
+Verify alignment persists correctly.
+
+==================================================
+61. END-TO-END SCENARIO — INDIVIDUAL OBJECTIVE
+==================================================
+
+Manager:
+
+Create/assign Individual Objective
+→ Employee receives it
+
+Employee:
+
+Open
+→ Accept
+
+Also verify Reject path:
+
+Reject
+→ mandatory reason
+→ manager can view reason.
+
+==================================================
+62. END-TO-END SCENARIO — EXECUTION
+==================================================
+
+Owner/Contributor:
+
+Open eligible direct KR
+→ submit evidence/notes
+
+Verify:
+
+no actual value entered by submitter.
+
+Reviewer:
+
+Review evidence
+→ enter approved actual value
+→ approve
+
+Verify:
+
+KR progress changes automatically.
+
+==================================================
+63. END-TO-END SCENARIO — CASCADE
+==================================================
+
+Approve lower-level Supporting Objective progress update.
+
+Verify:
+
+lower KR
+→ lower Objective
+→ upstream KR
+→ upstream Objective
+
+are recalculated correctly.
+
+Then verify Dashboard/report/search
+reflect the updated authoritative values.
+
+==================================================
+64. END-TO-END SCENARIO — RETURNED UPDATE
+==================================================
+
+Reviewer:
+
+Return progress request
+
+Reason required.
+
+Verify:
+
+- no authoritative actual-value change
+- no progress change from returned request
+- submitter sees return reason
+- history retained
+
+==================================================
+65. END-TO-END SCENARIO — PERFORMANCE
+==================================================
+
+Verify actual vs expected progress produces:
+
+- متقدم
+- على المسار
+- متأخر
+- متعثر
+
+according to Phase-4 rules and current Settings value.
+
+Then confirm Dashboard distribution updates.
+
+==================================================
+66. END-TO-END SCENARIO — ALERTS
+==================================================
+
+Verify:
+
+- overdue update alert
+- Delayed/Stalled alert
+- manual alert
+- unread/read
+- reminder
+- linked Objective/KR
+
+All recipients remain scope/permission correct.
+
+==================================================
+67. END-TO-END SCENARIO — REPORT
+==================================================
+
+Management user:
+
+Open Reports
+→ choose Cycle
+→ organization
+→ period/status/responsible filters
+→ generate report
+
+Verify:
+
+screen data
+= print data
+= exported scope
+
+No unauthorized records.
+
+==================================================
+68. HISTORICAL SCENARIO
+==================================================
+
+Use at least one Completed Cycle.
+
+Verify:
+
+- old Objectives remain viewable
+- progress history remains
+- alerts/history remain
+- reports work
+- no new execution updates
+- historical organizational context remains meaningful
+
+==================================================
+69. CLOSED OBJECTIVE HISTORICAL VIEW
+==================================================
+
+Closed Objectives must remain available
+for authorized:
+
+- search
+- details
+- reporting
+
+Do not make Closed mean deleted.
+
+==================================================
+70. SEARCH VS DASHBOARD VS REPORTS
+==================================================
+
+Maintain this separation:
+
+DASHBOARD
+= management aggregation
+
+SEARCH
+= detailed discovery/navigation
+
+REPORTS
+= structured formal output
+
+Do not make these three modules duplicates.
+
+==================================================
+71. FINAL STATUS TERMINOLOGY AUDIT
+==================================================
+
+Audit terminology across the app.
+
+CYCLE:
+
+- مسودة
+- نشطة
+- مكتملة
+
+OBJECTIVE:
+
+- مسودة
+- قيد المراجعة
+- معتمد
+- مغلق
+
+PERFORMANCE:
+
+- متقدم
+- على المسار
+- متأخر
+- متعثر
+
+USER:
+
+- فعال
+- موقوف
+
+ALERT:
+
+- مقروء
+- غير مقروء
+
+Do not mix these concepts.
+
+==================================================
+72. ARABIC LANGUAGE CONSISTENCY
+==================================================
+
+Review all visible Arabic text.
+
+Fix:
+
+- inconsistent terminology
+- broken RTL punctuation
+- mixed-direction labels
+- awkward developer-facing English
+- placeholder lorem ipsum
+- duplicate translations
+
+Technical IDs/internal keys may remain English.
+
+User-facing UI should be professional Arabic.
+
+==================================================
+73. DESIGN SYSTEM FINAL AUDIT
+==================================================
+
+Review all modules for consistency:
+
+- typography
+- spacing
+- button hierarchy
+- forms
+- badges
+- tables
+- dialogs
+- drawers
+- breadcrumbs
+- page headings
+- filters
+- empty states
+- skeletons
+- error states
+- charts
+
+Do not redesign everything.
+
+Standardize inconsistencies.
+
+==================================================
+74. LOADING STATES
+==================================================
+
+Ensure meaningful loading states exist for:
+
+- Dashboard
+- search
+- reports
+- exports
+- settings
+- previous core lists
+
+Avoid blank screens.
+
+Use the existing reusable loading architecture.
+
+==================================================
+75. EMPTY STATES
+==================================================
+
+Provide meaningful Arabic empty states.
+
+Examples:
+
+Dashboard:
+"لا توجد أهداف ضمن النطاق المحدد."
+
+Search:
+"لا توجد نتائج مطابقة لمعايير البحث."
+
+Reports:
+"لا توجد بيانات مطابقة لنطاق التقرير."
+
+Alerts:
+"لا توجد تنبيهات حالية."
+
+Avoid generic:
+"No data"
+
+where better Arabic context is possible.
+
+==================================================
+76. ERROR STATES
+==================================================
+
+Handle:
+
+- failed data load
+- failed settings save
+- failed export
+- invalid filter state
+- unauthorized access
+- missing/deleted linked record where safely possible
+
+Provide actionable Arabic feedback.
+
+==================================================
+77. RESPONSIVENESS FINAL AUDIT
+==================================================
+
+Test major screens at:
+
+- desktop
+- laptop
+- tablet
+- mobile
+
+Especially:
+
+- navigation
+- tables
+- Objective details
+- Dynamic KR forms
+- Dashboard
+- charts
+- search filters
+- reports
+- settings
+- organization tree
+- update evidence
+- review queues
+
+No uncontrolled horizontal page overflow.
+
+==================================================
+78. ACCESSIBILITY
+==================================================
+
+Improve basic accessibility.
+
+Verify:
+
+- semantic labels
+- form associations
+- keyboard navigation
+- visible focus
+- buttons identifiable
+- dialogs manageable
+- status not communicated only by color
+- sufficient chart labels/text alternatives where appropriate
+
+Do not destroy the existing visual design.
+
+==================================================
+79. PERFORMANCE — FINAL AUDIT
+==================================================
+
+Check for avoidable issues such as:
+
+- repeated full-tree traversal
+- repeated global recomputation
+- rendering huge unpaginated lists
+- duplicated aggregate calculations
+- unnecessary component rerenders
+- heavy export work blocking UI where avoidable
+
+Optimize appropriately for a prototype.
+
+Do not prematurely create distributed infrastructure.
+
+==================================================
+80. SCALABILITY
+==================================================
+
+The architecture must remain capable of supporting growth in:
+
+- users
+- organization units
+- cycles
+- Objectives
+- Key Results
+- progress updates
+- alerts
+
+without fundamental redesign.
+
+Keep list/query/aggregation logic centralized.
+
+==================================================
+81. SECURITY FINAL AUDIT
+==================================================
+
+Review every module for:
+
+AUTHENTICATION
+→ user must be signed in
+
+FUNCTIONAL PERMISSION
+→ user can perform operation
+
+ORGANIZATIONAL SCOPE
+→ user can access the record
+
+RELATIONSHIP RULE
+→ owner/reviewer/assigned user where required
+
+Do not rely solely on hidden buttons.
+
+==================================================
+82. DIRECT URL SECURITY
+==================================================
+
+Test manually entering URLs for:
+
+- users
+- roles
+- settings
+- reviews
+- reports
+- dashboard
+- Objectives outside scope
+
+Unauthorized requests must fail safely.
+
+==================================================
+83. EXPORT SECURITY
+==================================================
+
+Explicitly test exports.
+
+User outside Org B scope
+must not be able to generate/download
+Org B report through crafted parameters.
+
+==================================================
+84. SEARCH SECURITY
+==================================================
+
+Search autocomplete/result counts
+must not leak inaccessible record names/counts.
+
+Apply authorization first.
+
+==================================================
+85. DASHBOARD SECURITY
+==================================================
+
+Dashboard aggregates themselves must not leak
+unauthorized data.
+
+Even total counts must respect scope.
+
+==================================================
+86. FINAL DATA-INTEGRITY AUDIT
+==================================================
+
+Validate there are no:
+
+- Objectives pointing to missing Cycle
+- Objectives pointing to missing owner
+- KRs without Objective
+- invalid alignment
+- cross-cycle supporting alignment
+- orphan update requests
+- approved update without reviewer/value where required
+- broken alert references
+- invalid organization parent loops
+- dangling role assignments
+
+Fix seeded/demo data too.
+
+==================================================
+87. CALCULATION REGRESSION TESTS
+==================================================
+
+Do not modify Phase-4 formulas unless fixing a defect.
+
+Retest:
+
+Ascending:
+(current - baseline)/(target - baseline)*100
+
+Descending:
+(baseline - current)/(baseline - target)*100
+
+Binary:
+0 / 100
+
+Supporting-source:
+mean of approved Supporting Objective progress
+
+Objective:
+mean of capped KR contributions
+
+Expected Progress:
+linear time progress
+
+Performance:
+Advanced / On Track / Delayed / Stalled
+
+==================================================
+88. SETTINGS REGRESSION TEST
+==================================================
+
+Change:
+
+Update interval:
+7 → 5
+
+Verify monitoring consumes 5.
+
+Change:
+
+Delayed/Stalled threshold:
+25 → 10
+
+Verify performance evaluation consumes 10.
+
+Change:
+
+Unread reminder:
+2 → 1
+
+Verify future reminder evaluation consumes 1.
+
+Then restore defaults if the final demo data expects them.
+
+==================================================
+89. NO HARDCODED DASHBOARD DEMO NUMBERS
+==================================================
+
+Do not write:
+
+totalObjectives = 24
+averageProgress = 72
+
+inside UI just to make the Dashboard look good.
+
+Dashboard must derive values from actual project data.
+
+==================================================
+90. NO HARDCODED REPORT CONTENT
+==================================================
+
+Report preview/export must use actual stored Objective/KR/progress data.
+
+Do not create a static fake report screenshot.
+
+==================================================
+91. REALISTIC FINAL DEMO DATASET
+==================================================
+
+Ensure the final demo dataset is coherent enough
+to demonstrate the entire system.
+
+Include realistic Arabic institutional data covering:
+
+- multiple organizational branches
+- System Administrator
+- Top Management
+- Department Managers
+- Team Leader
+- Employees
+- active/disabled user
+- multiple roles
+- Draft Cycle
+- Active Cycle
+- Completed Cycle
+- institutional Objectives
+- organizational Objectives
+- Supporting Objectives
+- Individual Objectives
+- Draft Objective
+- Under Review Objective
+- Approved Objective
+- Closed Objective
+- ascending KR
+- descending KR
+- binary KR
+- supporting-source KR
+- approved progress updates
+- pending update
+- returned update
+- alignment chain
+- all four performance states
+- automatic alert
+- manual alert
+- read/unread alert
+- historical completed-cycle records
+
+Keep relationships internally consistent.
+
+==================================================
+92. DEMO DATA MUST NOT BREAK BUSINESS RULES
+==================================================
+
+Do not seed impossible records just for visuals.
+
+Examples of invalid seed data:
+
+- Approved Objective without Cycle
+- Supporting Objective linked cross-cycle
+- Employee assignment outside allowed scope
+- direct value on Supporting-source KR
+- closed Objective with active update allowed
+- Completed Cycle with new execution update
+
+Fix seeds to obey the system.
+
+==================================================
+93. OPTIONAL DEMO RESET
+==================================================
+
+If appropriate for the current prototype architecture,
+provide a developer-safe/demo reset mechanism
+that restores the seed dataset.
+
+This is optional.
+
+Do not place a dangerous "Reset All Data" control
+in normal user-facing navigation.
+
+==================================================
+94. FINAL PROTOTYPE WALKTHROUGH
+==================================================
+
+Make sure the prototype can be demonstrated logically
+to a supervisor/evaluator.
+
+A good demo path should be possible:
+
+1. Login as Admin
+2. Show users/roles/org structure/settings
+3. Login as Top Management
+4. Show Cycle + higher Objective + KR
+5. Show review/approval
+6. Login as Department Manager
+7. Show Supporting Objective/alignment
+8. Assign Individual Objective
+9. Login as Employee
+10. Accept Objective
+11. Submit evidence
+12. Login as reviewer/manager
+13. Approve actual value
+14. Show progress recalculation
+15. Show performance state
+16. Show alert
+17. Show Dashboard
+18. Search Objective
+19. Generate/export report
+20. Show historical Cycle
+
+Do NOT create a hardcoded guided tour unless useful.
+The actual system itself should support this flow.
+
+==================================================
+95. TEST ACCOUNTS / DEMO LOGIN INFORMATION
+==================================================
+
+If the project uses seeded demo accounts,
+provide them in the FINAL IMPLEMENTATION REPORT
+or existing developer documentation.
+
+Include:
+
+- role
+- username/email
+- intended scenario
+
+Do not expose passwords insecurely in public production UI.
+
+For a local prototype,
+follow the existing project's demo-account approach.
+
+==================================================
+96. FINAL ROUTE AUDIT
+==================================================
+
+Check every major route.
+
+No:
+
+- duplicate routes
+- dead routes
+- old placeholder pages
+- 404 links from navigation
+- stale Phase-1 "Coming Soon" page for implemented modules
+
+Remove/replace obsolete placeholders.
+
+==================================================
+97. FINAL PLACEHOLDER AUDIT
+==================================================
+
+Search code/UI for:
+
+- TODO
+- FIXME
+- Coming Soon
+- lorem ipsum
+- Test Data
+- User 1
+- Example only
+- dead prototype buttons
+
+Resolve them where they correspond
+to implemented Phase 1–5 functionality.
+
+Do not remove legitimate developer comments blindly.
+
+==================================================
+98. FINAL CONSOLE AUDIT
+==================================================
+
+Run through major workflows
+while monitoring browser console.
+
+Fix:
+
+- uncaught exceptions
+- React warnings
+- duplicate-key warnings
+- invalid DOM warnings
+- failed internal routes
+- avoidable 404 asset calls
+
+==================================================
+99. BUILD / TYPECHECK / LINT / TESTS
+==================================================
+
+Run every validation command available in the repository:
+
+- build
+- typecheck
+- lint
+- unit tests
+- integration tests
+- relevant E2E tests
+
+Do not claim success without running available checks.
+
+Fix failures caused by implementation.
+
+If a failure is genuinely unrelated/pre-existing,
+document it precisely.
+
+==================================================
+100. CORE BUSINESS REGRESSION TEST
+==================================================
+
+Confirm again:
+
+- disabled user cannot log in
+- permission union works
+- organization scope works
+- circular hierarchy blocked
+- Cycle lifecycle valid
+- Objective dates inside Cycle
+- at least one KR before submission
+- self-approval blocked
+- approval routing works
+- Supporting alignment same Cycle/direct parent
+- Employee rejection requires reason
+- update submitter cannot enter actual value
+- only reviewer approves actual value
+- pending updates do not affect progress
+- formulas correct
+- cascade correct
+- alerts correct
+- Closed/Completed lock correct
+
+==================================================
+101. DASHBOARD ACCEPTANCE TEST
+==================================================
+
+Login as Top Management:
+
+Dashboard visible.
+
+Verify:
+institutional allowed scope.
+
+Login as Department Manager:
+
+Dashboard visible.
+
+Verify:
+department + descendants only.
+
+Login as ordinary Employee:
+
+Aggregate management Dashboard should not be available
+unless explicit permission was intentionally granted.
+
+==================================================
+102. DASHBOARD FILTER ACCEPTANCE TEST
+==================================================
+
+Select Cycle A.
+
+Record KPI/chart values.
+
+Select Cycle B.
+
+Verify metrics actually change according to data.
+
+Then filter by organization.
+
+Verify all widgets use the same filter context.
+
+==================================================
+103. SEARCH ACCEPTANCE TEST
+==================================================
+
+Combine:
+
+text
++ Cycle
++ organization
++ lifecycle
++ performance
++ owner
+
+Verify results satisfy criteria.
+
+Then log in as lower-scope user.
+
+Verify inaccessible records disappear entirely.
+
+==================================================
+104. REPORT ACCEPTANCE TEST
+==================================================
+
+Generate report with:
+
+Cycle
++ organization
++ period
++ status
++ responsible user
+
+Verify report data.
+
+Print.
+
+Export document.
+
+Export spreadsheet.
+
+Verify same scoped dataset.
+
+==================================================
+105. HISTORICAL REPORT ACCEPTANCE TEST
+==================================================
+
+Choose Completed Cycle.
+
+Verify report still works
+and historical records retain correct context.
+
+No execution-changing action should become available.
+
+==================================================
+106. SETTINGS ACCEPTANCE TEST
+==================================================
+
+Unauthorized Employee:
+cannot access settings.
+
+Authorized Admin:
+can view/edit.
+
+Save valid values:
+success.
+
+Invalid value:
+validation error.
+
+Verify values affect subsequent Phase-4 logic.
+
+==================================================
+107. RESPONSIVE ACCEPTANCE TEST
+==================================================
+
+Test at representative viewport sizes.
+
+Ensure:
+
+- sidebar/drawer works
+- Dashboard charts fit
+- report filters usable
+- tables readable
+- forms accessible
+- no clipped dialogs
+- RTL remains correct
+
+==================================================
+108. USABILITY REQUIREMENT
+==================================================
+
+The final system should be understandable
+to nontechnical institutional users.
+
+Avoid exposing:
+
+- database IDs
+- raw permission keys
+- technical enum names
+- JSON
+- debug information
+
+in normal UI.
+
+==================================================
+109. SECURITY REQUIREMENT
+==================================================
+
+Protect:
+
+- user accounts
+- institutional data
+- sessions
+- actions
+- reports
+- exports
+
+through existing authentication,
+permissions,
+and organizational scope.
+
+==================================================
+110. PERFORMANCE REQUIREMENT
+==================================================
+
+Maintain responsive behavior for:
+
+- login
+- Objective lists
+- KR details
+- progress updates
+- Dashboard
+- search
+- reports
+
+with reasonably larger demo datasets.
+
+Do not use obviously inefficient implementation patterns.
+
+==================================================
+111. SCALABILITY REQUIREMENT
+==================================================
+
+Do not create final-phase shortcuts
+that prevent adding more:
+
+- users
+- organizations
+- Objectives
+- KRs
+- Cycles
+
+later.
+
+==================================================
+112. MAINTAINABILITY REQUIREMENT
+==================================================
+
+Centralize:
+
+- permissions
+- scope
+- filters
+- report queries
+- dashboard aggregates
+- configuration
+- calculations
+
+Avoid business logic duplication.
+
+==================================================
+113. COMPATIBILITY REQUIREMENT
+==================================================
+
+Verify on modern web browser behavior
+and responsive desktop/tablet/mobile layouts.
+
+Maintain correct Arabic RTL display.
+
+==================================================
+114. NO NEW BUSINESS FEATURES
+==================================================
+
+Do NOT add undocumented product features such as:
+
+- gamification
+- employee leaderboard
+- rewards
+- arbitrary performance ranking
+- chat/social feed
+- task kanban
+- AI recommendations
+- scoring/confidence systems
+- arbitrary KR weights
+- new Objective states
+- new Cycle states
+
+The goal is to finish the documented prototype,
+not expand scope.
+
+==================================================
+115. DO NOT REPLACE AUTHORITATIVE DATA WITH CHART-SPECIFIC DATA
+==================================================
+
+Charts and reports must consume
+the same authoritative application data.
+
+Do not maintain separate fake analytics stores.
+
+==================================================
+116. DASHBOARD CHART QUALITY
+==================================================
+
+Use charts only where they improve understanding.
+
+At minimum the performance-state distribution
+should have a clear visual representation.
+
+Other visualizations may be used where genuinely useful.
+
+Keep:
+
+- Arabic labels
+- legible legends
+- accessible values
+- responsive sizing
+- restrained professional design
+
+Avoid excessive decorative charts.
+
+==================================================
+117. REPORT DESIGN QUALITY
+==================================================
+
+Reports should look formal enough for institutional use.
+
+Use:
+
+- clear title
+- institution information
+- scope information
+- filters
+- table header
+- readable Arabic
+- page-friendly spacing
+
+Do not make reports look like ordinary application pages
+when printed.
+
+==================================================
+118. FINAL DESIGN POLISH
+==================================================
+
+Polish visual inconsistencies,
+but do NOT redesign the product into a different style.
+
+Keep the established visual identity.
+
+Focus on:
+
+- consistency
+- clarity
+- spacing
+- hierarchy
+- responsive behavior
+- professional institutional feel
+
+==================================================
+119. FINAL DEFINITION OF DONE — DASHBOARD
+==================================================
+
+✓ Dashboard restricted appropriately
+
+✓ total Objectives
+
+✓ participants count
+
+✓ aggregate completion
+
+✓ performance distribution
+
+✓ attention-needed cases
+
+✓ Cycle filter
+
+✓ organizational filter
+
+✓ period filter
+
+✓ scope-aware aggregation
+
+✓ live reflection of authoritative data
+
+==================================================
+120. FINAL DEFINITION OF DONE — SEARCH
+==================================================
+
+✓ Objective search
+
+✓ KR search
+
+✓ text search
+
+✓ Cycle filter
+
+✓ organization filter
+
+✓ time filter
+
+✓ Objective lifecycle filter
+
+✓ performance filter
+
+✓ owner/responsible filter
+
+✓ KR source filter
+
+✓ combined filters
+
+✓ clear/reset filters
+
+✓ scope enforcement
+
+✓ open authorized result
+
+==================================================
+121. FINAL DEFINITION OF DONE — REPORTS
+==================================================
+
+✓ report module
+
+✓ Objective data
+
+✓ KR data
+
+✓ progress data
+
+✓ performance data
+
+✓ Cycle scope
+
+✓ organization scope
+
+✓ period scope
+
+✓ status scope
+
+✓ responsible-user scope
+
+✓ historical Cycles
+
+✓ print view
+
+✓ document/printable export
+
+✓ spreadsheet export
+
+✓ exports respect filters
+
+✓ exports respect permissions
+
+==================================================
+122. FINAL DEFINITION OF DONE — SETTINGS
+==================================================
+
+✓ organization basic data
+
+✓ update interval setting
+  default 7 days
+
+✓ delayed/stalled threshold
+  default 25 percentage points
+
+✓ unread reminder
+  default 2 days
+
+✓ validation
+
+✓ authorized access only
+
+✓ saved values consumed by Phase-4 logic
+
+==================================================
+123. FINAL DEFINITION OF DONE — INTEGRATION
+==================================================
+
+✓ Phase 1 integrated
+
+✓ Phase 2 integrated
+
+✓ Phase 3 integrated
+
+✓ Phase 4 integrated
+
+✓ no duplicate data sources
+
+✓ no fake Dashboard numbers
+
+✓ no fake report data
+
+✓ no stale placeholders
+
+✓ no broken routes
+
+✓ full end-to-end workflow works
+
+==================================================
+124. FINAL DEFINITION OF DONE — QUALITY
+==================================================
+
+✓ Arabic-first UI
+
+✓ correct RTL
+
+✓ desktop responsive
+
+✓ tablet responsive
+
+✓ mobile responsive
+
+✓ loading states
+
+✓ empty states
+
+✓ error states
+
+✓ confirmation dialogs
+
+✓ status consistency
+
+✓ basic accessibility
+
+✓ scope security
+
+✓ permission security
+
+✓ reasonable performance
+
+✓ maintainable structure
+
+==================================================
+125. FINAL VERIFICATION
+==================================================
+
+Before declaring the prototype complete:
+
+RUN THE APPLICATION.
+
+Test it as multiple roles.
+
+Do not only inspect code.
+
+Run:
+
+- build
+- typecheck
+- lint
+- tests
+
+where available.
+
+Then perform the complete demo workflow manually.
+
+Fix all discovered critical/high-impact defects.
+
+==================================================
+126. FINAL IMPLEMENTATION REPORT
+==================================================
+
+When complete,
+provide a structured final report containing:
+
+1. Overall prototype completion summary
+
+2. Stack/architecture currently used
+
+3. Whether persistence uses:
+   - real backend/database
+   OR
+   - centralized prototype/local persistence
+
+Do not misrepresent this.
+
+4. Dashboard implementation
+
+5. Dashboard aggregation logic
+
+6. Search/filter implementation
+
+7. Reports implementation
+
+8. Printing/export implementation
+
+9. General Settings implementation
+
+10. How settings connect to Phase-4 rules
+
+11. Permission enforcement
+
+12. Organizational-scope enforcement
+
+13. Historical-data behavior
+
+14. Final seeded/demo data overview
+
+15. Demo accounts/roles
+
+16. Routes/screens completed
+
+17. End-to-end scenarios tested
+
+18. Calculation regression results
+
+19. Export/report verification results
+
+20. Responsive/RTL verification
+
+21. Build/typecheck/lint/test results
+
+22. Any remaining known limitations
+
+23. Any prototype-only implementation decisions,
+    especially persistence/storage limitations
+
+24. Explicit confirmation that all five phases
+    have been integrated into one working prototype
+
+==================================================
+127. FINAL PROJECT HANDOFF
+==================================================
+
+Also provide a concise handoff section explaining:
+
+- how to start/run the prototype
+- how to access demo accounts
+- how demo data is initialized
+- how to reset demo data if supported
+- what persistence mechanism is used
+- any environment setup required
+
+Do not expose secrets.
+
+==================================================
+128. FINAL RULE
+==================================================
+
+Do not merely produce a plan.
+
+Actually implement Phase 5.
+
+Actually connect it to Phases 1–4.
+
+Actually test the complete prototype.
+
+Actually generate/test report exports if implemented.
+
+Actually verify role-specific behavior.
+
+Actually verify Dashboard values from real application data.
+
+Actually fix discovered integration defects.
+
+The finished result should be a complete,
+coherent, demonstrable Arabic RTL institutional OKR prototype.
+
+This is the FINAL implementation phase.

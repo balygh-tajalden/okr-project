@@ -65,6 +65,14 @@ export const SEED_ROLES: Role[] = [
       "alignment.create",
       "individual_goals.view",
       "individual_goals.respond",
+      // Phase 4: التنفيذ والمراجعة والتنبيهات
+      "progress.update",
+      "progress.view",
+      "progress.review",
+      "evidence.upload",
+      "evidence.review",
+      "alerts.view",
+      "alerts.manage",
       "settings.view",
       "settings.manage",
     ],
@@ -99,10 +107,13 @@ export const SEED_ROLES: Role[] = [
       "individual_goals.view",
       "reviews.approve",
       "reviews.reject",
-      // Phase 4 (معرّفة الآن)
+      // Phase 4: مراجعة التحديثات والتنبيهات
       "progress.view",
+      "progress.review",
       "evidence.review",
       "alerts.view",
+      "alerts.manage",
+      // Phase 5 (معرّفة الآن)
       "reports.view",
       "reports.export",
       "dashboard.view",
@@ -135,6 +146,12 @@ export const SEED_ROLES: Role[] = [
       "reviews.request",
       "reviews.approve",
       "reviews.reject",
+      // Phase 4: مراجعة التحديثات والتنبيهات
+      "progress.view",
+      "progress.review",
+      "evidence.review",
+      "alerts.view",
+      "alerts.manage",
       // Phase 4
       "progress.view",
       "evidence.review",
@@ -165,6 +182,11 @@ export const SEED_ROLES: Role[] = [
       "alignment.create",
       "individual_goals.view",
       "reviews.request",
+      // Phase 4: تحديث الإنجاز وعرضه
+      "progress.update",
+      "progress.view",
+      "evidence.upload",
+      "alerts.view",
       // Phase 4
       "progress.view",
       "alerts.view",
@@ -185,7 +207,7 @@ export const SEED_ROLES: Role[] = [
       "individual_goals.view",
       "individual_goals.respond",
       "alignment.view",
-      // Phase 4
+      // Phase 4: تحديث الإنجاز (للأهداف المسندة) وعرضه
       "progress.update",
       "progress.view",
       "evidence.upload",
@@ -202,7 +224,10 @@ export const SEED_ROLES: Role[] = [
     permissions: [
       "reviews.approve",
       "reviews.reject",
+      "progress.view",
+      "progress.review",
       "evidence.review",
+      "alerts.view",
       "reports.view",
     ],
     createdAt: PAST,

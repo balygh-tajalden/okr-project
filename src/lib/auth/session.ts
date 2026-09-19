@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import type { Session, User } from "./types";
 import { SESSION_STORAGE_KEY } from "./types";
 
@@ -72,30 +72,21 @@ export const useAuthSession = create<SessionState>()(
     }),
     {
       name: SESSION_STORAGE_KEY,
-      storage: {
-        getItem: (name) => {
-          try {
-            const raw = localStorage.getItem(name);
-            return raw ? JSON.parse(raw) : null;
-          } catch {
-            return null;
-          }
-        },
-        setItem: (name, value) => {
-          try {
-            localStorage.setItem(name, JSON.stringify(value));
-          } catch {
-            // تجاهل أخطاء التخزين (مثل الوضع الخاص)
-          }
-        },
-        removeItem: (name) => {
-          try {
-            localStorage.removeItem(name);
-          } catch {
-            // ignore
-          }
-        },
-      },
+      storage: createJSONStorage(() => {
+        try {
+          return {
+            getItem: (name) => localStorage.getItem(name),
+            setItem: (name, value) => localStorage.setItem(name, value),
+            removeItem: (name) => localStorage.removeItem(name),
+          };
+        } catch {
+          return {
+            getItem: () => null,
+            setItem: () => {},
+            removeItem: () => {},
+          };
+        }
+      }),
       onRehydrateStorage: () => (state) => {
         // بعد اكتمال الترطيب: تأكد من صحته، ثم ارفع علم hydrated
         if (state) {

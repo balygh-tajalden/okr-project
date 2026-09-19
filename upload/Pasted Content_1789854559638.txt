@@ -1,0 +1,2524 @@
+You are a senior Software Engineer, Product Architect,
+Business Rules Engineer, UX Designer,
+and Frontend/Full-Stack Prototype Engineer.
+
+You are continuing an existing Arabic institutional OKR system:
+
+"نظام إدارة الأهداف المؤسسية وفق منهجية الأهداف والنتائج الرئيسية (OKR)"
+
+PHASE 1 already implemented:
+- Authentication
+- RTL App Shell
+- Protected Routes
+- Design System
+- Core session/authorization foundation
+
+PHASE 2 already implemented:
+- Users
+- Roles
+- Permissions
+- Organizational Structure
+- Organizational Scope
+- OKR Cycles
+
+PHASE 3 already implemented:
+- Objectives
+- Key Results
+- Objective lifecycle
+- Supporting Objectives
+- Alignment
+- Review & Approval
+- Individual Objectives
+- Employee Accept / Reject
+- Review history
+- Permission-aware Objective workflows
+
+DO NOT rebuild previous phases.
+
+Your task is now:
+
+==================================================
+PHASE 4
+EXECUTION + PROGRESS UPDATES
++ EVIDENCE REVIEW
++ PROGRESS CALCULATION
++ PERFORMANCE STATUS
++ ALERTS & NOTIFICATIONS
+==================================================
+
+The project documentation itself is NOT available to you.
+
+Therefore, all authoritative Phase-4 business rules
+are explicitly included in this prompt.
+
+Do NOT replace these rules with generic OKR assumptions.
+
+Do NOT implement Phase 5 Dashboard/Reports yet.
+
+==================================================
+1. FIRST — INSPECT CURRENT REPOSITORY
+==================================================
+
+Before implementing anything:
+
+Inspect the complete current project after Phase 3.
+
+Understand:
+
+- Objective model
+- Key Result model
+- direct-measurement configuration
+- supporting-objective relationships
+- Objective lifecycle
+- Cycle lifecycle
+- approval state/history
+- individual assignment
+- permissions
+- organizational scope
+- organization hierarchy
+- state/data layer
+- persistence/API layer
+- file/upload capability
+- notification architecture
+- routing
+- shared UI components
+- design system
+- date/time utilities
+- tests
+
+Do NOT:
+
+- recreate Objective models
+- duplicate Cycle/User/Organization data
+- create a second permission system
+- bypass organizational scope
+- create disconnected progress data
+- replace existing architecture unnecessarily
+
+Phase 4 must build directly on Phase 3.
+
+==================================================
+2. PHASE-4 CORE EXECUTION RULE
+==================================================
+
+Progress execution begins ONLY when BOTH conditions are true:
+
+1. Objective state = معتمد
+2. OKR Cycle state = نشطة
+
+If either condition is false:
+
+the Objective is NOT eligible for execution progress updates.
+
+Examples:
+
+Approved Objective + Draft Cycle
+→ no execution updates yet
+
+Approved Objective + Active Cycle
+→ execution allowed
+
+Draft/Under Review Objective + Active Cycle
+→ no execution updates
+
+Closed Objective
+→ no execution updates
+
+Completed Cycle
+→ no execution updates
+
+==================================================
+3. NO SEPARATE OBJECTIVE ACTIVATION STEP
+==================================================
+
+Do NOT invent:
+
+Approved → Activated
+
+Objective approval itself represents entry to execution eligibility.
+
+Execution becomes effective when the Cycle is Active.
+
+==================================================
+4. EXECUTION WORKSPACE
+==================================================
+
+Provide a clear execution experience.
+
+Depending on the existing architecture,
+this can live inside:
+
+- Objective Details
+- My Objectives
+- Assigned Objectives
+- Progress Updates
+
+The user must be able to understand:
+
+- Objective current progress
+- Key Results
+- which KRs can be updated
+- current approved values
+- pending update requests
+- update history
+- performance status
+
+Do not overload the page with final Phase-5 analytics.
+
+==================================================
+5. WHICH KEY RESULTS CAN RECEIVE UPDATE REQUESTS?
+==================================================
+
+A progress-update request is allowed ONLY when:
+
+- Cycle = نشطة
+- Objective = معتمد
+- Objective is not مغلق
+- Key Result progress source = قياس مباشر
+
+If Key Result progress source is:
+
+أهداف داعمة
+
+NO manual progress-value update request is allowed for that KR.
+
+Its progress comes automatically from approved Supporting Objectives.
+
+==================================================
+6. WHO CAN SUBMIT A PROGRESS UPDATE REQUEST?
+==================================================
+
+A progress update request may be submitted by:
+
+- Objective owner
+OR
+- authorized contributor
+
+The user must also have access according to:
+
+- permission
+- organizational scope
+- Objective relationship
+
+Do not allow unrelated users to submit evidence.
+
+==================================================
+7. IMPORTANT — SUBMITTER MUST NOT ENTER ACTUAL VALUE
+==================================================
+
+This is a critical documented business rule.
+
+The person submitting the progress update MUST NOT enter:
+
+- actual/current approved value
+- progress percentage
+
+The submitter provides:
+
+- explanatory notes
+- execution evidence
+- files
+- reports
+- links
+
+But NOT the authoritative actual measurement.
+
+Do not place an editable "actual value" field
+inside the submitter's form.
+
+Do not let them manually type:
+
+40%
+75%
+completed value
+
+as the approved result.
+
+==================================================
+8. PROGRESS UPDATE REQUEST MODEL
+==================================================
+
+Create a proper Progress Update Request entity.
+
+It should relate to:
+
+- Objective
+- Key Result
+- submitter
+- submitted at
+- notes
+- evidence
+- review state
+- reviewer
+- review timestamp
+- approved actual value when applicable
+- return reason when applicable
+- historical/audit metadata
+
+Use stable IDs.
+
+Do not store updates only as visual comments.
+
+==================================================
+9. UPDATE REQUEST REVIEW STATE
+==================================================
+
+The documentation defines review outcomes:
+
+- approve
+- return for correction/rejection
+
+It does not define an additional Objective lifecycle.
+
+Therefore use a lightweight update-request state model such as:
+
+- pending_review
+- approved
+- returned
+
+or equivalent.
+
+Do NOT confuse update-request state
+with Objective lifecycle state.
+
+==================================================
+10. SUBMIT PROGRESS UPDATE — UX
+==================================================
+
+Create a professional Arabic RTL update form.
+
+The user selects/opens a direct-measurement KR.
+
+Display context such as:
+
+- Objective
+- KR
+- measurement type
+- measurement unit
+- baseline
+- target
+- current approved value
+- last approved update date
+
+The submitter enters only:
+
+- ملاحظات الإنجاز
+- أدلة التنفيذ
+- الملفات/التقارير
+- الروابط
+
+Do NOT show editable actual-value field.
+
+==================================================
+11. EVIDENCE
+==================================================
+
+Support evidence types appropriate to the prototype:
+
+- notes
+- file attachment
+- report attachment
+- URL/link
+
+Use the current project's existing upload/storage architecture.
+
+If real file persistence exists:
+use it.
+
+If this is a frontend-only prototype:
+implement a coherent prototype-safe attachment model
+rather than fake buttons.
+
+Display:
+
+- file name
+- type
+- upload/add time
+- submitter
+
+Do not pretend a file was stored if it was not.
+
+==================================================
+12. SEQUENCE — SUBMIT PROGRESS REPORT
+==================================================
+
+Implement this exact conceptual sequence:
+
+Owner / Authorized Contributor
+→ opens direct-measurement KR
+→ chooses Submit Progress Update
+
+System
+→ verifies execution eligibility
+
+User
+→ enters notes
+→ attaches evidence
+→ submits
+
+System
+→ stores Update Request
+→ state = pending review
+→ does NOT modify actual approved value
+→ does NOT modify progress merely because request was submitted
+→ makes request available to authorized reviewer
+
+This is critical.
+
+PENDING EVIDENCE IS NOT APPROVED PROGRESS.
+
+==================================================
+13. REVIEW QUEUE FOR PROGRESS UPDATES
+==================================================
+
+Create a real review workspace such as:
+
+"مراجعة تحديثات الإنجاز"
+
+Authorized reviewers see only requests they can review.
+
+Use:
+
+- permission
+- organizational scope
+- Objective relationships
+- existing hierarchy/routing foundation
+
+Do not create a global unrestricted queue.
+
+==================================================
+14. REVIEWER VIEW
+==================================================
+
+Reviewer should see:
+
+- Objective
+- Key Result
+- owner
+- submitter
+- Cycle
+- measurement type
+- unit
+- baseline
+- target
+- current approved value
+- previous approved updates
+- submitted notes
+- files
+- links
+- timestamp
+
+The reviewer must have enough evidence to make a decision.
+
+==================================================
+15. REVIEW OUTCOMES
+==================================================
+
+Reviewer can:
+
+A. اعتماد التحديث
+B. إعادة الطلب
+
+Do not add unnecessary workflow states.
+
+==================================================
+16. APPROVING NUMERIC MEASUREMENT
+==================================================
+
+For numeric direct measurement:
+
+The authorized reviewer enters:
+
+القيمة الفعلية الحالية المعتمدة
+
+in the configured measurement unit.
+
+Example:
+
+Baseline: 20
+Target: 80
+Unit: %
+
+Reviewer enters:
+55
+
+The reviewer does NOT manually type:
+
+58.33% progress
+
+The system calculates progress automatically.
+
+==================================================
+17. APPROVING BINARY MEASUREMENT
+==================================================
+
+For:
+
+إنجاز / عدم إنجاز
+
+reviewer records:
+
+- تحقق
+or
+- لم يتحقق
+
+The system later calculates:
+
+not achieved = 0%
+achieved = 100%
+
+Do not ask reviewer for arbitrary percentage.
+
+==================================================
+18. RETURN UPDATE REQUEST
+==================================================
+
+If evidence is insufficient
+or there are problems:
+
+Reviewer chooses:
+
+"إعادة الطلب"
+
+A return reason is REQUIRED.
+
+Do not permit an empty reason.
+
+When returned:
+
+- no new actual value is approved
+- no authoritative progress changes because of this request
+- request state becomes returned
+- reason is persisted
+- submitter can view the reason
+
+==================================================
+19. APPROVED UPDATE PACKAGE
+==================================================
+
+When an update is approved,
+keep these items connected as one historical package:
+
+- approved value/status
+- evidence
+- submitter notes
+- submitter
+- reviewer
+- submission timestamp
+- approval timestamp
+
+Do not detach approved values from their supporting evidence.
+
+==================================================
+20. UPDATE HISTORY
+==================================================
+
+Every direct-measurement KR must provide a historical timeline.
+
+Show:
+
+- date
+- submitter
+- evidence
+- review result
+- reviewer
+- approved value
+- return reason where applicable
+
+Historical updates must remain visible.
+
+Do not overwrite previous approved values.
+
+==================================================
+21. AUTHORITATIVE CURRENT VALUE
+==================================================
+
+The KR current authoritative value is determined only by:
+
+the latest approved update
+
+NOT:
+
+- latest submitted request
+- latest returned request
+- submitter-entered claim
+- arbitrary UI percentage
+
+Centralize this rule.
+
+==================================================
+22. KEY RESULT PROGRESS — DIRECT NUMERIC ASCENDING
+==================================================
+
+For numeric direct measurement where:
+
+target > baseline
+
+calculate:
+
+progress =
+(current - baseline)
+/
+(target - baseline)
+* 100
+
+Example:
+
+baseline = 20
+target = 80
+current = 50
+
+progress:
+
+(50 - 20) / (80 - 20) * 100
+= 50%
+
+Use centralized calculation logic.
+
+==================================================
+23. KEY RESULT PROGRESS — DIRECT NUMERIC DESCENDING
+==================================================
+
+If:
+
+target < baseline
+
+calculate:
+
+progress =
+(baseline - current)
+/
+(baseline - target)
+* 100
+
+Example:
+
+baseline = 100
+target = 60
+current = 80
+
+progress:
+
+(100 - 80) / (100 - 60) * 100
+= 50%
+
+Do not reuse ascending formula incorrectly.
+
+==================================================
+24. BASELINE == TARGET
+==================================================
+
+If:
+
+baseline == target
+
+avoid division by zero.
+
+Documented rule:
+
+progress = 100%
+when target is reached
+
+otherwise:
+
+progress = 0%
+
+Do not divide by zero.
+
+==================================================
+25. BINARY KEY RESULT PROGRESS
+==================================================
+
+For direct binary measurement:
+
+Not achieved
+→ 0%
+
+Achieved
+→ 100%
+
+No other manual percentage is allowed.
+
+==================================================
+26. SUPPORTING-OBJECTIVE KEY RESULT PROGRESS
+==================================================
+
+If KR progress source is:
+
+أهداف داعمة
+
+calculate its progress from:
+
+the arithmetic mean
+of progress percentages
+of APPROVED Supporting Objectives
+linked to that KR.
+
+Use equal weights.
+
+Examples:
+
+One approved Supporting Objective:
+40%
+
+KR progress = 40%
+
+Three approved Supporting Objectives:
+40%, 60%, 80%
+
+KR progress = 60%
+
+==================================================
+27. ONLY APPROVED SUPPORTING OBJECTIVES COUNT
+==================================================
+
+Do NOT include Supporting Objectives that are:
+
+- Draft
+- Under Review
+- not approved
+
+Only approved Supporting Objectives participate.
+
+If there are zero approved Supporting Objectives:
+
+KR progress = 0%
+
+==================================================
+28. SUPPORTING KR HAS NO MANUAL ACTUAL VALUE
+==================================================
+
+Do NOT create manual:
+
+current value
+
+for a KR whose progress source is:
+
+Supporting Objectives.
+
+The supporting objectives are its only progress source.
+
+Avoid dual sources of truth.
+
+==================================================
+29. SUPPORTING OBJECTIVES ARE FULL OBJECTIVES
+==================================================
+
+A Supporting Objective can itself contain direct-measurement KRs.
+
+Those KRs follow the same evidence/review workflow.
+
+Therefore lower-level Objectives are executed and reviewed
+like normal Objectives.
+
+Their calculated Objective progress then flows upward.
+
+==================================================
+30. KEEP ACTUAL VALUE EVEN BEYOND TARGET
+==================================================
+
+If a numeric actual value exceeds the target,
+retain the real approved actual value.
+
+Example:
+
+target = 100
+approved current = 125
+
+Store/display:
+
+125
+
+Do NOT rewrite the actual value to 100.
+
+==================================================
+31. DO NOT INVENT EXTRA CLAMPING RULES
+==================================================
+
+Use the documented formulas.
+
+Do not silently clamp every KR raw progress to 0–100
+unless required elsewhere by the documented logic.
+
+The documented 100% cap specifically applies
+when KR progress contributes to Objective progress.
+
+Preserve the real actual value.
+
+==================================================
+32. OBJECTIVE PROGRESS CALCULATION
+==================================================
+
+Objective progress is calculated automatically
+as the arithmetic mean of its Key Result progress values.
+
+Before averaging:
+
+cap EACH KR contribution at a maximum of 100%.
+
+Example:
+
+KR1 raw progress = 120%
+KR2 progress = 60%
+
+Contribution values:
+
+100%
+60%
+
+Objective progress:
+
+80%
+
+The overperforming KR must NOT compensate
+for underperformance in another KR.
+
+==================================================
+33. EQUAL KR WEIGHTS
+==================================================
+
+Use equal weighting for all Key Results
+when calculating Objective progress.
+
+Do NOT add manual KR weighting in this phase.
+
+Formula conceptually:
+
+sum(min(KRProgress,100))
+/
+numberOfKRs
+
+==================================================
+34. OBJECTIVE PROGRESS MUST NOT BE MANUALLY EDITABLE
+==================================================
+
+No user can manually type Objective progress.
+
+It is always calculated.
+
+Do not provide an edit field.
+
+==================================================
+35. CASCADING RECALCULATION
+==================================================
+
+When an approved update changes a direct KR:
+
+1. recalculate that KR
+2. recalculate its Objective
+
+If that Objective is a Supporting Objective:
+
+3. recalculate the upstream KR
+4. recalculate the upstream Objective
+
+If that upper Objective is itself supporting another level:
+
+continue automatically.
+
+Do not require manual recalculation.
+
+==================================================
+36. CASCADE MUST SUPPORT MULTIPLE LEVELS
+==================================================
+
+Do not implement only one parent relationship.
+
+The Phase-2 organization and Phase-3 alignment
+support multiple hierarchical levels.
+
+Recalculation must propagate through all valid
+approved alignment relationships.
+
+Prevent infinite loops using the validated alignment hierarchy/data model.
+
+==================================================
+37. RECALCULATION TRIGGERS
+==================================================
+
+Recalculate when relevant events occur, including:
+
+- approved direct update changes current value
+- Supporting Objective progress changes
+- Objective closure/finalization changes applicable execution state
+- other documented progress-affecting state changes
+
+Do NOT recalculate from an unapproved pending request.
+
+==================================================
+38. CENTRALIZED CALCULATION ENGINE
+==================================================
+
+Do NOT scatter formulas across UI components.
+
+Create centralized testable calculation logic/services.
+
+Conceptually:
+
+calculateDirectKRProgress()
+calculateSupportingKRProgress()
+calculateObjectiveProgress()
+recalculateCascade()
+
+Use the current stack's architectural style.
+
+==================================================
+39. ACTUAL PROGRESS VS EXPECTED PROGRESS
+==================================================
+
+These are different values.
+
+ACTUAL PROGRESS:
+calculated from KRs
+
+EXPECTED PROGRESS:
+calculated from elapsed execution time
+
+Do not confuse them.
+
+==================================================
+40. EXPECTED PROGRESS — START DATE
+==================================================
+
+Expected progress moves linearly from:
+
+0% → 100%
+
+Execution-period start is:
+
+IF Objective was approved before or on Cycle start:
+
+start = Cycle start
+
+IF Objective was approved after Cycle start:
+
+start = Objective approval date
+
+Use actual approval timestamp/date from Phase 3.
+
+==================================================
+41. EXPECTED PROGRESS — END
+==================================================
+
+The documented expected-progress period ends at:
+
+- Objective closure
+OR
+- Cycle end
+
+whichever is earlier.
+
+Use this rule as specified.
+
+Do not invent another expected-progress formula.
+
+==================================================
+42. EXPECTED PROGRESS FORMULA
+==================================================
+
+Within the execution period:
+
+expected progress grows linearly.
+
+Conceptually:
+
+elapsed = now - effectiveStart
+duration = effectiveEnd - effectiveStart
+
+expected =
+elapsed / duration * 100
+
+Represent it safely within the valid execution window.
+
+Before effective start:
+expected = 0%
+
+At/after effective end:
+expected = 100%
+
+Handle zero/invalid duration safely.
+
+==================================================
+43. EXPECTED PROGRESS MUST NOT BE MANUALLY EDITABLE
+==================================================
+
+No user can enter expected progress.
+
+It is system-calculated.
+
+==================================================
+44. PERFORMANCE STATUS IS NOT OBJECTIVE LIFECYCLE
+==================================================
+
+Keep these concepts separate.
+
+Objective lifecycle:
+
+- مسودة
+- قيد المراجعة
+- معتمد
+- مغلق
+
+Performance status:
+
+- متقدم
+- على المسار
+- متأخر
+- متعثر
+
+Never replace one with the other.
+
+An Approved Objective may be:
+
+معتمد + متأخر
+
+or:
+
+معتمد + متقدم
+
+==================================================
+45. PERFORMANCE THRESHOLD
+==================================================
+
+Use a configurable performance threshold.
+
+Default:
+
+25 percentage points
+
+This threshold separates:
+
+متأخر
+
+from:
+
+متعثر
+
+Do not hardcode the threshold throughout UI.
+
+Use one configuration source.
+
+Phase 5 will expose General Settings UI.
+
+Phase 4 should already consume the centralized value.
+
+==================================================
+46. PERFORMANCE STATUS — ADVANCED
+==================================================
+
+Status:
+
+متقدم
+
+when:
+
+actual progress > expected progress
+
+Use the system's consistent percentage rounding/precision.
+
+==================================================
+47. PERFORMANCE STATUS — ON TRACK
+==================================================
+
+Status:
+
+على المسار
+
+when:
+
+actual progress equals expected progress
+after the system's standard percentage rounding.
+
+Do not invent an undocumented tolerance band.
+
+==================================================
+48. PERFORMANCE STATUS — DELAYED
+==================================================
+
+Status:
+
+متأخر
+
+when:
+
+actual < expected
+
+AND
+
+(expected - actual)
+<= configured threshold
+
+Default threshold:
+25 percentage points
+
+==================================================
+49. PERFORMANCE STATUS — STALLED
+==================================================
+
+Status:
+
+متعثر
+
+when:
+
+actual < expected
+
+AND
+
+(expected - actual)
+> configured threshold
+
+==================================================
+50. PERFORMANCE RE-EVALUATION
+==================================================
+
+Performance status must be re-evaluated:
+
+- whenever actual progress changes
+- as time passes during an Active Cycle
+
+Do not calculate it once and freeze it forever.
+
+==================================================
+51. TIME-BASED EVALUATION IN THE PROTOTYPE
+==================================================
+
+Implement deterministic time-aware evaluation
+appropriate to the existing architecture.
+
+If backend scheduled jobs already exist:
+use the existing architecture.
+
+If this is a frontend/prototype architecture:
+use a centralized execution-monitoring service
+with an injectable/current time value.
+
+Evaluate on appropriate events such as:
+
+- application/session initialization
+- execution screen load
+- approved update
+- alert evaluation
+- relevant date change/test clock
+
+Do NOT create fake enterprise scheduling infrastructure
+solely for the prototype.
+
+==================================================
+52. OBJECTIVE CLOSURE — EXECUTION PHASE
+==================================================
+
+Phase 3 prepared the Closed state.
+
+Phase 4 must implement documented closure behavior.
+
+Objective becomes:
+
+مغلق
+
+when:
+
+A. its end date is reached
+OR
+B. its approved Objective progress reaches 100%
+
+The authorized responsible user may also manually close it.
+
+==================================================
+53. MANUAL OBJECTIVE CLOSURE
+==================================================
+
+Provide authorized action:
+
+"إغلاق الهدف"
+
+Manual closure requires:
+
+- confirmation
+- closure reason
+
+Persist:
+
+- closed by
+- closed at
+- reason
+
+==================================================
+54. EFFECT OF OBJECTIVE CLOSURE
+==================================================
+
+When Objective becomes Closed:
+
+- final progress is retained
+- historical updates remain visible
+- no new update requests
+- no new approved actual values
+- execution alerts stop for that Objective/KRs
+- Objective becomes historical/read-only for execution
+
+Do not delete its history.
+
+==================================================
+55. COMPLETED CYCLE EXECUTION LOCK
+==================================================
+
+When Cycle = مكتملة:
+
+block:
+
+- new progress update requests
+- approval of new actual values that change results
+- new execution alerts
+
+Preserve historical records for viewing.
+
+==================================================
+56. ALERTS — PHASE-4 SCOPE
+==================================================
+
+Implement internal system alerts.
+
+Alerts can be:
+
+A. automatic
+B. manual
+
+They must be connected to:
+
+- Objective
+or
+- Key Result
+
+where applicable.
+
+==================================================
+57. AUTOMATIC ALERT — OVERDUE DIRECT KR UPDATE
+==================================================
+
+Monitor direct-measurement KRs during an Active Cycle.
+
+Determine the reference timestamp:
+
+IF at least one approved update exists:
+
+reference = timestamp of latest APPROVED update
+
+ELSE:
+
+reference = timestamp/date Objective entered execution
+
+Then compare with configured update interval.
+
+Default:
+
+7 days
+
+If the interval is exceeded
+without an approved update:
+
+generate an automatic overdue-update alert.
+
+==================================================
+58. ONLY APPROVED UPDATE RESETS AUTHORITATIVE UPDATE TIMER
+==================================================
+
+A pending/returned request must NOT become
+the authoritative last-approved-update timestamp.
+
+The monitoring source is:
+
+latest approved update
+
+or execution start if none exists.
+
+==================================================
+59. AUTOMATIC ALERT — PERFORMANCE DETERIORATION
+==================================================
+
+Generate an automatic alert
+when performance status transitions into:
+
+- متأخر
+or
+- متعثر
+
+Do not generate a performance alert merely because
+the status is Advanced or On Track.
+
+==================================================
+60. STOP AUTOMATIC EXECUTION ALERTS
+==================================================
+
+Stop generating execution alerts when:
+
+- Cycle becomes Completed
+- Objective becomes Closed
+- KR is no longer execution-updatable
+
+Existing alerts remain in history.
+
+Do not delete previous alerts.
+
+==================================================
+61. MANUAL ALERT
+==================================================
+
+Authorized manager,
+such as direct manager / Department Manager within scope,
+may issue a manual alert before the automatic threshold
+when early intervention is needed.
+
+Manual alert requires:
+
+- target user
+- Objective/KR context
+- reason
+
+Persist who sent it and when.
+
+==================================================
+62. ALERT RECIPIENT ROUTING
+==================================================
+
+Recipients depend on:
+
+- responsibility
+- organizational hierarchy
+- permissions
+
+Primary recipient should be:
+
+Objective owner
+or responsible person for the KR/context.
+
+Where administrative follow-up is required,
+notification may also reach:
+
+- direct manager
+- authorized higher organizational level
+
+Do not expose alerts to unrelated organizational users.
+
+==================================================
+63. ORGANIZATIONAL SCOPE FOR ALERTS
+==================================================
+
+Reuse Phase-2 scope logic.
+
+Do not route alerts globally.
+
+A manager must only see alerts appropriate to their scope.
+
+==================================================
+64. ALERT MODEL
+==================================================
+
+Alert should contain appropriate fields such as:
+
+- id
+- type
+- source
+- Objective/KR reference
+- message/context
+- generated manually/automatically
+- created at
+- sender/system source
+- recipients
+- per-recipient read state
+- reminder metadata
+- feedback/comments
+- linked item
+
+Do not store alert as only transient toast.
+
+==================================================
+65. READ / UNREAD STATE
+==================================================
+
+For every recipient,
+track:
+
+- غير مقروء
+- مقروء
+
+Persist read timestamp.
+
+Marking one user's alert as read
+must not automatically mark it read for every recipient.
+
+==================================================
+66. UNREAD REMINDER
+==================================================
+
+Use configurable unread reminder interval.
+
+Default:
+
+2 days
+
+If an alert remains unread after this interval:
+
+generate/record a reminder for that recipient.
+
+Do not mark it read automatically.
+
+==================================================
+67. ALERT FEEDBACK
+==================================================
+
+Authorized user may add a follow-up note/feedback
+to an alert.
+
+Purpose:
+
+document follow-up or action taken.
+
+Persist:
+
+- user
+- note
+- timestamp
+
+Do not turn alerts into an unrestricted social chat system.
+
+==================================================
+68. OPEN LINKED ITEM
+==================================================
+
+Alert recipient should be able to open
+the related Objective/KR
+only if they still have permission to access it.
+
+Do not treat alert possession as automatic authorization.
+
+==================================================
+69. ALERTS PAGE
+==================================================
+
+Create a proper internal Alerts page.
+
+Suggested Arabic navigation:
+
+"التنبيهات والإشعارات"
+
+Display:
+
+- type
+- related Objective/KR
+- reason/context
+- created date
+- read state
+- source
+- relevant action
+
+Support:
+
+- unread/all filter
+- type filter if useful
+- mark as read
+- open linked item
+
+Keep it professional and compact.
+
+==================================================
+70. UNREAD COUNT
+==================================================
+
+If Phase-1 shell has a notification icon,
+integrate a real unread count.
+
+Do not use a hardcoded number.
+
+Count only alerts for current user.
+
+==================================================
+71. CONFIGURATION VALUES USED IN PHASE 4
+==================================================
+
+Phase 4 needs these centralized settings:
+
+A. direct-KR update interval
+Default = 7 days
+
+B. delayed/stalled threshold
+Default = 25 percentage points
+
+C. unread alert reminder interval
+Default = 2 days
+
+Do NOT build the complete General Settings administration page yet.
+
+That belongs to Phase 5.
+
+But all Phase-4 logic must read these values
+from one centralized configuration source
+so Phase 5 can make them editable later.
+
+==================================================
+72. SETTINGS MUST NOT BE SCATTERED CONSTANTS
+==================================================
+
+Do not place:
+
+7
+25
+2
+
+randomly across components.
+
+Use one service/config object/store.
+
+Later Phase 5 will expose authorized editing.
+
+==================================================
+73. UPDATE PERMISSIONS
+==================================================
+
+Add/use appropriate capabilities such as:
+
+progress_updates.submit
+progress_updates.view_own
+progress_updates.review
+progress_updates.approve
+progress_updates.return
+
+alerts.view
+alerts.issue_manual
+alerts.feedback
+
+objectives.close
+
+Names may follow existing convention.
+
+Enforce permission + scope together.
+
+==================================================
+74. REVIEWER CANNOT BYPASS UPDATE WORKFLOW
+==================================================
+
+Do not provide random direct edit controls
+on the KR current value.
+
+Actual value changes through:
+
+Update Request
+→ Review
+→ Approval
+
+Do not let reviewers click an arbitrary KR
+and silently overwrite current value.
+
+==================================================
+75. DIRECT MEASUREMENT SOURCE OF TRUTH
+==================================================
+
+For direct KRs:
+
+source of truth =
+latest approved actual value
+
+For supporting-source KRs:
+
+source of truth =
+approved Supporting Objective progress
+
+Do not mix these sources.
+
+==================================================
+76. PROGRESS DISPLAY
+==================================================
+
+On Objective/KR details show useful execution data:
+
+For direct numeric KR:
+
+- baseline
+- target
+- latest approved actual
+- calculated progress
+- last approved update
+
+For binary KR:
+
+- achieved/not achieved
+- progress
+
+For supporting-source KR:
+
+- Supporting Objectives
+- each applicable Objective progress
+- calculated average
+
+Do not display manual progress input.
+
+==================================================
+77. EXECUTION STATUS PANEL
+==================================================
+
+Objective details can show:
+
+- Actual Progress
+- Expected Progress
+- Performance Status
+- last update information
+- execution eligibility
+- closed/open state
+
+Make it clear which values are calculated.
+
+==================================================
+78. PERFORMANCE STATUS UI
+==================================================
+
+Use consistent reusable status presentation:
+
+- متقدم
+- على المسار
+- متأخر
+- متعثر
+
+Do not confuse these with lifecycle badges.
+
+==================================================
+79. UPDATE REQUEST LIST
+==================================================
+
+Provide a list/workspace for progress requests.
+
+Useful fields:
+
+- Objective
+- KR
+- submitter
+- date
+- review state
+- reviewer
+- approved value where applicable
+
+Support scope-aware filtering.
+
+==================================================
+80. SUBMITTER VIEW
+==================================================
+
+Submitter should be able to see:
+
+- submitted update
+- current review state
+- evidence
+- approval result
+- return reason
+
+Returned requests must clearly explain why.
+
+==================================================
+81. NO APPROVAL = NO PROGRESS EFFECT
+==================================================
+
+This is critical.
+
+Submitting evidence does NOT change progress.
+
+Only approving the update
+and recording the approved actual value/status
+changes direct-KR progress.
+
+==================================================
+82. ACTIVITY-DIAGRAM EXECUTION FLOW
+==================================================
+
+Implement the Phase-4 portion of the documented activity:
+
+Employee / Owner / Contributor
+→ performs work
+→ submits progress report and evidence
+
+Authorized Manager/Reviewer
+→ reviews report and evidence
+
+IF evidence insufficient:
+→ return request with required reason
+→ no actual value change
+
+IF evidence sufficient:
+→ reviewer enters approved actual value
+→ approves update
+
+System:
+→ calculates KR progress
+→ calculates Objective progress
+→ propagates change upward through alignment
+→ recalculates performance status
+
+This cycle repeats until execution completes.
+
+==================================================
+83. SEQUENCE DIAGRAM — UPDATE APPROVAL
+==================================================
+
+The exact conceptual sequence must be:
+
+Submitter
+→ select eligible direct KR
+→ submit notes/evidence
+
+System
+→ create pending request
+
+Reviewer
+→ inspect request/evidence
+
+Decision:
+
+A. APPROVE
+
+Reviewer
+→ enter approved actual value/status
+
+System
+→ persist approved package
+→ update authoritative KR value
+→ calculate KR progress
+→ calculate Objective progress
+→ cascade to upstream alignment
+→ recalculate performance status
+
+B. RETURN
+
+Reviewer
+→ enter mandatory reason
+
+System
+→ return request
+→ preserve history
+→ do NOT approve new actual value
+
+==================================================
+84. SEQUENCE DIAGRAM — OVERDUE ALERT
+==================================================
+
+Implement:
+
+Monitoring service
+→ inspect eligible direct KRs
+
+For each KR:
+
+get latest approved update time
+
+IF none:
+→ use execution start
+
+Compare elapsed duration with configured update interval.
+
+IF elapsed > threshold:
+→ generate overdue-update alert
+→ associate with Objective/KR
+→ route to authorized recipients
+
+ELSE:
+→ no overdue alert
+
+Do not evaluate closed/non-executable items.
+
+==================================================
+85. DUPLICATE ALERT SAFETY
+==================================================
+
+The monitoring routine must be idempotent enough
+that repeatedly opening the page or rerunning evaluation
+does not create uncontrolled duplicate identical alerts
+for the same unchanged overdue condition.
+
+This is an implementation integrity safeguard,
+not a new business workflow.
+
+==================================================
+86. TIME HANDLING
+==================================================
+
+Use one centralized date/time utility.
+
+Avoid inconsistent timezone/date calculations
+across:
+
+- expected progress
+- update age
+- closure
+- alert reminder
+- Cycle end
+
+Use the project's existing date architecture.
+
+==================================================
+87. OBJECTIVE 100% AUTO-CLOSURE
+==================================================
+
+When Objective calculated approved progress reaches 100%:
+
+close the Objective automatically
+according to documented Objective closure behavior.
+
+Persist closure metadata indicating automatic/system closure.
+
+Then:
+
+block further execution updates.
+
+==================================================
+88. OBJECTIVE END-DATE AUTO-CLOSURE
+==================================================
+
+When Objective reaches its end date:
+
+transition to Closed according to documented rule.
+
+Use deterministic monitoring appropriate to prototype architecture.
+
+Preserve final state/history.
+
+==================================================
+89. NO PROGRESS AFTER CLOSED
+==================================================
+
+Once Closed:
+
+- do not accept update request
+- do not approve pending updates that would alter final results
+- do not generate new execution alerts
+
+Keep historical pending/returned records viewable as appropriate.
+
+==================================================
+90. DATA INTEGRITY
+==================================================
+
+Do not allow:
+
+- update for nonexistent KR
+- update for Supporting-source KR
+- update outside Active Cycle
+- update on non-approved Objective
+- update on Closed Objective
+- reviewer approval without valid permission
+- approved numeric update without actual value
+- returned request without reason
+- manual progress override
+- broken alignment cascade
+
+==================================================
+91. TRANSACTIONAL CONSISTENCY
+==================================================
+
+Approval should behave atomically.
+
+Do not produce:
+
+approved update
+but stale KR progress
+
+or:
+
+updated KR progress
+but stale Objective progress
+
+or:
+
+updated Objective
+but stale upstream aligned KR
+
+Use appropriate transactional/state consistency
+available in current stack.
+
+==================================================
+92. REALISTIC DEMO DATA
+==================================================
+
+Create/extend realistic Phase-4 demo scenarios.
+
+Include:
+
+- approved Objective in Active Cycle
+- ascending numeric KR
+- descending numeric KR
+- binary KR
+- Supporting-source KR
+- pending update
+- returned update with reason
+- approved update
+- Objective with Supporting Objective cascade
+- Advanced status
+- On Track status
+- Delayed status
+- Stalled status
+- overdue update alert
+- performance alert
+- manual alert
+- unread alert
+- read alert
+
+Use realistic Arabic institutional data.
+
+==================================================
+93. TEST — UPDATE ELIGIBILITY
+==================================================
+
+Test:
+
+Active Cycle
++ Approved Objective
++ Direct KR
+
+Expected:
+submit update allowed.
+
+==================================================
+94. TEST — DRAFT CYCLE
+==================================================
+
+Approved Objective
++ Draft Cycle
+
+Expected:
+update blocked.
+
+==================================================
+95. TEST — NON-APPROVED OBJECTIVE
+==================================================
+
+Active Cycle
++ Objective Under Review
+
+Expected:
+update blocked.
+
+==================================================
+96. TEST — SUPPORTING-SOURCE KR
+==================================================
+
+Attempt direct update on KR
+whose source = Supporting Objectives.
+
+Expected:
+blocked.
+
+==================================================
+97. TEST — SUBMITTER CANNOT ENTER ACTUAL VALUE
+==================================================
+
+Owner opens update form.
+
+Verify:
+no editable actual-value field
+and no editable progress field.
+
+==================================================
+98. TEST — PENDING REQUEST DOES NOT CHANGE PROGRESS
+==================================================
+
+Submit evidence.
+
+Expected:
+
+- request pending
+- previous current value unchanged
+- KR progress unchanged
+- Objective progress unchanged
+
+==================================================
+99. TEST — NUMERIC ASCENDING
+==================================================
+
+baseline = 20
+target = 80
+approved current = 50
+
+Expected:
+KR progress = 50%
+
+==================================================
+100. TEST — NUMERIC DESCENDING
+==================================================
+
+baseline = 100
+target = 60
+approved current = 80
+
+Expected:
+KR progress = 50%
+
+==================================================
+101. TEST — BASELINE EQUAL TARGET
+==================================================
+
+baseline = target
+
+Verify:
+no division by zero.
+
+At target:
+100%
+
+otherwise:
+0%
+
+==================================================
+102. TEST — BINARY
+==================================================
+
+Not achieved:
+0%
+
+Achieved:
+100%
+
+==================================================
+103. TEST — OBJECTIVE AVERAGE CAP
+==================================================
+
+KR1 = 120%
+KR2 = 60%
+
+Expected Objective progress:
+
+(100 + 60) / 2
+= 80%
+
+Do not use 90%.
+
+==================================================
+104. TEST — SUPPORTING OBJECTIVE AVERAGE
+==================================================
+
+Approved supporting Objectives:
+
+40%
+60%
+80%
+
+Expected upstream KR:
+60%
+
+==================================================
+105. TEST — UNAPPROVED SUPPORTING OBJECTIVE
+==================================================
+
+Supporting Objectives:
+
+Approved = 60%
+Draft = 100%
+
+Expected upstream KR:
+60%
+
+Draft must not count.
+
+==================================================
+106. TEST — ZERO APPROVED SUPPORTS
+==================================================
+
+No approved Supporting Objectives.
+
+Expected upstream supporting-source KR:
+0%
+
+==================================================
+107. TEST — CASCADE
+==================================================
+
+Approve lower-level direct update.
+
+Verify automatically:
+
+lower KR
+→ lower Objective
+→ upstream KR
+→ upstream Objective
+
+without manual action.
+
+==================================================
+108. TEST — EXPECTED PROGRESS
+==================================================
+
+Verify:
+
+approval before/on Cycle start
+→ expected timeline starts at Cycle start
+
+approval after Cycle start
+→ expected timeline starts at approval date
+
+Expected value evolves linearly.
+
+==================================================
+109. TEST — PERFORMANCE ADVANCED
+==================================================
+
+actual > expected
+
+Expected:
+متقدم
+
+==================================================
+110. TEST — PERFORMANCE ON TRACK
+==================================================
+
+actual == expected
+after standard system rounding
+
+Expected:
+على المسار
+
+==================================================
+111. TEST — PERFORMANCE DELAYED
+==================================================
+
+actual below expected
+
+difference <= 25 percentage points
+with default configuration
+
+Expected:
+متأخر
+
+==================================================
+112. TEST — PERFORMANCE STALLED
+==================================================
+
+actual below expected
+
+difference > 25 percentage points
+with default configuration
+
+Expected:
+متعثر
+
+==================================================
+113. TEST — PERFORMANCE RE-EVALUATION
+==================================================
+
+Advance deterministic current time
+without changing actual progress.
+
+Verify expected progress increases
+and performance status may change.
+
+==================================================
+114. TEST — OVERDUE ALERT
+==================================================
+
+Direct KR
+in Active Cycle
+with no approved update
+for more than 7 days since execution start.
+
+Expected:
+automatic overdue-update alert.
+
+==================================================
+115. TEST — APPROVED UPDATE RESETS TIMER
+==================================================
+
+Approve update today.
+
+Verify overdue reference becomes:
+latest approved update time.
+
+==================================================
+116. TEST — RETURNED UPDATE DOES NOT RESET AUTHORITATIVE TIMER
+==================================================
+
+Submit and return request.
+
+Verify:
+latest approved update remains authoritative.
+
+==================================================
+117. TEST — PERFORMANCE ALERT
+==================================================
+
+Performance changes:
+
+On Track → Delayed
+
+Expected:
+automatic alert.
+
+Performance changes:
+
+Delayed → Stalled
+
+Expected:
+appropriate automatic alert handling.
+
+==================================================
+118. TEST — MANUAL ALERT
+==================================================
+
+Authorized manager within scope
+→ issue alert
+→ reason required
+→ target receives it.
+
+Unauthorized/out-of-scope manager:
+blocked.
+
+==================================================
+119. TEST — READ STATE
+==================================================
+
+Recipient opens/marks alert read.
+
+Verify:
+
+- read state persists
+- read timestamp persists
+- other recipient's state unaffected
+
+==================================================
+120. TEST — REMINDER
+==================================================
+
+Alert remains unread beyond configured 2 days.
+
+Expected:
+reminder generated/recorded for recipient.
+
+==================================================
+121. TEST — CLOSE OBJECTIVE
+==================================================
+
+Authorized user manually closes Objective
+with reason.
+
+Verify:
+
+- state = مغلق
+- progress/history preserved
+- new updates blocked
+- execution alerts stop
+
+==================================================
+122. TEST — AUTO CLOSE AT 100%
+==================================================
+
+Approved progress reaches 100%.
+
+Expected:
+Objective automatically closes.
+
+==================================================
+123. TEST — COMPLETED CYCLE
+==================================================
+
+Complete Cycle.
+
+Verify:
+
+- new update requests blocked
+- new actual-value approval blocked
+- new execution alerts stopped
+- history remains viewable
+
+==================================================
+124. PERMISSION AND SCOPE TESTS
+==================================================
+
+Verify:
+
+Submitter outside Objective relationship:
+cannot submit.
+
+Reviewer outside scope:
+cannot review.
+
+Manager outside organizational branch:
+cannot issue manual alert.
+
+Direct URL attempts:
+must also be rejected.
+
+UI hiding alone is not sufficient.
+
+==================================================
+125. RESPONSIVE RTL
+==================================================
+
+Verify Arabic RTL on:
+
+- execution views
+- evidence forms
+- file/link lists
+- review queue
+- calculation panels
+- timelines
+- alerts
+- status badges
+- mobile/tablet
+
+No broken directionality.
+
+==================================================
+126. NON-FUNCTIONAL QUALITY
+==================================================
+
+USABILITY:
+
+Users must understand:
+
+- what they submit
+- who approves
+- which values are calculated
+- why progress changed
+- why an alert exists
+
+SECURITY:
+
+- scope-aware requests
+- reviewer authorization
+- attachment access control
+- linked-item access control
+
+PERFORMANCE:
+
+- avoid recalculating entire institution unnecessarily
+- update only affected dependency chain where possible
+
+SCALABILITY:
+
+support many:
+
+- updates
+- Objectives
+- KRs
+- alerts
+- alignment levels
+
+MAINTAINABILITY:
+
+centralize:
+
+- formulas
+- execution eligibility
+- monitoring logic
+- notification rules
+
+==================================================
+127. DO NOT IMPLEMENT PHASE 5
+==================================================
+
+STRICTLY DO NOT implement the final:
+
+- Executive Dashboard
+- final aggregated KPI dashboard
+- reporting center
+- PDF/print exports
+- spreadsheet exports
+- final global search experience
+- full General Settings administration UI
+- final application polish/demo walkthrough
+
+Those belong to Phase 5.
+
+You may use the centralized settings values required
+for Phase-4 calculations,
+but do NOT build the full settings administration module yet.
+
+==================================================
+128. NO GENERIC OKR FEATURES
+==================================================
+
+Do NOT add:
+
+- confidence scoring
+- manual OKR scoring
+- arbitrary weighted KRs
+- check-in scoring
+- likes/comments/social feed
+- gamification
+- arbitrary task management
+- performance ranking of employees
+
+unless explicitly required elsewhere.
+
+==================================================
+129. PHASE-4 DEFINITION OF DONE
+==================================================
+
+Phase 4 is complete only when:
+
+EXECUTION
+
+✓ execution eligibility rules
+✓ update request creation
+✓ notes
+✓ evidence/files/links
+✓ owner/contributor submission
+✓ submitter cannot enter actual value
+✓ pending updates do not affect progress
+
+REVIEW
+
+✓ review queue
+✓ evidence inspection
+✓ numeric actual-value approval
+✓ binary approval
+✓ return with mandatory reason
+✓ update history
+✓ approved package audit trail
+
+CALCULATIONS
+
+✓ ascending numeric formula
+✓ descending numeric formula
+✓ baseline==target safety
+✓ binary 0/100
+✓ Supporting Objective average
+✓ only approved supports count
+✓ zero approved supports = 0
+✓ actual values beyond target retained
+✓ 100% cap per KR for Objective average
+✓ equal KR weighting
+✓ Objective progress automatic
+✓ no manual Objective progress
+✓ cascading recalculation
+
+EXPECTED PROGRESS
+
+✓ effective execution start
+✓ linear expected progress
+✓ approval-after-start behavior
+✓ end rule
+✓ time-based reevaluation
+
+PERFORMANCE
+
+✓ متقدم
+✓ على المسار
+✓ متأخر
+✓ متعثر
+✓ default 25-point threshold
+✓ status separate from lifecycle
+✓ automatic reevaluation
+
+CLOSURE
+
+✓ manual Objective closure with reason
+✓ auto closure at 100%
+✓ auto/end-date closure behavior
+✓ execution lock after close
+✓ Completed Cycle execution lock
+
+ALERTS
+
+✓ automatic overdue alert
+✓ default 7-day update interval
+✓ automatic Delayed/Stalled alerts
+✓ manual manager alert
+✓ permission/scope routing
+✓ read/unread state
+✓ read timestamp
+✓ default 2-day unread reminder
+✓ feedback note
+✓ linked Objective/KR
+✓ no new alerts after execution ends
+
+SYSTEM
+
+✓ centralized calculation engine
+✓ centralized monitoring
+✓ centralized configuration
+✓ permission guards
+✓ organizational scope
+✓ Arabic RTL
+✓ responsive UX
+✓ real persistence
+✓ no dead buttons
+✓ no Phase-5 implementation
+
+==================================================
+130. FINAL VERIFICATION
+==================================================
+
+Before completion:
+
+Run the application.
+
+Run available:
+
+- build
+- typecheck
+- lint
+- automated tests
+
+Inspect browser console.
+
+Verify:
+
+- no compile errors
+- no TypeScript errors
+- no runtime exceptions
+- no broken routes
+- no unauthorized progress update
+- no manual progress edit
+- no incorrect formulas
+- no stale cascade
+- no invalid alert recipient
+- no duplicate runaway alerts
+- no update after closure
+- no update after Cycle completion
+- no broken RTL
+- no broken mobile layout
+
+Fix defects before reporting completion.
+
+==================================================
+131. FINAL REPORT REQUIRED
+==================================================
+
+When Phase 4 is complete:
+
+DO NOT start Phase 5.
+
+Provide a concise technical report containing:
+
+1. Phase-4 summary
+2. Files/modules changed
+3. Progress Update Request model
+4. Evidence implementation
+5. Review/approval workflow
+6. Actual-value source-of-truth logic
+7. KR calculation formulas implemented
+8. Objective calculation implementation
+9. Supporting Objective cascade implementation
+10. Expected-progress implementation
+11. Performance-status implementation
+12. Objective closure implementation
+13. Automatic monitoring implementation
+14. Alert model and routing
+15. Read/unread/reminder implementation
+16. Permissions/scope enforcement
+17. Demo scenarios created
+18. Tests executed and results
+19. build/typecheck/lint status
+20. Known limitations
+21. Phase-5 items intentionally deferred
+22. Explicit confirmation that Phase 5 was NOT started
+
+==================================================
+FINAL INSTRUCTION
+==================================================
+
+Do not merely describe a plan.
+
+Actually inspect the existing repository,
+implement Phase 4,
+run the complete execution flow,
+verify formulas with test cases,
+verify cascading recalculation,
+verify alerts and time-based behavior,
+fix discovered issues,
+and leave the project in a clean working state.
+
+Do not begin Phase 5.

@@ -124,11 +124,11 @@ export const NAV_SECTIONS: NavSection[] = [
       {
         key: "updates",
         label: "تحديثات الإنجاز",
-        description: "تسجيل التقدّم وإرفاق الأدلة",
+        description: "مراجعة طلبات تحديث الإنجاز",
         href: "/app/updates",
         icon: Activity,
-        status: "upcoming",
-        requiredAnyPermission: ["progress.view", "progress.update"],
+        status: "active",
+        requiredAnyPermission: ["progress.review", "progress.update", "progress.view"],
       },
       {
         key: "my-objectives",
@@ -181,10 +181,10 @@ export const NAV_SECTIONS: NavSection[] = [
       {
         key: "alerts",
         label: "التنبيهات",
-        description: "تذكيرات وإنذارات النظام",
+        description: "تنبيهات النظام والإشعارات",
         href: "/app/alerts",
         icon: Bell,
-        status: "upcoming",
+        status: "active",
         requiredPermissions: ["alerts.view"],
       },
       {

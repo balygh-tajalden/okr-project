@@ -89,6 +89,7 @@ export type Permission =
   // تحديثات الإنجاز (Phase 4)
   | "progress.update"
   | "progress.view"
+  | "progress.review" // فتح قائمة مراجعة التحديثات
   | "evidence.upload"
   | "evidence.review"
   // التنبيهات (Phase 4)
@@ -157,8 +158,9 @@ export const PERMISSION_DEFS: PermissionDef[] = [
   { key: "reviews.approve", label: "اعتماد الطلبات", description: "اعتماد أو رفض طلبات المراجعة.", group: "reviews" },
   { key: "reviews.reject", label: "رفض الطلبات", description: "رفض طلب مراجعة مع سبب.", group: "reviews" },
   // تحديثات الإنجاز
-  { key: "progress.update", label: "تحديث الإنجاز", description: "تسجيل تقدّم النتائج الرئيسية.", group: "progress" },
+  { key: "progress.update", label: "تحديث الإنجاز", description: "تسجيل تقدّم النتائج الرئيسية (إرسال أدلة وملاحظات).", group: "progress" },
   { key: "progress.view", label: "عرض الإنجاز", description: "الاطّلاع على تحديثات الإنجاز.", group: "progress" },
+  { key: "progress.review", label: "مراجعة التحديثات", description: "مراجعة طلبات تحديث الإنجاز واعتمادها أو إعادتها.", group: "progress" },
   { key: "evidence.upload", label: "رفع الأدلة", description: "إرفاق مستندات/صور داعمة للإنجاز.", group: "progress" },
   { key: "evidence.review", label: "مراجعة الأدلة", description: "مراجعة الأدلة المرفوعة وتسجيل القيمة المعتمدة.", group: "progress" },
   // التنبيهات

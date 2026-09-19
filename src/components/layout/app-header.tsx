@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import { Bell, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -12,6 +13,8 @@ import {
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { UserMenu } from "./user-menu";
 import { findNavItemByHref } from "@/lib/nav/navigation";
+import { useCurrentUser } from "@/lib/auth/session";
+import { usePhase4Store } from "@/lib/data/phase4-store";
 
 /**
  * AppHeader
@@ -27,6 +30,21 @@ import { findNavItemByHref } from "@/lib/nav/navigation";
  */
 export function AppHeader() {
   const pathname = usePathname();
+  const user = useCurrentUser();
+  const alerts = usePhase4Store((s) => s.alerts);
+  const readStates = usePhase4Store((s) => s.alertReadStates);
+
+  // حساب التنبيهات غير المقروءة للمستخدم الحالي
+  const unreadCount = user
+    ? alerts.filter(
+        (a) =>
+          a.recipientUserIds.includes(user.id) &&
+          a.isActive &&
+          !readStates.find(
+            (s) => s.alertId === a.id && s.userId === user.id
+          )?.isRead
+      ).length
+    : 0;
 
   const currentItem = findNavItemByHref(pathname);
   const pageTitle = currentItem?.label ?? deriveTitleFromPath(pathname);
@@ -68,11 +86,21 @@ export function AppHeader() {
               size="icon"
               aria-label="التنبيهات"
               className="relative text-muted-foreground"
+              asChild
             >
-              <Bell className="size-4" />
+              <Link href="/app/alerts">
+                <Bell className="size-4" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -left-0.5 flex size-4 items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold tabular-nums">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </Link>
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom">التنبيهات (قريباً)</TooltipContent>
+          <TooltipContent side="bottom">
+            {unreadCount > 0 ? `${unreadCount} تنبيه غير مقروء` : "التنبيهات"}
+          </TooltipContent>
         </Tooltip>
 
         <Separator orientation="vertical" className="mx-1 h-5" />
