@@ -20,9 +20,7 @@ import {
 import { SystemLogo } from "./system-logo";
 import { NAV_SECTIONS, type NavItem } from "@/lib/nav/navigation";
 import { useCurrentInstitutionalUser } from "@/hooks/use-current-institutional-user";
-import { StatusBadge } from "@/components/common/status-badge";
 import { ChevronLeft } from "lucide-react";
-import { cn } from "@/lib/utils";
 import type { Permission } from "@/lib/auth/permissions-v2";
 
 /**
@@ -32,9 +30,8 @@ import type { Permission } from "@/lib/auth/permissions-v2";
  *
  * الميزات:
  * - قابل للطي (collapsible=icon) مع إظهار tooltips عند الطي.
- * - يقفل التنقّل على الأدوار والصلاحيات (data-driven, Phase 2 v2 permissions).
+ * - يقفل التنقّل على الأدوار والصلاحيات (data-driven، صلاحيات دقيقة).
  * - يميّز العنصر النشط تلقائياً حسب المسار الحالي.
- * - يدعم الحالة "قريباً" للأقسام القادمة.
  *
  * يعمل تلقائياً كدرج (drawer) على الجوال عبر shadcn/ui Sidebar.
  */
@@ -70,35 +67,20 @@ export function AppSidebar() {
                   {visibleItems.map((item) => {
                     const isActive = isItemActive(item.href, pathname);
                     const Icon = item.icon;
-                    const isUpcoming = item.status === "upcoming";
-
-                    const button = (
-                      <SidebarMenuButton
-                        asChild
-                        isActive={isActive}
-                        tooltip={collapsed ? item.label : undefined}
-                        size="default"
-                        className={cn(
-                          isUpcoming && "text-muted-foreground"
-                        )}
-                      >
-                        <Link href={item.href}>
-                          <Icon className="size-4" />
-                          <span>{item.label}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    );
 
                     return (
                       <SidebarMenuItem key={item.key}>
-                        {button}
-                        {isUpcoming && !collapsed && (
-                          <SidebarMenuBadge>
-                            <StatusBadge variant="outline" size="sm">
-                              قريباً
-                            </StatusBadge>
-                          </SidebarMenuBadge>
-                        )}
+                        <SidebarMenuButton
+                          asChild
+                          isActive={isActive}
+                          tooltip={collapsed ? item.label : undefined}
+                          size="default"
+                        >
+                          <Link href={item.href}>
+                            <Icon className="size-4" />
+                            <span>{item.label}</span>
+                          </Link>
+                        </SidebarMenuButton>
                       </SidebarMenuItem>
                     );
                   })}

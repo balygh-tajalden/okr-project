@@ -11,7 +11,7 @@ export default function ForgotPasswordPage() {
     <RedirectIfAuthenticated>
       <AuthLayout
         title="استعادة كلمة المرور"
-        subtitle="أدخل بريدك الإلكتروني وسنرسل لك تعليمات إعادة التعيين."
+        subtitle="أدخل بريدك الإلكتروني أو اسم المستخدم المرتبط بحسابك للمتابعة في الاستعادة."
       >
         <ForgotPasswordForm />
       </AuthLayout>

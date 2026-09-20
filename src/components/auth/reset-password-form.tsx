@@ -6,22 +6,37 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { AlertCircle, Eye, EyeOff, Loader2, CheckCircle2 } from "lucide-react";
+import {
+  AlertCircle,
+  Eye,
+  EyeOff,
+  Loader2,
+  CheckCircle2,
+  UserCircle,
+} from "lucide-react";
 import { resetPassword } from "@/lib/auth/service";
+import { useAuthSession } from "@/lib/auth/session";
 import { toast } from "sonner";
 
 /**
  * ResetPasswordForm
  * ===================================================================
- * نموذج إعادة تعيين / تعيين كلمة المرور الجديدة.
- * يدعم حالتين:
- *  - إعادة تعيين بعد طلب الاستعادة
- *  - تعيين كلمة مرور لأول مرة لحساب جديد
+ * نموذج إعادة تعيين / تغيير كلمة المرور — يحفظ كلمة المرور فعلياً.
+ * يكتشف الحالة تلقائياً:
+ *  - جلسة نشطة: تغيير كلمة مرور المستخدم الحالي (من الملف الشخصي)
+ *    ثم تسجيل الخروج لإعادة الدخول بكلمة المرور الجديدة.
+ *  - بلا جلسة: مسار "نسيت كلمة المرور" — يحدد الحساب باسم المستخدم
+ *    أو البريد الإلكتروني ثم يعيّن كلمة مرور جديدة.
  *
  * يقدم توجيه قوة كلمة المرور بصرياً واختبار تطابق كلمتي المرور.
  */
-export function ResetPasswordForm({ mode = "reset" }: { mode?: "reset" | "set" }) {
+export function ResetPasswordForm() {
   const router = useRouter();
+  const session = useAuthSession((s) => s.session);
+  const clearSession = useAuthSession((s) => s.clearSession);
+  const hasSession = !!session;
+
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -29,9 +44,18 @@ export function ResetPasswordForm({ mode = "reset" }: { mode?: "reset" | "set" }
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [touched, setTouched] = useState({ password: false, confirm: false });
+  const [touched, setTouched] = useState({
+    identifier: false,
+    password: false,
+    confirm: false,
+  });
 
   const strength = useMemo(() => computeStrength(password), [password]);
+
+  const identifierError =
+    !hasSession && touched.identifier && !identifier.trim()
+      ? "اسم المستخدم أو البريد الإلكتروني مطلوب"
+      : null;
 
   const passwordError =
     touched.password && password.length > 0 && password.length < 8
@@ -45,9 +69,9 @@ export function ResetPasswordForm({ mode = "reset" }: { mode?: "reset" | "set" }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setTouched({ password: true, confirm: true });
+    setTouched({ identifier: true, password: true, confirm: true });
 
-    if (passwordError || confirmError) return;
+    if ((!hasSession && !identifier.trim()) || passwordError || confirmError) return;
     if (!password || !confirm) {
       setError("يرجى إدخال كلمة المرور وتأكيدها.");
       return;
@@ -55,10 +79,18 @@ export function ResetPasswordForm({ mode = "reset" }: { mode?: "reset" | "set" }
 
     setError(null);
     startTransition(async () => {
-      const result = await resetPassword(null, password, confirm);
+      const result = await resetPassword(
+        hasSession ? null : identifier.trim(),
+        password,
+        confirm
+      );
       if (result.success) {
         setSuccess(true);
         toast.success("تم تعيين كلمة المرور بنجاح");
+        if (hasSession) {
+          // تغيير كلمة المرور من جلسة نشطة → تسجيل خروج لإعادة الدخول
+          clearSession();
+        }
         setTimeout(() => router.replace("/login"), 1800);
       } else {
         setError(result.error ?? "تعذّر تعيين كلمة المرور. حاول مرة أخرى.");
@@ -102,6 +134,43 @@ export function ResetPasswordForm({ mode = "reset" }: { mode?: "reset" | "set" }
         </div>
       )}
 
+      {hasSession ? (
+        <div className="flex items-center gap-2.5 rounded-md border border-border bg-muted/30 px-3.5 py-3 text-sm text-muted-foreground">
+          <UserCircle className="size-4 shrink-0" />
+          <span>
+            تغيير كلمة المرور للحساب:{" "}
+            <span className="font-medium text-foreground">
+              {session.user.fullName}
+            </span>
+          </span>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <Label htmlFor="identifier" className="text-sm font-medium">
+            اسم المستخدم أو البريد الإلكتروني
+          </Label>
+          <Input
+            id="identifier"
+            name="identifier"
+            type="text"
+            autoComplete="username"
+            required
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
+            onBlur={() => setTouched((t) => ({ ...t, identifier: true }))}
+            aria-invalid={!!identifierError}
+            aria-describedby={identifierError ? "identifier-error" : undefined}
+            placeholder="مثال: a.almansour"
+            className="h-10"
+          />
+          {identifierError && (
+            <p id="identifier-error" className="text-xs text-destructive">
+              {identifierError}
+            </p>
+          )}
+        </div>
+      )}
+
       <div className="space-y-2">
         <Label htmlFor="password" className="text-sm font-medium">
           كلمة المرور الجديدة
@@ -112,7 +181,6 @@ export function ResetPasswordForm({ mode = "reset" }: { mode?: "reset" | "set" }
             name="password"
             type={showPassword ? "text" : "password"}
             autoComplete="new-password"
-            autoFocus
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -186,10 +254,10 @@ export function ResetPasswordForm({ mode = "reset" }: { mode?: "reset" | "set" }
             <Loader2 className="size-4 animate-spin" />
             جاري الحفظ...
           </>
-        ) : mode === "set" ? (
-          "تعيين كلمة المرور"
+        ) : hasSession ? (
+          "تغيير كلمة المرور"
         ) : (
-          "إعادة تعيين كلمة المرور"
+          "تعيين كلمة المرور"
         )}
       </Button>
 

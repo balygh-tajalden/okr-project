@@ -102,6 +102,8 @@ function EditCycleForm({ cycleId }: { cycleId: string }) {
   }
 
   const editableFields = getCycleEditableFields(cycle.status);
+  // معرّف ثابت بعد فحص الوجود — يضمن عدم فقدان التخصيص داخل العمليات
+  const currentCycleId = cycle.id;
 
   const setField = (patch: Partial<CycleFormValues>) =>
     setValues((v) => ({ ...v, ...patch }));
@@ -133,9 +135,9 @@ function EditCycleForm({ cycleId }: { cycleId: string }) {
         // @ts-expect-error — indexing with keyof
         patch[field] = values[field];
       }
-      updateCycle(cycle.id, patch as any);
+      updateCycle(currentCycleId, patch as any);
       toast.success("تم حفظ التعديلات بنجاح.");
-      router.push(`/app/cycles/${cycle.id}`);
+      router.push(`/app/cycles/${currentCycleId}`);
     });
   }
 

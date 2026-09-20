@@ -97,19 +97,22 @@ export function AppHeader() {
       </div>
 
       <div className="flex items-center gap-1">
-        {/* البحث — placeholder */}
+        {/* البحث — صفحة البحث والتصفية */}
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
-              aria-label="بحث"
+              aria-label="البحث والتصفية"
               className="text-muted-foreground"
+              asChild
             >
-              <Search className="size-4" />
+              <Link href="/app/search">
+                <Search className="size-4" />
+              </Link>
             </Button>
           </TooltipTrigger>
-          <TooltipContent side="bottom">البحث (قريباً)</TooltipContent>
+          <TooltipContent side="bottom">البحث والتصفية</TooltipContent>
         </Tooltip>
 
         {/* جرس التنبيهات — popover منبثق */}

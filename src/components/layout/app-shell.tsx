@@ -37,8 +37,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <footer className="border-t border-border bg-background/60 px-4 py-3 text-center sm:px-6">
             <p className="text-[11px] text-muted-foreground">
-              نظام إدارة الأهداف المؤسسية وفق منهجية OKR — الطور الأول: التأسيس
-              والمصادقة
+              نظام إدارة الأهداف المؤسسية OKR
             </p>
           </footer>
         </SidebarInset>

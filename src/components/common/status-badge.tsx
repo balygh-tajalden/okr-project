@@ -96,10 +96,4 @@ export const OkrStatusBadges = {
       مكتمل
     </StatusBadge>
   ),
-  /** قريباً (للأقسام القادمة) */
-  Upcoming: ({ size }: { size?: "sm" | "md" | "lg" }) => (
-    <StatusBadge variant="outline" size={size}>
-      قريباً
-    </StatusBadge>
-  ),
 };

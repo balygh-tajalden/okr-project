@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/common/page-header";
 import { StatusBadge } from "@/components/common/status-badge";
 import { Breadcrumbs } from "@/components/common/breadcrumbs";
@@ -26,8 +25,6 @@ import {
   GitPullRequestArrow as GitPullRequestArrowIcon,
   Activity,
   BarChart3,
-  ArrowLeft,
-  Sparkles,
   ShieldCheck,
   CheckCircle2,
   Users as UsersIcon,
@@ -42,11 +39,11 @@ import {
 import { can as canSvc, canAny as canAnySvc } from "@/lib/services/institutional";
 
 /**
- * WelcomePage — الصفحة الرئيسية (الطور الثاني)
+ * WelcomePage — الصفحة الرئيسية
  * ===================================================================
  * - ترحيب باسم المستخدم + دوره الأساسي + وحدته التنظيمية.
- * - مؤشرات إعداد حقيقية من بيانات Phase 2 (وليست KPIs ملفقة).
- * - روابط سريعة للأقسام الفعّالة والقادمة.
+ * - مؤشرات إعداد حقيقية من بيانات النظام (وليست أرقاماً ملفقة).
+ * - روابط سريعة للأقسام المتاحة حسب صلاحيات المستخدم.
  */
 export default function WelcomePage() {
   const { user, roles } = useCurrentInstitutionalUser();
@@ -66,7 +63,6 @@ export default function WelcomePage() {
   const primaryUnitName = getUserPrimaryUnitName(user, orgUnits);
   const userRoles = getUserRoles(user, roles);
   const primaryRoleName = userRoles[0]?.name ?? "—";
-  const primaryRoleDesc = userRoles[0]?.description ?? "";
 
   // مؤشرات حقيقية من بيانات Phase 2 و 3
   const scopedObjectives = filterObjectivesByScopeAndPermissions(
@@ -121,67 +117,6 @@ export default function WelcomePage() {
           ) : undefined
         }
       />
-
-      {/* بطاقة الترحيب */}
-      <Card className="overflow-hidden border-border bg-gradient-to-l from-primary/5 via-background to-background">
-        <CardContent className="p-6 sm:p-8">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
-            <div className="space-y-3 max-w-2xl">
-              <div className="flex items-center gap-2">
-                <Sparkles className="size-5 text-primary" />
-                <h2 className="text-lg font-semibold text-foreground">
-                  منصة إدارة الأهداف وفق منهجية OKR
-                </h2>
-              </div>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                يتيح لك النظام تحديد أهداف مؤسسية طموحة، ربطها بنتائج رئيسية
-                قابلة للقياس، متابعة الإنجاز، وتفعيل الاعتمادات متعددة المستويات
-                — مع دعم كامل للغة العربية واتجاه RTL.
-              </p>
-              {primaryRoleDesc && (
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {primaryRoleDesc}
-                </p>
-              )}
-              <div className="flex flex-wrap gap-2 pt-1">
-                <Button asChild variant="default" size="sm">
-                  <Link href="/app/cycles">
-                    عرض دورات OKR
-                    <ArrowLeft className="size-4" />
-                  </Link>
-                </Button>
-                <Button asChild variant="outline" size="sm">
-                  <Link href="/app/profile">عرض ملفي الشخصي</Link>
-                </Button>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2 text-sm min-w-[220px]">
-              <div className="rounded-lg border border-border bg-background/80 p-4 space-y-2">
-                <p className="text-xs text-muted-foreground">جلسة حالية</p>
-                <div className="space-y-1.5">
-                  <Row label="الاسم:" value={user.fullName} />
-                  <Row label="الدور:" value={primaryRoleName} />
-                  <Row label="الجهة:" value={primaryUnitName} small />
-                  <Row
-                    label="الحالة:"
-                    value={
-                      <StatusBadge variant="success" dot size="sm">
-                        فعّال
-                      </StatusBadge>
-                    }
-                  />
-                  {userRoles.length > 1 && (
-                    <Row
-                      label="أدوار إضافية:"
-                      value={`+${userRoles.length - 1} دور`}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* مؤشرات النظام الحقيقية */}
       <section className="space-y-3">
@@ -266,7 +201,6 @@ export default function WelcomePage() {
           ) : (
             quickLinks.map((item) => {
               const Icon = item.icon;
-              const isUpcoming = item.status === "upcoming";
               return (
                 <Link
                   key={item.key}
@@ -277,15 +211,9 @@ export default function WelcomePage() {
                     <div className="flex size-10 items-center justify-center rounded-md bg-primary/10 text-primary transition-colors group-hover:bg-primary/15">
                       <Icon className="size-5" />
                     </div>
-                    {isUpcoming ? (
-                      <StatusBadge variant="outline" size="sm">
-                        قريباً
-                      </StatusBadge>
-                    ) : (
-                      <StatusBadge variant="success" size="sm">
-                        متاح
-                      </StatusBadge>
-                    )}
+                    <StatusBadge variant="success" size="sm">
+                      متاح
+                    </StatusBadge>
                   </div>
                   <div className="mt-3 space-y-1">
                     <h4 className="text-sm font-semibold text-foreground">
@@ -304,10 +232,10 @@ export default function WelcomePage() {
         </div>
       </section>
 
-      {/* ميزات الطور الثاني المتاحة */}
+      {/* إمكانيات النظام */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">إمكانيات الطور الثاني المتاحة</CardTitle>
+          <CardTitle className="text-base">إمكانيات النظام المتاحة</CardTitle>
           <CardDescription>
             ما يمكنك القيام به الآن في النظام
           </CardDescription>
@@ -318,8 +246,14 @@ export default function WelcomePage() {
             "إدارة الأدوار والصلاحيات الدقيقة مع تعدد الأدوار",
             "إدارة الهيكل التنظيمي الهرمي (N مستويات)",
             "إدارة دورات OKR مع آلة حالة صارمة",
+            "إنشاء الأهداف والنتائج الرئيسية ومتابعتها",
+            "المراجعات والاعتمادات متعددة المستويات",
+            "تحديثات الإنجاز ومؤشرات الأداء الفعلية",
+            "التنبيهات والمراقبة الآلية للتأخر والتعطل",
+            "التقارير المؤسسية مع التصدير والطباعة",
+            "لوحة معلومات تحليلية حسب النطاق التنظيمي",
+            "البحث والتصفية الموحدة للأهداف",
             "حماية المسارات بناءً على الصلاحيات والنطاق التنظيمي",
-            "السجل التنظيمي التاريخي للمستخدمين",
           ].map((f, i) => (
             <div key={i} className="flex items-start gap-2.5">
               <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" />
@@ -328,27 +262,6 @@ export default function WelcomePage() {
           ))}
         </CardContent>
       </Card>
-    </div>
-  );
-}
-
-function Row({
-  label,
-  value,
-  small,
-}: {
-  label: string;
-  value: React.ReactNode;
-  small?: boolean;
-}) {
-  return (
-    <div className="flex items-center justify-between gap-2">
-      <span className="text-muted-foreground text-xs">{label}</span>
-      <span
-        className={`font-medium text-foreground ${small ? "text-xs" : "text-sm"}`}
-      >
-        {value}
-      </span>
     </div>
   );
 }

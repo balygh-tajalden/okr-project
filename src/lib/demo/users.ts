@@ -9,11 +9,11 @@ import type { User, DemoCredentials, Role } from "@/lib/auth/types";
  *
  * المؤسسة الافتراضية: "هيئة التطوير المؤسسي"
  *
- * كلمة المرور لجميع الحسابات التالية: Demo@2025
+ * كلمة المرور لجميع الحسابات التالية: Demo@2026
  * (انظر DEMO_PASSWORD أدناه — مرجع موحّد)
  */
 
-export const DEMO_PASSWORD = "Demo@2025";
+export const DEMO_PASSWORD = "Demo@2026";
 
 /** المستخدمون التجريبيون — كل دور يمثّل فئة وظيفية حقيقية */
 export const DEMO_USERS: User[] = [

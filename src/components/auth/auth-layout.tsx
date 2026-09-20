@@ -68,7 +68,7 @@ export function AuthLayout({
 
         <div className="relative z-10 space-y-6">
           <h2 className="text-3xl font-bold leading-tight">
-            نظام مؤسسي متكامل لإدارة الأهداف وفق منهجية OKR
+            نظام ادارة الاهداف المؤسسية OKR
           </h2>
           <p className="text-base leading-relaxed text-primary-foreground/85">
             منصة موحّدة لتخطيط الأهداف، متابعة الإنجاز، الاعتماد متعدد المستويات،

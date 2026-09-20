@@ -26,15 +26,9 @@ import {
  *
  * مبادئ:
  * - التنقّل مُدار بالبيانات (data-driven) بدل التكرار في كل مكوّن.
- * - كل عنصر يحمل: مفتاحاً، مساراً، أيقونة، حالة (متاح/قادم)،
- *   والصلاحيات المطلوبة لعرضه.
- * - يستخدم نظام صلاحيات Phase 2 (permissions-v2): users.view, cycles.view...
- *
- * - العناصر القادمة (status = "upcoming") تُعرض مع شارة "قريباً"
- *   وتُسلك إلى صفحة مكان مؤقتة دون منطق أعمال فعلي.
+ * - كل عنصر يحمل: مفتاحاً، مساراً، أيقونة، والصلاحيات المطلوبة لعرضه.
+ * - يستخدم نظام صلاحيات دقيق (permissions-v2): users.view, cycles.view...
  */
-
-export type NavItemStatus = "active" | "upcoming";
 
 export interface NavItem {
   key: string;
@@ -42,7 +36,6 @@ export interface NavItem {
   description?: string;
   href: string;
   icon: LucideIcon;
-  status: NavItemStatus;
   /** الصلاحيات المطلوبة لرؤية العنصر. البديل: requiredAnyPermission */
   requiredPermissions?: Permission[];
   /** إن توفّر أي صلاحية من هذه القائمة يُعرض العنصر */
@@ -57,8 +50,8 @@ export interface NavSection {
 
 /**
  * الأقسام الرئيسية للتنقّل.
- * Phase 2 فعّال: المستخدمون، الأدوار، الهيكل التنظيمي، دورات OKR
- * القادمة (Phase 3+): الأهداف، المراجعات، التحديثات، التنبيهات، التقارير، لوحة المعلومات
+ * فعّال بالكامل: لوحة المعلومات، المستخدمون، الأدوار، الهيكل التنظيمي،
+ * دورات OKR، الأهداف، المراجعات، التحديثات، التنبيهات، التقارير
  */
 export const NAV_SECTIONS: NavSection[] = [
   {
@@ -70,7 +63,6 @@ export const NAV_SECTIONS: NavSection[] = [
         label: "الرئيسية",
         href: "/app",
         icon: LayoutDashboard,
-        status: "active",
       },
       {
         key: "dashboard",
@@ -78,7 +70,6 @@ export const NAV_SECTIONS: NavSection[] = [
         description: "تحليلات وملخصات الأداء المؤسسي",
         href: "/app/dashboard",
         icon: BarChart3,
-        status: "active",
         requiredPermissions: ["dashboard.view"],
       },
       {
@@ -86,7 +77,6 @@ export const NAV_SECTIONS: NavSection[] = [
         label: "البحث والتصفية",
         href: "/app/search",
         icon: Search,
-        status: "active",
       },
     ],
   },
@@ -100,7 +90,6 @@ export const NAV_SECTIONS: NavSection[] = [
         description: "إدارة دورات التخطيط الفصلية والسنوية",
         href: "/app/cycles",
         icon: Repeat,
-        status: "active",
         requiredAnyPermission: ["cycles.view", "cycles.create"],
       },
       {
@@ -109,7 +98,6 @@ export const NAV_SECTIONS: NavSection[] = [
         description: "إنشاء ومتابعة الأهداف والنتائج",
         href: "/app/objectives",
         icon: Target,
-        status: "active",
         requiredAnyPermission: ["goals.view"],
       },
       {
@@ -118,7 +106,6 @@ export const NAV_SECTIONS: NavSection[] = [
         description: "مراجعة واعتماد الأهداف المُرسلة",
         href: "/app/reviews",
         icon: GitPullRequestArrow,
-        status: "active",
         requiredAnyPermission: ["goals.review", "goals.approve"],
       },
       {
@@ -127,7 +114,6 @@ export const NAV_SECTIONS: NavSection[] = [
         description: "مراجعة طلبات تحديث الإنجاز",
         href: "/app/updates",
         icon: Activity,
-        status: "active",
         requiredAnyPermission: ["progress.review", "progress.update", "progress.view"],
       },
       {
@@ -136,7 +122,6 @@ export const NAV_SECTIONS: NavSection[] = [
         description: "الأهداف الفردية التي سُنّدت إليك",
         href: "/app/my-objectives",
         icon: Inbox,
-        status: "active",
         requiredPermissions: ["individual_goals.view"],
       },
     ],
@@ -151,7 +136,6 @@ export const NAV_SECTIONS: NavSection[] = [
         description: "الإدارات والأقسام والفرق",
         href: "/app/organization",
         icon: Network,
-        status: "active",
         requiredPermissions: ["organization.view"],
       },
       {
@@ -160,7 +144,6 @@ export const NAV_SECTIONS: NavSection[] = [
         description: "إدارة حسابات المستخدمين",
         href: "/app/users",
         icon: Users,
-        status: "active",
         requiredPermissions: ["users.view"],
       },
       {
@@ -169,7 +152,6 @@ export const NAV_SECTIONS: NavSection[] = [
         description: "إدارة الأدوار والصلاحيات",
         href: "/app/roles",
         icon: KeyRound,
-        status: "active",
         requiredPermissions: ["roles.view"],
       },
     ],
@@ -184,7 +166,6 @@ export const NAV_SECTIONS: NavSection[] = [
         description: "تنبيهات النظام والإشعارات",
         href: "/app/alerts",
         icon: Bell,
-        status: "active",
         requiredPermissions: ["alerts.view"],
       },
       {
@@ -193,7 +174,6 @@ export const NAV_SECTIONS: NavSection[] = [
         description: "تقارير الأداء والتصدير",
         href: "/app/reports",
         icon: FileBarChart,
-        status: "active",
         requiredPermissions: ["reports.view"],
       },
     ],
@@ -207,14 +187,12 @@ export const NAV_SECTIONS: NavSection[] = [
         label: "ملفي الشخصي",
         href: "/app/profile",
         icon: UserIcon,
-        status: "active",
       },
       {
         key: "settings",
         label: "الإعدادات",
         href: "/app/settings",
         icon: Settings,
-        status: "active",
         requiredPermissions: ["settings.manage"],
       },
       {
@@ -223,7 +201,6 @@ export const NAV_SECTIONS: NavSection[] = [
         description: "إعدادات النظام وسجلاته",
         href: "/app/admin",
         icon: ShieldCheck,
-        status: "active",
         requiredPermissions: ["system.admin"],
       },
     ],

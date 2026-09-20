@@ -20,6 +20,18 @@ import { ConfirmDialog } from "@/components/common/confirm-dialog";
 import { ProtectedRoute } from "@/components/auth/protected-route-v2";
 import { useCurrentInstitutionalUser } from "@/hooks/use-current-institutional-user";
 import { useInstitutionalStore } from "@/lib/data/store";
+import { usePhase3Store } from "@/lib/data/phase3-store";
+import { usePhase4Store } from "@/lib/data/phase4-store";
+import { filterObjectivesByScopeAndPermissions } from "@/lib/services/phase3-services";
+import {
+  calculateObjectiveProgress,
+  formatProgress,
+} from "@/lib/services/phase4-calculations";
+import {
+  ObjectiveStatusBadge,
+  ObjectiveTypeBadge,
+} from "@/components/common/phase3-badges";
+import { Progress } from "@/components/ui/progress";
 import {
   getCycleActionsFor,
   canTransitionCycle,
@@ -40,8 +52,9 @@ import {
   Calendar,
   Clock,
   UserCircle,
-  Sparkles,
   Target,
+  Plus,
+  ChevronLeft,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -59,13 +72,53 @@ export default function CycleDetailsPage({
 }
 
 function CycleDetails({ cycleId }: { cycleId: string }) {
-  const { can } = useCurrentInstitutionalUser();
+  const { user, roles, can } = useCurrentInstitutionalUser();
   const cycles = useInstitutionalStore((s) => s.cycles);
+  const orgUnits = useInstitutionalStore((s) => s.orgUnits);
+  const users = useInstitutionalStore((s) => s.users);
   const setCycleStatus = useInstitutionalStore((s) => s.setCycleStatus);
+  const allObjectives = usePhase3Store((s) => s.objectives);
+  const keyResults = usePhase3Store((s) => s.keyResults);
+  const assignments = usePhase3Store((s) => s.assignments);
+  const updateRequests = usePhase4Store((s) => s.updateRequests);
   const [confirm, setConfirm] = useState<null | CycleStatus>(null);
 
   const cycle = cycles.find((c) => c.id === cycleId);
   const creator = cycle ? getUserById(cycle.createdBy) : undefined;
+
+  // أهداف الدورة ضمن نطاق صلاحيات المستخدم، مع نسبة إنجازها المعتمدة
+  const cycleObjectives = useMemo(() => {
+    if (!user) return [];
+    const scoped = filterObjectivesByScopeAndPermissions(
+      user,
+      roles,
+      allObjectives,
+      orgUnits,
+      assignments,
+      users
+    );
+    return scoped
+      .filter((o) => o.cycleId === cycleId)
+      .map((o) => ({
+        objective: o,
+        progress: calculateObjectiveProgress(
+          o,
+          keyResults,
+          updateRequests,
+          allObjectives
+        ),
+      }));
+  }, [
+    user,
+    roles,
+    allObjectives,
+    orgUnits,
+    assignments,
+    users,
+    cycleId,
+    keyResults,
+    updateRequests,
+  ]);
 
   if (!cycle) {
     return (
@@ -90,6 +143,12 @@ function CycleDetails({ cycleId }: { cycleId: string }) {
   );
 
   const endDatePassed = isCycleEndDatePassed(cycle);
+
+  const avgProgress = cycleObjectives.length
+    ? cycleObjectives.reduce((s, x) => s + x.progress, 0) /
+      cycleObjectives.length
+    : 0;
+  const completedCount = cycleObjectives.filter((x) => x.progress >= 100).length;
 
   const handleConfirmAction = () => {
     if (!confirm) return;
@@ -222,39 +281,110 @@ function CycleDetails({ cycleId }: { cycleId: string }) {
         </CardContent>
       </Card>
 
-      {/* قسم الأهداف — placeholder للطور الثالث */}
+      {/* أهداف الدورة */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base flex items-center gap-2">
-            <Target className="size-4" />
-            الأهداف
-          </CardTitle>
-          <CardDescription>
-            الأهداف المرتبطة بهذه الدورة — ستُضاف في الطور الثالث.
-          </CardDescription>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="space-y-1.5">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <Target className="size-4" />
+                الأهداف
+              </CardTitle>
+              <CardDescription>
+                الأهداف المرتبطة بهذه الدورة
+                {cycleObjectives.length > 0 && ` (${cycleObjectives.length})`}
+              </CardDescription>
+            </div>
+            {can("goals.create") && cycle.status === "active" && (
+              <Button asChild variant="outline" size="sm">
+                <Link href="/app/objectives/new">
+                  <Plus className="size-4" />
+                  إنشاء هدف
+                </Link>
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent className="p-0">
-          <EmptyState
-            icon={<Sparkles className="size-6" />}
-            title="لم تتم إضافة أهداف إلى هذه الدورة بعد"
-            description="في الطور القادم (Phase 3) ستتمكن من إنشاء أهداف ونتائج رئيسية مرتبطة بهذه الدورة، مع التحقق التلقائي من وقوعها ضمن فترتها الزمنية."
-            className="border-0"
-          />
+          {cycleObjectives.length === 0 ? (
+            <EmptyState
+              icon={<Target className="size-6" />}
+              title="لا توجد أهداف مرتبطة بهذه الدورة بعد"
+              description="عند إنشاء أهداف وربطها بهذه الدورة ستظهر هنا مع نتائجها الرئيسية ومؤشرات تقدّمها."
+              action={
+                can("goals.create") ? (
+                  <Button asChild size="sm">
+                    <Link href="/app/objectives/new">
+                      <Plus className="size-4" />
+                      إنشاء هدف
+                    </Link>
+                  </Button>
+                ) : undefined
+              }
+              className="border-0"
+            />
+          ) : (
+            <div className="divide-y divide-border">
+              {cycleObjectives.map(({ objective: o, progress }) => {
+                const owner = getUserById(o.ownerId);
+                return (
+                  <Link
+                    key={o.id}
+                    href={`/app/objectives/${o.id}`}
+                    className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/30"
+                  >
+                    <div className="min-w-0 flex-1 space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="truncate text-sm font-medium text-foreground">
+                          {o.title}
+                        </span>
+                        <ObjectiveTypeBadge type={o.type} size="sm" />
+                        <ObjectiveStatusBadge status={o.status} size="sm" />
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {owner?.fullName ?? "—"}
+                      </p>
+                    </div>
+                    <div className="flex w-32 shrink-0 items-center gap-2">
+                      <Progress
+                        value={Math.min(progress, 100)}
+                        className="h-2"
+                      />
+                      <span className="text-xs tabular-nums text-muted-foreground">
+                        {formatProgress(progress)}
+                      </span>
+                    </div>
+                    <ChevronLeft className="size-4 shrink-0 text-muted-foreground" />
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </CardContent>
       </Card>
 
-      {/* مؤشرات تقدّم الدورة — placeholder للطور الرابع */}
+      {/* مؤشرات تقدّم الدورة */}
       <Card>
         <CardHeader>
           <CardTitle className="text-base">تقدّم الدورة</CardTitle>
           <CardDescription>
-            مؤشرات الإنجاز والإحصائيات — ستُفعّل عند بدء تنفيذ الأهداف.
+            مؤشرات الإنجاز محسوبة من تحديثات الإنجاز المعتمدة لأهداف هذه
+            الدورة.
           </CardDescription>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-3">
-          <PlaceholderStat label="عدد الأهداف" value="—" />
-          <PlaceholderStat label="متوسط الإنجاز" value="—" />
-          <PlaceholderStat label="الأهداف المكتملة" value="—" />
+          <ProgressStat
+            label="عدد الأهداف"
+            value={String(cycleObjectives.length)}
+          />
+          <ProgressStat
+            label="متوسط الإنجاز"
+            value={formatProgress(avgProgress)}
+          />
+          <ProgressStat
+            label="الأهداف المكتملة"
+            value={`${completedCount} / ${cycleObjectives.length}`}
+          />
         </CardContent>
       </Card>
 
@@ -270,7 +400,6 @@ function CycleDetails({ cycleId }: { cycleId: string }) {
             : `سيتم إكمال دورة "${cycle.name}". بعد الإكمال، تصبح الدورة للقراءة فقط (مرجع تاريخي). لا يمكن العودة إلى حالة "نشطة". هل تريد المتابعة؟`
         }
         confirmLabel={confirm === "active" ? "تفعيل" : "إكمال"}
-        variant={confirm === "active" ? "default" : "outline"}
         onConfirm={handleConfirmAction}
       />
     </div>
@@ -335,11 +464,13 @@ function InfoRow({
   );
 }
 
-function PlaceholderStat({ label, value }: { label: string; value: string }) {
+function ProgressStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-md border border-dashed border-border bg-muted/20 p-3 text-center">
-      <div className="text-2xl font-bold text-muted-foreground">{value}</div>
-      <div className="text-[11px] text-muted-foreground mt-1">{label}</div>
+    <div className="rounded-md border border-border bg-muted/20 p-4 text-center">
+      <div className="text-2xl font-bold tabular-nums text-foreground">
+        {value}
+      </div>
+      <div className="mt-1 text-[11px] text-muted-foreground">{label}</div>
     </div>
   );
 }

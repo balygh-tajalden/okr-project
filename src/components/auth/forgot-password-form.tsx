@@ -52,13 +52,10 @@ export function ForgotPasswordForm() {
           </div>
           <div className="space-y-1.5">
             <h2 className="text-lg font-semibold text-foreground">
-              تم إرسال تعليمات الاستعادة
+              تم التحقق من الطلب
             </h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              إن كان البريد الإلكتروني{" "}
-              <span className="font-medium text-foreground">{email}</span>{" "}
-              مسجّلاً في النظام، فستصلك تعليمات إعادة تعيين كلمة المرور خلال
-              دقائق. يرجى التحقق من صندوق الوارد ومجلد الرسائل غير المرغوب فيها.
+              أكمل الآن عملية الاستعادة بتعيين كلمة مرور جديدة لحسابك.
             </p>
           </div>
         </div>
@@ -117,10 +114,10 @@ export function ForgotPasswordForm() {
         {isPending ? (
           <>
             <Loader2 className="size-4 animate-spin" />
-            جاري الإرسال...
+            جاري التحقق...
           </>
         ) : (
-          "إرسال تعليمات الاستعادة"
+          "متابعة"
         )}
       </Button>
 

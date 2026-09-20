@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ShieldX } from "lucide-react";
 import { useCurrentUser } from "@/lib/auth/session";
+import { ROLE_LABELS } from "@/lib/auth/types";
 
 /**
  * Unauthorized — صفحة 403 (Access Denied)
@@ -34,7 +35,7 @@ export default function UnauthorizedPage() {
             <span>المستخدم الحالي:</span>
             <span className="font-medium text-foreground">{user.fullName}</span>
             <span>•</span>
-            <span>{user.role}</span>
+            <span>{ROLE_LABELS[user.role]}</span>
           </div>
         )}
       </div>

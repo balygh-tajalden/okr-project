@@ -523,7 +523,7 @@ export const SEED_DATA = {
 };
 
 /** كلمة المرور المشتركة للحسابات التجريبية (مرجع موحّد) */
-export const DEMO_PASSWORD = "Demo@2025";
+export const DEMO_PASSWORD = "Demo@2026";
 
 /** بنية بيانات الاعتماد للربط مع Phase 1 auth service */
 export const DEMO_CREDENTIALS = SEED_USERS.map((u) => ({
