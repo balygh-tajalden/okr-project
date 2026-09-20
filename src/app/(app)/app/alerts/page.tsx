@@ -173,8 +173,12 @@ function AlertsList() {
           {filtered.length === 0 ? (
             <EmptyState
               icon={<Bell className="size-6" />}
-              title="لا توجد تنبيهات"
-              description={filter === "unread" ? "لا توجد تنبيهات غير مقروءة." : "لا توجد تنبيهات لك."}
+              title={filter === "unread" ? "لا توجد تنبيهات غير مقروءة" : "لا توجد تنبيهات لك حالياً"}
+              description={
+                filter === "unread"
+                  ? "عند وصول تنبيهات جديدة، ستظهر هنا."
+                  : "عند وصول تنبيهات جديدة أو يدورية، ستظهر هنا."
+              }
               className="border-0"
             />
           ) : (
