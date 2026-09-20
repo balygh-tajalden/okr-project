@@ -259,7 +259,7 @@ export const useInstitutionalStore = create<InstitutionalStore>()(
     }),
     {
       name: STORAGE_KEY,
-      version: 7,
+      version: 8,
       storage: createJSONStorage(() => {
         try {
           return {

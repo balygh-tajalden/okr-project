@@ -280,10 +280,10 @@ export const SEED_USERS: User[] = [
   // مدير النظام
   {
     id: "u-001",
-    username: "a.almansour",
-    fullName: "عبدالله بن سعد المنصور",
-    email: "a.almansour@org.dev",
-    initials: "عم",
+    username: "b.taj",
+    fullName: "بليغ تاج الدين",
+    email: "b.taj@org.dev",
+    initials: "بت",
     jobTitle: "مدير النظام",
     employeeId: "EMP-1001",
     status: "active",
@@ -295,10 +295,10 @@ export const SEED_USERS: User[] = [
   // الإدارة العليا
   {
     id: "u-002",
-    username: "k.alshammari",
-    fullName: "د. خالد بن ناصر الشمري",
-    email: "k.alshammari@org.dev",
-    initials: "خش",
+    username: "t.ahmed",
+    fullName: "تاج الدين أحمد",
+    email: "t.ahmed@org.dev",
+    initials: "تأ",
     jobTitle: "وكيل الهيئة المساعد",
     employeeId: "EMP-1002",
     status: "active",
@@ -310,10 +310,10 @@ export const SEED_USERS: User[] = [
   // مدير إدارة (تخطيط الموارد والأداء)
   {
     id: "u-003",
-    username: "s.aldosari",
-    fullName: "م. سارة بنت محمد الدوسري",
-    email: "s.aldosari@org.dev",
-    initials: "سد",
+    username: "m.qattafi",
+    fullName: "محمد القطافي",
+    email: "m.qattafi@org.dev",
+    initials: "مق",
     jobTitle: "مدير إدارة تخطيط الموارد",
     employeeId: "EMP-1003",
     status: "active",
@@ -325,10 +325,10 @@ export const SEED_USERS: User[] = [
   // قائد فريق (تطبيقات الويب)
   {
     id: "u-004",
-    username: "f.alotaibi",
-    fullName: "فهد بن عبدالعزيز العتيبي",
-    email: "f.alotaibi@org.dev",
-    initials: "فع",
+    username: "k.khawlani",
+    fullName: "خليل الخولاني",
+    email: "k.khawlani@org.dev",
+    initials: "خخ",
     jobTitle: "قائد فريق تجربة المستخدم",
     employeeId: "EMP-1004",
     status: "active",
@@ -340,10 +340,10 @@ export const SEED_USERS: User[] = [
   // موظف (تطبيقات الويب)
   {
     id: "u-005",
-    username: "n.alqahtani",
-    fullName: "نورة بنت سعد القحطاني",
-    email: "n.alqahtani@org.dev",
-    initials: "نق",
+    username: "a.mahab",
+    fullName: "أمير المهاب",
+    email: "a.mahab@org.dev",
+    initials: "أم",
     jobTitle: "محلل أعمال أول",
     employeeId: "EMP-1005",
     status: "active",
@@ -355,10 +355,10 @@ export const SEED_USERS: User[] = [
   // موظف موقوف
   {
     id: "u-006",
-    username: "m.alharbi",
-    fullName: "ماجد بن عمران الحربي",
-    email: "m.alharbi@org.dev",
-    initials: "مح",
+    username: "s.almakhafi",
+    fullName: "سالم بن أحمد المخافي",
+    email: "s.almakhafi@org.dev",
+    initials: "سم",
     jobTitle: "أخصائي تطوير الموارد البشرية",
     employeeId: "EMP-1006",
     status: "disabled",
@@ -371,10 +371,10 @@ export const SEED_USERS: User[] = [
   // مدير إدارة (الموارد البشرية) — لاختبار نطاق مختلف
   {
     id: "u-007",
-    username: "r.alzahrani",
-    fullName: "ريم بنت عبدالله الزهراني",
-    email: "r.alzahrani@org.dev",
-    initials: "رز",
+    username: "f.alharthi",
+    fullName: "فاطمة بنت سعيد الحارثي",
+    email: "f.alharthi@org.dev",
+    initials: "فح",
     jobTitle: "مدير إدارة الموارد البشرية",
     employeeId: "EMP-1007",
     status: "active",
@@ -386,10 +386,10 @@ export const SEED_USERS: User[] = [
   // موظف بمهام متعددة (تطبيقات الجوال + مراجع جودة) — مثال تعدد الأدوار
   {
     id: "u-008",
-    username: "h.almutairi",
-    fullName: "حسن بن فهد المطيري",
-    email: "h.almutairi@org.dev",
-    initials: "حم",
+    username: "y.basuraim",
+    fullName: "ياسر بن عمر باصريم",
+    email: "y.basuraim@org.dev",
+    initials: "يب",
     jobTitle: "مطوّر تطبيقات أول",
     employeeId: "EMP-1008",
     status: "active",
@@ -401,10 +401,10 @@ export const SEED_USERS: User[] = [
   // قائد فريق (المشاريع) — نطاق آخر
   {
     id: "u-009",
-    username: "t.alghamdi",
-    fullName: "طارق بن سعد الغامدي",
-    email: "t.alghamdi@org.dev",
-    initials: "طغ",
+    username: "o.hubaishan",
+    fullName: "عمر بن ناصر الحبشان",
+    email: "o.hubaishan@org.dev",
+    initials: "عح",
     jobTitle: "قائد فريق مكتب المشاريع",
     employeeId: "EMP-1009",
     status: "active",
