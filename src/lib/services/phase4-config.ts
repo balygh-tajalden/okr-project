@@ -123,6 +123,10 @@ export function formatDateTimeAr(iso: string): string {
   }
 }
 
+/** اسم إضافي متوافق لتنسيق التاريخ والوقت */
+export const formatDateTime = formatDateTimeAr;
+
+
 /** تنسيق قصير للعرض */
 export function formatDateShort(iso: string): string {
   try {
