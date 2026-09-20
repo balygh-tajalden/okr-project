@@ -26,7 +26,6 @@ import {
   Activity,
   BarChart3,
   ShieldCheck,
-  CheckCircle2,
   Users as UsersIcon,
   Network,
   KeyRound,
@@ -232,36 +231,7 @@ export default function WelcomePage() {
         </div>
       </section>
 
-      {/* إمكانيات النظام */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">إمكانيات النظام المتاحة</CardTitle>
-          <CardDescription>
-            ما يمكنك القيام به الآن في النظام
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-3 sm:grid-cols-2">
-          {[
-            "إدارة المستخدمين وأدوارهم وارتباطهم التنظيمي",
-            "إدارة الأدوار والصلاحيات الدقيقة مع تعدد الأدوار",
-            "إدارة الهيكل التنظيمي الهرمي (N مستويات)",
-            "إدارة دورات OKR مع آلة حالة صارمة",
-            "إنشاء الأهداف والنتائج الرئيسية ومتابعتها",
-            "المراجعات والاعتمادات متعددة المستويات",
-            "تحديثات الإنجاز ومؤشرات الأداء الفعلية",
-            "التنبيهات والمراقبة الآلية للتأخر والتعطل",
-            "التقارير المؤسسية مع التصدير والطباعة",
-            "لوحة معلومات تحليلية حسب النطاق التنظيمي",
-            "البحث والتصفية الموحدة للأهداف",
-            "حماية المسارات بناءً على الصلاحيات والنطاق التنظيمي",
-          ].map((f, i) => (
-            <div key={i} className="flex items-start gap-2.5">
-              <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" />
-              <span className="text-sm text-foreground">{f}</span>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+
     </div>
   );
 }
