@@ -280,10 +280,10 @@ export const SEED_USERS: User[] = [
   // مدير النظام
   {
     id: "u-001",
-    username: "b.taj",
-    fullName: "بليغ تاج الدين",
-    email: "b.taj@org.dev",
-    initials: "بت",
+    username: "ahmed",
+    fullName: "أحمد",
+    email: "ahmed@example.com",
+    initials: "أح",
     jobTitle: "مدير النظام",
     employeeId: "EMP-1001",
     status: "active",
@@ -292,13 +292,14 @@ export const SEED_USERS: User[] = [
     createdAt: PAST,
     updatedAt: PAST,
   },
+
   // الإدارة العليا
   {
     id: "u-002",
-    username: "t.ahmed",
-    fullName: "تاج الدين أحمد",
-    email: "t.ahmed@org.dev",
-    initials: "تأ",
+    username: "mohammed",
+    fullName: "محمد",
+    email: "mohammed@example.com",
+    initials: "مح",
     jobTitle: "وكيل الهيئة المساعد",
     employeeId: "EMP-1002",
     status: "active",
@@ -307,13 +308,14 @@ export const SEED_USERS: User[] = [
     createdAt: PAST,
     updatedAt: PAST,
   },
+
   // مدير إدارة (تخطيط الموارد والأداء)
   {
     id: "u-003",
-    username: "m.qattafi",
-    fullName: "محمد القطافي",
-    email: "m.qattafi@org.dev",
-    initials: "مق",
+    username: "khaled",
+    fullName: "خالد",
+    email: "khaled@example.com",
+    initials: "خا",
     jobTitle: "مدير إدارة تخطيط الموارد",
     employeeId: "EMP-1003",
     status: "active",
@@ -322,13 +324,14 @@ export const SEED_USERS: User[] = [
     createdAt: PAST,
     updatedAt: PAST,
   },
+
   // قائد فريق (تطبيقات الويب)
   {
     id: "u-004",
-    username: "k.khawlani",
-    fullName: "خليل الخولاني",
-    email: "k.khawlani@org.dev",
-    initials: "خخ",
+    username: "ali",
+    fullName: "علي",
+    email: "ali@example.com",
+    initials: "عل",
     jobTitle: "قائد فريق تجربة المستخدم",
     employeeId: "EMP-1004",
     status: "active",
@@ -337,13 +340,14 @@ export const SEED_USERS: User[] = [
     createdAt: PAST,
     updatedAt: PAST,
   },
+
   // موظف (تطبيقات الويب)
   {
     id: "u-005",
-    username: "a.mahab",
-    fullName: "أمير المهاب",
-    email: "a.mahab@org.dev",
-    initials: "أم",
+    username: "yousef",
+    fullName: "يوسف",
+    email: "yousef@example.com",
+    initials: "يو",
     jobTitle: "محلل أعمال أول",
     employeeId: "EMP-1005",
     status: "active",
@@ -352,13 +356,14 @@ export const SEED_USERS: User[] = [
     createdAt: PAST,
     updatedAt: PAST,
   },
+
   // موظف موقوف
   {
     id: "u-006",
-    username: "s.almakhafi",
-    fullName: "سالم بن أحمد المخافي",
-    email: "s.almakhafi@org.dev",
-    initials: "سم",
+    username: "salem",
+    fullName: "سالم",
+    email: "salem@example.com",
+    initials: "سا",
     jobTitle: "أخصائي تطوير الموارد البشرية",
     employeeId: "EMP-1006",
     status: "disabled",
@@ -368,13 +373,14 @@ export const SEED_USERS: User[] = [
     updatedAt: NOW,
     disabledAt: NOW,
   },
-  // مدير إدارة (الموارد البشرية) — لاختبار نطاق مختلف
+
+  // مدير إدارة (الموارد البشرية)
   {
     id: "u-007",
-    username: "f.alharthi",
-    fullName: "فاطمة بنت سعيد الحارثي",
-    email: "f.alharthi@org.dev",
-    initials: "فح",
+    username: "fatima",
+    fullName: "فاطمة",
+    email: "fatima@example.com",
+    initials: "فا",
     jobTitle: "مدير إدارة الموارد البشرية",
     employeeId: "EMP-1007",
     status: "active",
@@ -383,13 +389,14 @@ export const SEED_USERS: User[] = [
     createdAt: PAST,
     updatedAt: PAST,
   },
-  // موظف بمهام متعددة (تطبيقات الجوال + مراجع جودة) — مثال تعدد الأدوار
+
+  // موظف بمهام متعددة — مثال تعدد الأدوار
   {
     id: "u-008",
-    username: "y.basuraim",
-    fullName: "ياسر بن عمر باصريم",
-    email: "y.basuraim@org.dev",
-    initials: "يب",
+    username: "omar",
+    fullName: "عمر",
+    email: "omar@example.com",
+    initials: "عم",
     jobTitle: "مطوّر تطبيقات أول",
     employeeId: "EMP-1008",
     status: "active",
@@ -398,13 +405,14 @@ export const SEED_USERS: User[] = [
     createdAt: PAST,
     updatedAt: PAST,
   },
-  // قائد فريق (المشاريع) — نطاق آخر
+
+  // قائد فريق (المشاريع)
   {
     id: "u-009",
-    username: "o.hubaishan",
-    fullName: "عمر بن ناصر الحبشان",
-    email: "o.hubaishan@org.dev",
-    initials: "عح",
+    username: "hassan",
+    fullName: "حسن",
+    email: "hassan@example.com",
+    initials: "حس",
     jobTitle: "قائد فريق مكتب المشاريع",
     employeeId: "EMP-1009",
     status: "active",

@@ -62,6 +62,7 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" suppressHydrationWarning>
       <body
+        suppressHydrationWarning
         className={`${arabicSans.variable} ${geistMono.variable} antialiased bg-background text-foreground font-sans`}
       >
         <AuthSessionProvider>{children}</AuthSessionProvider>

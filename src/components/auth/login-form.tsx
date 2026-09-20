@@ -189,8 +189,8 @@ export function LoginForm() {
         )}
       </Button>
 
-      {/* مساعدة المطور: حسابات العرض (مخفية افتراضياً) */}
-      <details className="group rounded-md border border-dashed border-border bg-muted/30 px-3 py-2 text-xs">
+      {/* مساعدة المطور: حسابات العرض (مخفية) */}
+      <details className="hidden group rounded-md border border-dashed border-border bg-muted/30 px-3 py-2 text-xs">
         <summary className="cursor-pointer select-none text-muted-foreground hover:text-foreground">
           حسابات تجريبية للعرض (للمطورين)
         </summary>
